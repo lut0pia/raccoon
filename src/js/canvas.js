@@ -36,10 +36,11 @@ rcn_canvas.prototype.blit = function(x, y, w, h, pixels, palette) {
   }
 
   // Blit the image to the canvas, at same pixel scale
+  this.ctx.clearRect(0, 0, this.node.width, this.node.height);
   this.ctx.putImageData(this.img, 0, 0);
 
   // Scale up to fit the entire canvas
-  this.ctx.setTransform(this.node.clientHeight/this.height, this.node.clientHeight/this.height, 0, 0, 0, 0);
+  this.ctx.setTransform(this.node.clientHeight/this.height, 0, 0, this.node.clientHeight/this.height, 0, 0);
   this.ctx.drawImage(this.ctx.canvas, 0, 0);
 }
 
