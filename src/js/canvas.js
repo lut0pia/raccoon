@@ -19,12 +19,12 @@ rcn_canvas.prototype.blit = function(x, y, w, h, pixels, palette) {
   // TODO: we're not respecting xywh for now because they're not useful
   for(var x = 0; x < w; x++) {
     for(var y = 0; y < h; y++) {
-      var pixel_index = y*w+(x>>1);
+      var pixel_index = y*(w>>1)+(x>>1);
       var pixel = pixels[pixel_index];
       if((x & 1) == 0) {
-        pixel &= 0xf;
+        pixel &= 0xf; // Left pixel
       } else {
-        pixel >>= 4;
+        pixel >>= 4; // Right pixel
       }
 
       var img_pixel_index = y*w+x;
