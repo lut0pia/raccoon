@@ -33,3 +33,30 @@ function rcn_load_style(name) {
 }
 
 document.title = 'raccoon';
+
+// Test code
+rcn_load_scripts(['canvas','vm','vm_worker']).then(function() {
+  var canvas = new rcn_canvas();
+
+  var vm = new rcn_vm();
+  vm.canvas = canvas;
+  
+  var text_area = document.createElement('textarea');
+  document.body.appendChild(text_area);
+
+  var update_button = document.createElement('input');
+  update_button.type = 'button';
+  update_button.value = 'Execute';
+  update_button.onclick = function() {
+    vm.load_code(text_area.value);
+  }
+  document.body.appendChild(update_button);
+
+  var update_button = document.createElement('input');
+  update_button.type = 'button';
+  update_button.value = 'Update';
+  update_button.onclick = function() {
+    vm.update();
+  }
+  document.body.appendChild(update_button);
+});
