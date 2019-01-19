@@ -1,0 +1,8 @@
+.window {
+  resize: both;
+  overflow: auto;
+  min-height: 128px;
+  background-color: lightgrey;
+  border: 2px lightgrey outset;
+  padding: 8px;
+}
