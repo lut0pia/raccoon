@@ -42,20 +42,10 @@ function rcn_load_styles(styles) {
 document.title = 'raccoon';
 
 // Test code
-rcn_load_scripts(['canvas','vm','vm_worker']).then(function() {
-  var canvas = new rcn_canvas();
-
-  var vm = new rcn_vm();
-  vm.canvas = canvas;
+rcn_load_styles(['code_ed','window']);
+rcn_load_scripts(['canvas','code_ed','window','vm','vm_worker']).then(function() {
+  rcn_global_vm = new rcn_vm();
+  rcn_global_vm.canvas = new rcn_canvas();
   
-  var text_area = document.createElement('textarea');
-  document.body.appendChild(text_area);
-
-  var run_button = document.createElement('input');
-  run_button.type = 'button';
-  run_button.value = 'Run';
-  run_button.onclick = function() {
-    vm.load_code(text_area.value);
-  }
-  document.body.appendChild(run_button);
+  var code_ed = new rcn_code_ed();
 });
