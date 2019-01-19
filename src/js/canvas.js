@@ -1,3 +1,4 @@
+// Raccoon canvas
 
 const rcn_default_canvas_size = 128;
 
@@ -7,16 +8,26 @@ function rcn_canvas() {
   this.ctx.imageSmoothingEnabled = false;
   this.width = rcn_default_canvas_size;
   this.height = rcn_default_canvas_size;
+  this.node.width = this.width * 3;
+  this.node.height = this.height * 3;
   document.body.appendChild(this.node);
-  this.update_img();
 }
 
-rcn_canvas.prototype.update_img = function() {
-  this.img = this.ctx.createImageData(this.width, this.height);
-}
+rcn_canvas.prototype.blit = function(x_start, y_start, w, h, pixels, palette) {
+  // Convert byte palette to css palette (e.g. #ffffff)
+  var css_palette = [];
+  for(var i=0; i<16; i++) {
+    var css_value = '#';
+    for(var j=0; j<3; j++) {
+      css_value += ('00'+palette[i*3+j].toString(16)).slice(-2);
+    }
+    css_palette.push(css_value);
+  }
 
-rcn_canvas.prototype.blit = function(x, y, w, h, pixels, palette) {
-  // TODO: we're not respecting xywh for now because they're not useful
+  var x_ratio = this.node.clientWidth/this.width;
+  var y_ratio = this.node.clientHeight/this.height;
+  var ratio = Math.min(x_ratio, y_ratio);
+
   for(var x = 0; x < w; x++) {
     for(var y = 0; y < h; y++) {
       var pixel_index = y*(w>>1)+(x>>1);
@@ -26,26 +37,14 @@ rcn_canvas.prototype.blit = function(x, y, w, h, pixels, palette) {
       } else {
         pixel >>= 4; // Right pixel
       }
-
-      var img_pixel_index = y*w+x;
-      this.img.data[img_pixel_index*4+0] = palette[pixel*3+0];
-      this.img.data[img_pixel_index*4+1] = palette[pixel*3+1];
-      this.img.data[img_pixel_index*4+2] = palette[pixel*3+2];
-      this.img.data[img_pixel_index*4+3] = 255;
+      
+      this.ctx.fillStyle = css_palette[pixel];
+      this.ctx.fillRect((x_start+x)*ratio, (y_start+y)*ratio, ratio, ratio);
     }
   }
-
-  // Blit the image to the canvas, at same pixel scale
-  this.ctx.clearRect(0, 0, this.node.width, this.node.height);
-  this.ctx.putImageData(this.img, 0, 0);
-
-  // Scale up to fit the entire canvas
-  this.ctx.setTransform(this.node.clientHeight/this.height, 0, 0, this.node.clientHeight/this.height, 0, 0);
-  this.ctx.drawImage(this.ctx.canvas, 0, 0);
 }
 
 rcn_canvas.prototype.set_size = function(width, height) {
   this.width = width;
   this.height = height;
-  this.update_img();
 }
