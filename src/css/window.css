@@ -8,6 +8,7 @@
   padding: 8px;
   background-color: grey;
   text-align: center;
+  cursor: move;
 }
 
 .window content {
