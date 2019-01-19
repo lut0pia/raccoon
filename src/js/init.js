@@ -42,12 +42,13 @@ function rcn_load_styles(styles) {
 document.title = 'raccoon';
 
 // Test code
-rcn_load_styles(['code_ed','window']);
-rcn_load_scripts(['canvas','code_ed','window','vm','vm_worker']).then(function() {
+rcn_load_styles(['code_ed','palette_ed','window']);
+rcn_load_scripts(['canvas','code_ed','palette_ed','window','vm','vm_worker']).then(function() {
   rcn_global_vm = new rcn_vm();
   rcn_global_vm.canvas = new rcn_canvas();
   
   var code_ed = new rcn_code_ed();
+  var palette_ed = new rcn_palette_ed();
 
   setInterval(function() { rcn_global_vm.update(); }, 1000/30);
 });

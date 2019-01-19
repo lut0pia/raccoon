@@ -1,0 +1,10 @@
+.window.palette_ed content {
+  width: 256px;
+  height: 128px;
+}
+.window.palette_ed content input[type=color] {
+  width: 32px;
+  height: 32px;
+  padding: 0px;
+  border: none;
+}
