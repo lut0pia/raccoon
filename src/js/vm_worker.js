@@ -56,6 +56,13 @@ function rcn_vm_worker_function() {
         e.data.code = e.data.code.replace(/function ([a-z]+)(\s*)(\([^\)]*\))/gim, '$1 = function$2$3');
         (new _Function(e.data.code))();
         break;
+      case 'memory':
+        var offset = e.data.offset;
+        var bytes = e.data.bytes;
+        for(var i=0; i<bytes.byteLength; i++) {
+          ram[offset+i] = bytes[i];
+        }
+        break;
       case 'update':
         if(typeof update !== 'undefined') {
           update(); // This is user-defined
