@@ -5,6 +5,7 @@ function rcn_vm_worker_function() {
   const rcn_vm_ram_size = 32 * 1024; // = 32KiB
   const rcn_vm_ram_palette_offset = 0x4000;
   const rcn_vm_ram_screen_offset = 0x6000;
+  const rcn_vm_ram_screen_size = 0x2000;
 
   // Keep parts of the API local
   var _Function = Function;
