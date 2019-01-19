@@ -10,15 +10,17 @@ function rcn_vm_worker_function() {
   // Keep parts of the API local
   var _Function = Function;
   var _postMessage = postMessage;
+  var _Uint8Array = Uint8Array;
 
   // Remove parts of the API
   delete eval;
   delete Function;
   delete postMessage;
+  delete Uint8Array;
   delete Worker;
   delete XMLHttpRequest;
 
-  var ram = new Uint8Array(rcn_vm_ram_size);
+  var ram = new _Uint8Array(rcn_vm_ram_size);
 
   // Implement raccoon API
   pset = function(x, y, p) {
