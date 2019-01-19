@@ -1,8 +1,20 @@
 .window {
-  resize: both;
-  overflow: auto;
-  min-height: 128px;
+  position: absolute;
   background-color: lightgrey;
   border: 2px lightgrey outset;
+}
+
+.window header {
   padding: 8px;
+  background-color: grey;
+  text-align: center;
+}
+
+.window content {
+  min-height: 128px;
+  min-width: 128px;
+  display: block;
+  padding: 8px;
+  resize: both;
+  overflow: auto;
 }

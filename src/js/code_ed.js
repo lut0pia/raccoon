@@ -1,7 +1,7 @@
 // Raccoon code editor
 
 function rcn_code_ed() {
-  this.window = new rcn_window('code_ed');
+  this.window = new rcn_window('code_ed', 'Code Editor');
   this.textarea = document.createElement('textarea');
   this.window.add_child(this.textarea);
 
