@@ -41,7 +41,9 @@ function rcn_vm_worker_function() {
   onmessage = function(e) {
     switch(e.data.type) {
       case 'code':
-        // TODO: allow function thing() {} syntax to work as expected
+        // Allow function thing() {} syntax to work as expected
+        // by replacing it with thing = function() {}
+        e.data.code = e.data.code.replace(/function ([a-z]+)(\s*)(\([^\)]*\))/gim, '$1 = function$2$3');
         (new _Function(e.data.code))();
         break;
       case 'update':
