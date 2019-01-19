@@ -22,7 +22,7 @@ function rcn_load_scripts(scripts) {
   });
   return Promise.all(script_promises);
 }
-function rcn_load_style(name) {
+function rcn_load_style(style) {
   // TODO: keep array of style promises
   var path = 'src/css/'+style+'.css';
   var style_node = rcn_add_head_node('link');
