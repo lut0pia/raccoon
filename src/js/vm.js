@@ -5,6 +5,8 @@ function rcn_vm() {
   this.worker = new Worker(rcn_vm_worker_url);
   var vm = this;
   this.worker.onmessage = function(e) { vm.onmessage(e); }
+  // This is probably bad because it means vm never dies
+  setInterval(function() { vm.update(); }, 1000/30);
 }
 
 rcn_vm.prototype.load_paw = function(paw) {
