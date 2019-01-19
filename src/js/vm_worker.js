@@ -45,7 +45,9 @@ function rcn_vm_worker_function() {
         (new _Function(e.data.code))();
         break;
       case 'update':
-        update(); // This is user-defined
+        if(typeof update !== 'undefined') {
+          update(); // This is user-defined
+        }
         _postMessage({
           type:'blit', x:0, y:0, w:128, h:128,
           pixels:ram.slice(rcn_vm_ram_screen_offset, rcn_vm_ram_screen_offset+0x2000),
