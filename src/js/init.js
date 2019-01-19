@@ -44,19 +44,11 @@ rcn_load_scripts(['canvas','vm','vm_worker']).then(function() {
   var text_area = document.createElement('textarea');
   document.body.appendChild(text_area);
 
-  var update_button = document.createElement('input');
-  update_button.type = 'button';
-  update_button.value = 'Execute';
-  update_button.onclick = function() {
+  var run_button = document.createElement('input');
+  run_button.type = 'button';
+  run_button.value = 'Run';
+  run_button.onclick = function() {
     vm.load_code(text_area.value);
   }
-  document.body.appendChild(update_button);
-
-  var update_button = document.createElement('input');
-  update_button.type = 'button';
-  update_button.value = 'Update';
-  update_button.onclick = function() {
-    vm.update();
-  }
-  document.body.appendChild(update_button);
+  document.body.appendChild(run_button);
 });
