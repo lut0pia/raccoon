@@ -22,7 +22,7 @@ function rcn_window_onmousedown(e) {
   e.preventDefault();
 
   rcn_window_drag = {
-    node: e.path[1],
+    node: e.srcElement.parentElement,
     x: e.clientX,
     y: e.clientY,
   }
