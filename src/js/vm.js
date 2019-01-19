@@ -1,20 +1,26 @@
 // Raccoon virtual machine
 // This is the client that spawns the web worker
 
-function rcn_vm() {
+function rcn_vm() { }
+
+rcn_vm.prototype.new_worker = function() {
+  if(this.worker) {
+    this.worker.onmessage = null;
+    this.worker.terminate();
+  }
   this.worker = new Worker(rcn_vm_worker_url);
   var vm = this;
   this.worker.onmessage = function(e) { vm.onmessage(e); }
 }
 
-rcn_vm.prototype.load_paw = function(paw) {
-  this.ram = paw.rom.slice();
-  this.worker = new Worker(rcn_vm_worker_url);
-  this.load_code(paw.code);
+rcn_vm.prototype.load_bin = function(bin) {
+  this.new_worker();
+  this.load_memory(bin.rom);
+  this.load_code(bin.code);
 }
 
 rcn_vm.prototype.load_code = function(code) {
-  this.worker.postMessage({type:'code',code:code});
+  this.worker.postMessage({type:'code', code:code});
 }
 
 rcn_vm.prototype.load_memory = function(bytes, offset) {

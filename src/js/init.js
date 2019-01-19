@@ -43,12 +43,16 @@ document.title = 'raccoon';
 
 // Test code
 rcn_load_styles(['code_ed','palette_ed','window']);
-rcn_load_scripts(['canvas','code_ed','palette_ed','window','vm','vm_worker']).then(function() {
+rcn_load_scripts(['bin','canvas','code_ed','palette_ed','window','vm','vm_worker']).then(function() {
+  rcn_global_bin = new rcn_bin();
+
   rcn_global_vm = new rcn_vm();
   rcn_global_vm.canvas = new rcn_canvas();
+
+  rcn_global_vm.load_bin(rcn_global_bin);
   
-  var code_ed = new rcn_code_ed();
-  var palette_ed = new rcn_palette_ed();
+  rcn_global_code_ed = new rcn_code_ed();
+  rcn_global_palette_ed = new rcn_palette_ed();
 
   setInterval(function() { rcn_global_vm.update(); }, 1000/30);
 });
