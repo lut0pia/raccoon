@@ -31,6 +31,13 @@ function rcn_load_style(style) {
   style_node.type = 'text/css';
   style_node.href = path;
 }
+function rcn_load_styles(styles) {
+  var style_promises = [];
+  styles.forEach(function(style) {
+    style_promises.push(rcn_load_style(style));  
+  });
+  return Promise.all(style_promises);
+}
 
 document.title = 'raccoon';
 
