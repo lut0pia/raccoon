@@ -48,4 +48,6 @@ rcn_load_scripts(['canvas','code_ed','window','vm','vm_worker']).then(function()
   rcn_global_vm.canvas = new rcn_canvas();
   
   var code_ed = new rcn_code_ed();
+
+  setInterval(function() { rcn_global_vm.update(); }, 1000/30);
 });
