@@ -10,9 +10,29 @@ function rcn_bin() {
 }
 
 rcn_bin.prototype.load_from_text = function(text) {
-  // TODO
+  var bin = JSON.parse(text);
+  if(bin.version == 1) {
+    this.name = bin.name;
+    this.code = bin.code;
+    for(var i=0; i<rcn_paw_byte_size; i++) {
+      this.rom[i] = parseInt(bin.rom.substr(i*2, 2), 16);
+    }
+  } else {
+    console.log('Unable to read bin with version: '+bin.version);
+  }
 }
 
 rcn_bin.prototype.save_to_text = function() {
-  // TODO
+  var romhex = '';
+
+  this.rom.forEach(function(byte) {
+    romhex += ('00'+byte.toString(16)).slice(-2);
+  });
+
+  return JSON.stringify({
+    name: this.name,
+    version: 1,
+    code: this.code,
+    rom: romhex,
+  });
 }
