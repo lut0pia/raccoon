@@ -9,6 +9,14 @@ function rcn_bin() {
   this.rom = new Uint8Array(rcn_paw_byte_size);
 }
 
+rcn_bin.prototype.clone = function() {
+  var bin_clone = new rcn_bin();
+  bin_clone.name = this.name;
+  bin_clone.code = this.code;
+  bin_clone.rom = this.rom.slice();
+  return bin_clone;
+}
+
 rcn_bin.prototype.load_from_text = function(text) {
   var bin = JSON.parse(text);
   if(bin.version == 1) {
