@@ -44,3 +44,9 @@ rcn_bin.prototype.save_to_text = function() {
     rom: romhex,
   });
 }
+
+rcn_bin.prototype.patch_memory = function(bytes, offset) {
+  for(var i=0; i<bytes.byteLength; i++) {
+    this.rom[offset+i] = bytes[i];
+  }
+}
