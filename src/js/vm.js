@@ -34,6 +34,9 @@ rcn_vm.prototype.update = function() {
 
 rcn_vm.prototype.onmessage = function(e) {
   switch(e.data.type) {
-    case 'blit': this.canvas.blit(e.data.x, e.data.y, e.data.w, e.data.h, e.data.pixels, e.data.palette); break;
+    case 'blit':
+      this.canvas.blit(e.data.x, e.data.y, e.data.w, e.data.h, e.data.pixels, e.data.palette);
+      this.canvas.flush();
+      break;
   }
 }
