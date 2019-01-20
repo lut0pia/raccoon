@@ -1,7 +1,7 @@
 // Bins are containers for raccoon software
 // They can be saved, shared, and loaded into a raccoon VM
 
-const rcn_paw_byte_size = 32 * 1024;
+const rcn_paw_byte_size = 24 * 1024;
 
 function rcn_bin() {
   this.name = 'Untitled';
