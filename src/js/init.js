@@ -1,5 +1,7 @@
 // Basic functionality, bootstrap, config
 
+var rcn_log = false ? console.log : function() {};
+
 function rcn_add_head_node(name) {
   var new_node = document.createElement(name);
   document.head.appendChild(new_node);
