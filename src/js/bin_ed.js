@@ -19,7 +19,7 @@ function rcn_bin_ed() {
   // Create bin list UI
   this.bin_node = document.createElement('div');
   for(var i in this.bins) {
-    this.add_bin_ui(this.bins[i]);
+    this.add_bin_ui(i);
   }
   this.window.add_child(this.bin_node);
 
