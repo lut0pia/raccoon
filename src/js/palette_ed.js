@@ -14,6 +14,7 @@ function rcn_palette_ed() {
       // Update bin's palette with UI palette
       rcn_global_bin.patch_memory(palette_ed.to_palette_bytes(), 0x4000);
     }
+    color_input.setAttribute('data-content', i); // Use for overlay number
     
     this.color_inputs.push(color_input);
     this.window.add_child(color_input);

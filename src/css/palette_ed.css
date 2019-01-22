@@ -8,3 +8,14 @@
   padding: 0px;
   border: none;
 }
+
+/* Style rule for numbers inside color inputs */
+.window.palette_ed content input[type=color]:before {
+  content: attr(data-content);
+  position: absolute;
+  width: 32px;
+  color: white;
+  text-shadow: 0px 0px 1px black;
+  text-align: center;
+  padding-top: 9px;
+}
