@@ -16,13 +16,6 @@ function rcn_bin_ed() {
     this.bins = [];
   }
 
-  // Create bin list UI
-  this.bin_node = document.createElement('div');
-  for(var i in this.bins) {
-    this.add_bin_ui(i);
-  }
-  this.window.add_child(this.bin_node);
-
   var bin_ed = this;
 
   // Create new button
@@ -54,6 +47,8 @@ function rcn_bin_ed() {
     bin_ed.save_bin();
   }
   this.window.add_child(this.save_button);
+
+  this.refresh_bins_ui();
 }
 
 rcn_bin_ed.prototype.save_bin = function() {
@@ -82,6 +77,18 @@ rcn_bin_ed.prototype.save_bin = function() {
   }
 }
 
+rcn_bin_ed.prototype.refresh_bins_ui = function() {
+  if(this.bin_node) {
+    this.bin_node.parentNode.removeChild(this.bin_node);
+  }
+
+  this.bin_node = document.createElement('div');
+  for(var i in this.bins) {
+    this.add_bin_ui(i);
+  }
+  this.window.add_child(this.bin_node);
+}
+
 rcn_bin_ed.prototype.add_bin_ui = function(bin_index) {
   var bin_ed = this;
   var bin = this.bins[bin_index];
@@ -94,6 +101,13 @@ rcn_bin_ed.prototype.add_bin_ui = function(bin_index) {
     bin_ed.change_bin(bin_ed.bins[bin_index].clone());
   }
   p.appendChild(load_button);
+  var delete_button = document.createElement('input');
+  delete_button.type = 'button';
+  delete_button.value = 'Delete';
+  delete_button.onclick = function() {
+    bin_ed.delete_bin(bin_index);
+  }
+  p.appendChild(delete_button);
   this.bin_node.appendChild(p);
 }
 
@@ -101,4 +115,9 @@ rcn_bin_ed.prototype.change_bin = function(new_bin) {
   rcn_global_bin = new_bin;
   rcn_global_vm.load_bin(new_bin);
   this.onbinchange.forEach(function(f) { f(new_bin); });
+}
+
+rcn_bin_ed.prototype.delete_bin = function(bin_index) {
+  this.bins.splice(bin_index, 1);
+  this.refresh_bins_ui();
 }
