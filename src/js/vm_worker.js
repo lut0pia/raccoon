@@ -43,9 +43,7 @@ function rcn_vm_worker_function() {
   cls = function(c) {
     c = c || 0; // Default color is 0
     c |= c<<4; // Left and right pixel to same color
-    for(var i=0; i<rcn_vm_ram_screen_size; i++) {
-      ram[rcn_vm_ram_screen_offset+i] = c;
-    }
+    ram.fill(c, rcn_vm_ram_screen_offset, rcn_vm_ram_screen_offset + rcn_vm_ram_screen_size);
   }
 
   onmessage = function(e) {
