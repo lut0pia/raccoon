@@ -74,6 +74,20 @@ function rcn_vm_worker_function() {
     ram.fill(c, rcn_vm_ram_screen_offset, rcn_vm_ram_screen_offset + rcn_vm_ram_screen_size);
   }
 
+  // Raccoon memory API
+  memcpy = function(dst, src, len) {
+    ram.copyWithin(dst, src, src + len);
+  }
+  memset = function(dst, val, len) {
+    ram.fill(val, dst, dst + len);
+  }
+  read = function(addr) {
+    return ram[addr];
+  }
+  write = function(addr, val) {
+    ram[addr] = val;
+  }
+
   onmessage = function(e) {
     switch(e.data.type) {
       case 'code':
