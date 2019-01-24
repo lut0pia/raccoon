@@ -5,7 +5,6 @@ function rcn_canvas() {
   this.ctx = this.node.getContext('2d');
   this.ctx.imageSmoothingEnabled = false;
   this.set_size(384, 384, 128, 128);
-  document.body.appendChild(this.node);
 }
 
 rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, palette) {
