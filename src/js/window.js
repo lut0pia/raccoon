@@ -1,6 +1,9 @@
 // Generic draggable window
 
 function rcn_window(type, title) {
+  this.type = type;
+  this.title = title;
+
   this.section = document.createElement('section');
   this.section.classList.add('window');
   this.section.classList.add(type);
@@ -15,6 +18,34 @@ function rcn_window(type, title) {
   // Create content
   this.content = document.createElement('content');
   this.section.appendChild(this.content);
+
+  this.load_from_storage();
+  rcn_windows.push(this);
+}
+
+rcn_window.prototype.save_to_storage = function() {
+  try {
+    localStorage['rcn_window_'+this.type] = JSON.stringify({
+      left: this.section.style.left,
+      top: this.section.style.top,
+      width: this.content.style.width,
+      height: this.content.style.height,
+    });
+  } catch(e) {
+    rcn_log('Could not save window to storage')
+  }
+}
+
+rcn_window.prototype.load_from_storage = function() {
+  try {
+    var save = JSON.parse(localStorage['rcn_window_'+this.type]);
+    this.section.style.left = save.left;
+    this.section.style.top = save.top;
+    this.content.style.width = save.width;
+    this.content.style.height = save.height;
+  } catch(e) {
+    rcn_log('Could not load window from storage')
+  }
 }
 
 function rcn_window_onmousedown(e) {
@@ -56,7 +87,15 @@ rcn_window.prototype.add_child = function(node) {
 
 rcn_window.prototype.kill = function() {
   this.section.parentElement.removeChild(this.section);
+  rcn_windows.splice(rcn_windows.indexOf(this), 1);
 }
+
+rcn_windows = [];
 
 document.addEventListener('mousemove', rcn_window_onmousemove);
 document.addEventListener('mouseup', rcn_window_onmouseup);
+window.addEventListener('unload', function() {
+  rcn_windows.forEach(function(window) {
+    window.save_to_storage();
+  });
+})
