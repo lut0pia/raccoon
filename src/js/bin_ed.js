@@ -4,18 +4,6 @@ function rcn_bin_ed() {
   this.window = new rcn_window('bin_ed', 'Bin Browser');
   this.onbinchange = [];
   
-  // Load bins from storage
-  try {
-    this.bins = JSON.parse(localStorage.rcn_bins || '[]').map(function(bin_text) {
-      var bin = new rcn_bin();
-      bin.load_from_text(bin_text);
-      return bin;
-    });
-  } catch(e) {
-    rcn_log('Could not load bins from storage!');
-    this.bins = [];
-  }
-
   var bin_ed = this;
 
   // Create new button
@@ -48,6 +36,7 @@ function rcn_bin_ed() {
   }
   this.window.add_child(this.save_button);
 
+  this.load_from_storage();
   this.refresh_bins_ui();
 }
 
@@ -66,14 +55,41 @@ rcn_bin_ed.prototype.save_bin = function() {
     rcn_log('Overwriting old bin: '+bin_clone.name);
     this.bins[save_index] = bin_clone;
   }
+  this.save_to_storage();
+}
 
-  // Save bins to storage
+rcn_bin_ed.prototype.change_bin = function(new_bin) {
+  rcn_global_bin = new_bin;
+  rcn_global_vm.load_bin(new_bin);
+  this.onbinchange.forEach(function(f) { f(new_bin); });
+}
+
+rcn_bin_ed.prototype.delete_bin = function(bin_index) {
+  this.bins.splice(bin_index, 1);
+  this.refresh_bins_ui();
+  this.save_to_storage();
+}
+
+rcn_bin_ed.prototype.save_to_storage = function() {
   try {
     localStorage.rcn_bins = JSON.stringify(this.bins.map(function(bin) {
       return bin.save_to_text();
     }));
   } catch(e) {
     rcn_log('Could not save bins to storage!');
+  }
+}
+
+rcn_bin_ed.prototype.load_from_storage = function() {
+  try {
+    this.bins = JSON.parse(localStorage.rcn_bins || '[]').map(function(bin_text) {
+      var bin = new rcn_bin();
+      bin.load_from_text(bin_text);
+      return bin;
+    });
+  } catch(e) {
+    rcn_log('Could not load bins from storage!');
+    this.bins = [];
   }
 }
 
@@ -109,15 +125,4 @@ rcn_bin_ed.prototype.add_bin_ui = function(bin_index) {
   }
   p.appendChild(delete_button);
   this.bin_node.appendChild(p);
-}
-
-rcn_bin_ed.prototype.change_bin = function(new_bin) {
-  rcn_global_bin = new_bin;
-  rcn_global_vm.load_bin(new_bin);
-  this.onbinchange.forEach(function(f) { f(new_bin); });
-}
-
-rcn_bin_ed.prototype.delete_bin = function(bin_index) {
-  this.bins.splice(bin_index, 1);
-  this.refresh_bins_ui();
 }
