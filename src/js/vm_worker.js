@@ -9,12 +9,14 @@ function rcn_vm_worker_function() {
 
   // Keep parts of the API local
   var _Function = Function;
+  var _Math = Math;
   var _postMessage = postMessage;
   var _Uint8Array = Uint8Array;
 
   // Remove parts of the API
   delete eval;
   delete Function;
+  delete Math;
   delete postMessage;
   delete Uint8Array;
   delete Worker;
@@ -26,6 +28,19 @@ function rcn_vm_worker_function() {
   var screen_pixel_index = function(x, y) {
     return rcn_vm_ram_screen_offset+(y<<6)+(x>>1);
   }
+
+  // Raccoon math API
+  flr = _Math.floor;
+  ceil = _Math.ceil;
+  abs = _Math.abs;
+  sign = _Math.sign;
+  max = _Math.max;
+  min = _Math.min;
+  sqrt = _Math.sqrt;
+  rnd = _Math.random;
+  sin = _Math.sin;
+  cos = _Math.cos;
+  atan2 = _Math.atan2;
 
   // Raccoon rendering API
   pset = function(x, y, p) {
