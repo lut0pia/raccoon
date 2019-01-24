@@ -27,7 +27,7 @@ function rcn_vm_worker_function() {
     return rcn_vm_ram_screen_offset+(y<<6)+(x>>1);
   }
 
-  // Implement raccoon API
+  // Raccoon rendering API
   pset = function(x, y, p) {
     var pixel_index = screen_pixel_index(x, y);
     var pixel = ram[pixel_index];
