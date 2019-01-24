@@ -40,6 +40,14 @@ function rcn_vm_worker_function() {
     }
     ram[pixel_index] = pixel;
   }
+  pget = function(x, y) {
+    var pixel = ram[screen_pixel_index(x, y)];
+    if((x % 2) == 0) {
+      return pixel & 0xf;
+    } else {
+      return pixel >> 4;
+    }
+  }
   palset = function(i, r, g, b) {
     ram[rcn_vm_ram_palette_offset+i*3+0] = r;
     ram[rcn_vm_ram_palette_offset+i*3+1] = g;
