@@ -22,9 +22,14 @@ function rcn_vm_worker_function() {
 
   var ram = new _Uint8Array(rcn_vm_ram_size);
 
+  // Local helper functions
+  var screen_pixel_index = function(x, y) {
+    return rcn_vm_ram_screen_offset+(y<<6)+(x>>1);
+  }
+
   // Implement raccoon API
   pset = function(x, y, p) {
-    var pixel_index = rcn_vm_ram_screen_offset+y*64+(x>>1);
+    var pixel_index = screen_pixel_index(x, y);
     var pixel = ram[pixel_index];
     if((x % 2) == 0) {
       pixel &= 0xf0;
