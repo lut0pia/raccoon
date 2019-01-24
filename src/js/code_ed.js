@@ -6,13 +6,13 @@ function rcn_code_ed() {
   this.textarea.onchange = rcn_code_ed_textarea_onchange;
   this.window.add_child(this.textarea);
 
-  this.run_button = document.createElement('input');
-  this.run_button.type = 'button';
-  this.run_button.value = 'Run';
-  this.window.add_child(this.run_button);
+  this.apply_button = document.createElement('input');
+  this.apply_button.type = 'button';
+  this.apply_button.value = 'Apply';
+  this.window.add_child(this.apply_button);
 
   var code_ed = this;
-  this.run_button.onclick = function() {
+  this.apply_button.onclick = function() {
     rcn_global_vm.load_code(code_ed.textarea.value);
   }
   rcn_global_bin_ed.onbinchange.push(function(bin) {
