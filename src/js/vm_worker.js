@@ -36,6 +36,9 @@ function rcn_vm_worker_function() {
   sign = _Math.sign;
   max = _Math.max;
   min = _Math.min;
+  mid = function(a, b, c) {
+    return _Math.max(_Math.min(a, b), _Math.min(_Math.max(a, b), c));
+  }
   sqrt = _Math.sqrt;
   rnd = _Math.random;
   sin = _Math.sin;
