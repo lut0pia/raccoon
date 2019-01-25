@@ -40,7 +40,13 @@ function rcn_vm_worker_function() {
     return _Math.max(_Math.min(a, b), _Math.min(_Math.max(a, b), c));
   }
   sqrt = _Math.sqrt;
-  rnd = _Math.random;
+  rnd = function(x) {
+    if(x) {
+      return _Math.floor(_Math.random()*x);
+    } else {
+      return _Math.random;
+    }
+  }
   sin = _Math.sin;
   cos = _Math.cos;
   atan2 = _Math.atan2;
