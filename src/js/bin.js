@@ -1,12 +1,10 @@
 // Bins are containers for raccoon software
 // They can be saved, shared, and loaded into a raccoon VM
 
-const rcn_paw_byte_size = 24 * 1024;
-
 function rcn_bin() {
   this.name = 'Untitled';
   this.code = '';
-  this.rom = new Uint8Array(rcn_paw_byte_size);
+  this.rom = new Uint8Array(rcn_const.rom_size);
 }
 
 rcn_bin.prototype.clone = function() {
@@ -22,7 +20,7 @@ rcn_bin.prototype.load_from_text = function(text) {
   if(bin.version == 1) {
     this.name = bin.name;
     this.code = bin.code;
-    for(var i=0; i<rcn_paw_byte_size; i++) {
+    for(var i=0; i<rcn_const.rom_size; i++) {
       this.rom[i] = parseInt(bin.rom.substr(i*2, 2), 16);
     }
   } else {

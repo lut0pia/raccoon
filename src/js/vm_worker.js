@@ -1,11 +1,12 @@
 // Raccoon virtual machine
 // This is the worker script that gets executed inside a web worker
 
-function rcn_vm_worker_function() {
-  const rcn_vm_ram_size = 32 * 1024; // = 32KiB
-  const rcn_vm_ram_palette_offset = 0x4000;
-  const rcn_vm_ram_screen_offset = 0x6000;
-  const rcn_vm_ram_screen_size = 0x2000;
+function rcn_vm_worker_function(rcn_const) {
+  const rcn_ram_size = rcn_const.ram_size;
+  const rcn_ram_palette_offset = rcn_const.ram_palette_offset;
+  const rcn_ram_palette_size = rcn_const.ram_palette_size;
+  const rcn_ram_screen_offset = rcn_const.ram_screen_offset;
+  const rcn_ram_screen_size = rcn_const.ram_screen_size;
 
   // Keep parts of the API local
   var _Function = Function;
@@ -22,11 +23,11 @@ function rcn_vm_worker_function() {
   delete Worker;
   delete XMLHttpRequest;
 
-  var ram = new _Uint8Array(rcn_vm_ram_size);
+  var ram = new _Uint8Array(rcn_ram_size);
 
   // Local helper functions
   var screen_pixel_index = function(x, y) {
-    return rcn_vm_ram_screen_offset+(y<<6)+(x>>1);
+    return rcn_ram_screen_offset+(y<<6)+(x>>1);
   }
 
   // Raccoon math API
@@ -73,14 +74,14 @@ function rcn_vm_worker_function() {
     }
   }
   palset = function(i, r, g, b) {
-    ram[rcn_vm_ram_palette_offset+i*3+0] = r;
-    ram[rcn_vm_ram_palette_offset+i*3+1] = g;
-    ram[rcn_vm_ram_palette_offset+i*3+2] = b;
+    ram[rcn_ram_palette_offset+i*3+0] = r;
+    ram[rcn_ram_palette_offset+i*3+1] = g;
+    ram[rcn_ram_palette_offset+i*3+2] = b;
   }
   cls = function(c) {
     c = c || 0; // Default color is 0
     c |= c<<4; // Left and right pixel to same color
-    ram.fill(c, rcn_vm_ram_screen_offset, rcn_vm_ram_screen_offset + rcn_vm_ram_screen_size);
+    ram.fill(c, rcn_ram_screen_offset, rcn_ram_screen_offset + rcn_ram_screen_size);
   }
 
   // Raccoon memory API
@@ -119,12 +120,14 @@ function rcn_vm_worker_function() {
         }
         _postMessage({
           type:'blit', x:0, y:0, w:128, h:128,
-          pixels:ram.slice(rcn_vm_ram_screen_offset, rcn_vm_ram_screen_offset+0x2000),
-          palette:ram.slice(rcn_vm_ram_palette_offset, rcn_vm_ram_palette_offset+0x30),
+          pixels:ram.slice(rcn_ram_screen_offset, rcn_ram_screen_offset + rcn_ram_screen_size),
+          palette:ram.slice(rcn_ram_palette_offset, rcn_ram_palette_offset + rcn_ram_palette_size),
         });
         break;
     }
   }
 }
 
-const rcn_vm_worker_url = URL.createObjectURL(new Blob(['('+rcn_vm_worker_function.toString()+')()'], {type: 'text/javascript'}));
+const rcn_vm_worker_url = URL.createObjectURL(new Blob(
+  ['('+rcn_vm_worker_function.toString()+')('+JSON.stringify(rcn_const)+')'],
+  {type: 'text/javascript'}));

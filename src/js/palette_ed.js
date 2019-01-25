@@ -12,7 +12,7 @@ function rcn_palette_ed() {
     color_input.type = 'color';
     color_input.onchange = function() {
       // Update bin's palette with UI palette
-      rcn_global_bin.patch_memory(palette_ed.to_palette_bytes(), 0x4000);
+      rcn_global_bin.patch_memory(palette_ed.to_palette_bytes(), rcn_const.ram_palette_offset);
     }
     color_input.setAttribute('data-content', i); // Use for overlay number
     
@@ -28,12 +28,12 @@ function rcn_palette_ed() {
 
   this.apply_button.onclick = function() {
     // Update VM palette with UI palette
-    rcn_global_vm.load_memory(palette_ed.to_palette_bytes(), 0x4000);
+    rcn_global_vm.load_memory(palette_ed.to_palette_bytes(), rcn_const.ram_palette_offset);
   }
 
   rcn_global_bin_ed.onbinchange.push(function(bin) {
     // Update UI palette with bin's palette
-    palette_ed.from_palette_bytes(bin.rom.slice(0x4000, 0x4030));
+    palette_ed.from_palette_bytes(bin.rom.slice(rcn_const.ram_palette_offset, rcn_const.ram_palette_offset + rcn_const.ram_palette_size));
   });
 }
 
