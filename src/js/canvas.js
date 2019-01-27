@@ -34,7 +34,7 @@ function rcn_canvas() {
     3, -1, 2, 2,
   ]));
 
-  this.set_size(384, 384, 128, 128);
+  this.set_size(2048, 2048, 128, 128);
 }
 
 rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, palette) {
