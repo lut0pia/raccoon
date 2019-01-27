@@ -54,7 +54,7 @@ document.title = 'raccoon';
 
 // Test code
 rcn_load_styles(['bin_ed','code_ed','palette_ed','vm_ed','window']);
-rcn_load_scripts(['bin','bin_ed','canvas','code_ed','palette_ed','window','vm','vm_ed','vm_worker']).then(function() {
+rcn_load_scripts(['bin','bin_ed','canvas','code_ed','gl','palette_ed','window','vm','vm_ed','vm_worker']).then(function() {
   rcn_global_vm_ed = new rcn_vm_ed();
   rcn_global_bin_ed = new rcn_bin_ed();
   rcn_global_code_ed = new rcn_code_ed();
