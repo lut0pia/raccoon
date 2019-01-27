@@ -10,12 +10,11 @@
 }
 
 /* Style rule for numbers inside color inputs */
-.window.palette_ed content input[type=color]:before {
-  content: attr(data-content);
+.window.palette_ed content label {
   position: absolute;
   width: 32px;
   color: white;
-  text-shadow: 0px 0px 1px black;
+  text-shadow: 0px 0px 2px black;
   text-align: center;
-  padding-top: 9px;
+  padding-top: 7px;
 }

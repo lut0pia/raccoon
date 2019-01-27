@@ -8,13 +8,19 @@ function rcn_palette_ed() {
   // Create color inputs
   this.color_inputs = [];
   for(var i=0; i<8; i++) {
+    var color_input_id = 'color_input_'+i;
+    var color_label = document.createElement('label');
+    color_label.innerText = i; 
+    color_label.htmlFor = color_input_id;
+    this.window.add_child(color_label);
+
     var color_input = document.createElement('input');
     color_input.type = 'color';
+    color_input.id = color_input_id;
     color_input.onchange = function() {
       // Update bin's palette with UI palette
       rcn_global_bin.patch_memory(palette_ed.to_palette_bytes(), rcn_const.ram_palette_offset);
     }
-    color_input.setAttribute('data-content', i); // Use for overlay number
     
     this.color_inputs.push(color_input);
     this.window.add_child(color_input);
