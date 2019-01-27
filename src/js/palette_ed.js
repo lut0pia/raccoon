@@ -7,7 +7,7 @@ function rcn_palette_ed() {
 
   // Create color inputs
   this.color_inputs = [];
-  for(var i=0; i<16; i++) {
+  for(var i=0; i<8; i++) {
     var color_input = document.createElement('input');
     color_input.type = 'color';
     color_input.onchange = function() {
@@ -38,7 +38,7 @@ function rcn_palette_ed() {
 }
 
 rcn_palette_ed.prototype.from_palette_bytes = function(palette_bytes) {
-  for(var i=0; i<16; i++) {
+  for(var i=0; i<8; i++) {
     var rgb_str = '#'
     for(var j=0; j<3; j++) {
       rgb_str += ('00'+palette_bytes[i*3+j].toString(16)).slice(-2);
@@ -48,8 +48,8 @@ rcn_palette_ed.prototype.from_palette_bytes = function(palette_bytes) {
 }
 
 rcn_palette_ed.prototype.to_palette_bytes = function() {
-  var palette_bytes = new Uint8Array(16*3); // 16 RGB values
-  for(var i=0; i<16; i++) {
+  var palette_bytes = new Uint8Array(rcn_const.ram_palette_size); // 8 RGB values
+  for(var i=0; i<8; i++) {
     var rgb_int = parseInt(this.color_inputs[i].value.slice(1), 16);
     palette_bytes[i*3+0] = (rgb_int>>16);
     palette_bytes[i*3+1] = (rgb_int>>8) & 0xff;

@@ -6,7 +6,7 @@ const rcn_const = {
   rom_size: 0x6000, // = 24KiB
   ram_size: 0x8000, // = 32KiB
   ram_palette_offset: 0x4000,
-  ram_palette_size: 0x30,
+  ram_palette_size: 0x0018, // 24B = 8x24bits
   ram_screen_offset: 0x6000,
   ram_screen_size: 0x2000,
 };
