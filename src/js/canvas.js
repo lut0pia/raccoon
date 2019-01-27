@@ -1,40 +1,74 @@
 // Raccoon canvas
 
+const rcn_canvas_vs_source = `
+  attribute vec4 vert;
+  varying highp vec2 uv;
+  void main(void) {
+    uv = vert.zw;
+    gl_Position = vec4(vert.xy, 0, 1);
+  }
+`;
+
+const rcn_canvas_fs_source = `
+  varying highp vec2 uv;
+  uniform sampler2D sampler;
+
+  void main(void) {
+    gl_FragColor = texture2D(sampler, uv);
+  }
+`;
+
 function rcn_canvas() {
   this.node = document.createElement('canvas');
-  this.ctx = this.node.getContext('2d');
-  this.ctx.imageSmoothingEnabled = false;
+  this.gl = this.node.getContext('webgl');
+
+  this.texture = this.gl.createTexture();
+  this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+  this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+  this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+
+  this.program = rcn_gl_create_program(this.gl, rcn_canvas_vs_source, rcn_canvas_fs_source);
+  this.vbo = rcn_gl_create_array_buffer(this.gl, new Float32Array([
+    -1, -1, 0, 2,
+    -1, 3, 0, 0,
+    3, -1, 2, 2,
+  ]));
+
   this.set_size(384, 384, 128, 128);
 }
 
 rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, palette) {
-  const x_ratio = this.node.clientWidth / this.width;
-  const y_ratio = this.node.clientHeight / this.height;
-
-  const cx_start = Math.floor(x_start * x_ratio);
-  const cy_start = Math.floor(y_start * y_ratio);
-  const cwidth = Math.floor(width * x_ratio);
-  const cheight = Math.floor(height * y_ratio);
-  const cx_end = cx_start + cwidth;
-  const cy_end = cy_start + cheight;
-  for(var cx = cx_start; cx < cx_end; cx++) {
-    for(var cy = cy_start; cy < cy_end; cy++) {
-      const x = Math.floor(cx / x_ratio);
-      const y = Math.floor(cy / y_ratio);
+  const x_end = x_start + width;
+  const y_end = y_start + height;
+  for(var x = x_start; x < x_end; x++) {
+    for(var y = y_start; y < y_end; y++) {
       const pixel_index = y*(width>>1) + (x>>1); // Bitshift because pixels are 4bits
       var pixel = pixels[pixel_index];
       pixel = ((x & 1) == 0) ? (pixel & 0xf) : (pixel >> 4); // Deal with left or right pixel
 
-      const cpixel_index = cy*(this.img.width) + cx;
-      this.img.data[cpixel_index*4+0] = palette[pixel*3+0];
-      this.img.data[cpixel_index*4+1] = palette[pixel*3+1];
-      this.img.data[cpixel_index*4+2] = palette[pixel*3+2];
+      const cpixel_index = y*width + x;
+      this.img[cpixel_index*4+0] = palette[pixel*3+0];
+      this.img[cpixel_index*4+1] = palette[pixel*3+1];
+      this.img[cpixel_index*4+2] = palette[pixel*3+2];
     }
   }
 }
 
 rcn_canvas.prototype.flush = function() {
-  this.ctx.putImageData(this.img, 0, 0);
+  const gl = this.gl;
+
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, this.texture);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.width, this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.img);
+  
+  gl.useProgram(this.program);
+  gl.uniform1i(gl.getUniformLocation(this.program, 'sampler'), 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+  gl.vertexAttribPointer(gl.getAttribLocation(this.program, 'vert'), 4, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(gl.getAttribLocation(this.program, 'vert'));
+
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
 rcn_canvas.prototype.set_size = function(width, height, internal_width, internal_height) {
@@ -42,10 +76,11 @@ rcn_canvas.prototype.set_size = function(width, height, internal_width, internal
   this.node.height = height;
   this.width = internal_width;
   this.height = internal_height;
-  this.img = this.ctx.createImageData(width, height);
+  this.img = new Uint8Array(internal_width * internal_height * 4);
+  this.gl.viewport(0, 0, width, height);
   
   // Set all alpha values to 255 in advance to avoid doing it later
-  for(var i=3; i < this.img.data.length; i+=4) {
-    this.img.data[i] = 255;
+  for(var i=3; i < this.img.length; i+=4) {
+    this.img[i] = 255;
   }
 }
