@@ -1,6 +1,11 @@
 // Raccoon virtual machine
 // This is the client that spawns the web worker
 
+const rcn_keycode_to_gamepad = {
+  37: 0, 39: 1, 38: 2, 40: 3, // Left Right Up Down
+  88: 4, 67: 5, 86: 6, 66: 7, // X C V B
+};
+
 function rcn_vm() {
   this.gamepad_state = new Uint8Array(rcn_const.ram_gamepad_size);
 
@@ -8,16 +13,14 @@ function rcn_vm() {
   this.canvas.node.tabIndex = 0; // Means we can focus the canvas and receive input
   this.canvas.node.vm = this;
   this.canvas.node.addEventListener('keydown', function(e) {
-    if(e.keyCode == 37) this.vm.set_gamepad_bit(0, 0, true); // Left
-    if(e.keyCode == 39) this.vm.set_gamepad_bit(0, 1, true); // Right
-    if(e.keyCode == 38) this.vm.set_gamepad_bit(0, 2, true); // Up
-    if(e.keyCode == 40) this.vm.set_gamepad_bit(0, 3, true); // Down
+    if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
+      this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], true);
+    }
   });
   this.canvas.node.addEventListener('keyup', function(e) {
-    if(e.keyCode == 37) this.vm.set_gamepad_bit(0, 0, false); // Left
-    if(e.keyCode == 39) this.vm.set_gamepad_bit(0, 1, false); // Right
-    if(e.keyCode == 38) this.vm.set_gamepad_bit(0, 2, false); // Up
-    if(e.keyCode == 40) this.vm.set_gamepad_bit(0, 3, false); // Down
+    if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
+      this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], false);
+    }
   });
 }
 
