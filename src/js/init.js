@@ -1,6 +1,6 @@
 // Basic functionality, bootstrap, config
 
-var rcn_log = false ? console.log : function() {};
+var rcn_log = (location.protocol == 'file:') ? console.log : function() {};
 
 const rcn_const = {
   rom_size: 0x6000, // = 24KiB
