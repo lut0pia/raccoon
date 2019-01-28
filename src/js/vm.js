@@ -1,7 +1,9 @@
 // Raccoon virtual machine
 // This is the client that spawns the web worker
 
-function rcn_vm() { }
+function rcn_vm() {
+  this.canvas = new rcn_canvas();
+}
 
 rcn_vm.prototype.new_worker = function() {
   if(this.worker) {
