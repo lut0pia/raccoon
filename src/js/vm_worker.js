@@ -5,6 +5,7 @@ function rcn_vm_worker_function(rcn_const) {
   const rcn_ram_size = rcn_const.ram_size;
   const rcn_ram_palette_offset = rcn_const.ram_palette_offset;
   const rcn_ram_palette_size = rcn_const.ram_palette_size;
+  const rcn_ram_gamepad_offset = rcn_const.ram_gamepad_offset;
   const rcn_ram_screen_offset = rcn_const.ram_screen_offset;
   const rcn_ram_screen_size = rcn_const.ram_screen_size;
 
@@ -82,6 +83,12 @@ function rcn_vm_worker_function(rcn_const) {
     c = c || 0; // Default color is 0
     c |= c<<4; // Left and right pixel to same color
     ram.fill(c, rcn_ram_screen_offset, rcn_ram_screen_offset + rcn_ram_screen_size);
+  }
+
+  // Raccoon input API
+  btn = function(i, p) {
+    p = p || 0; // First player by default
+    return (ram[rcn_ram_gamepad_offset+p] & (1 << i)) != 0;
   }
 
   // Raccoon memory API
