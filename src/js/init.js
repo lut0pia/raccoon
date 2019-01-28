@@ -7,6 +7,8 @@ const rcn_const = {
   ram_size: 0x8000, // = 32KiB
   ram_palette_offset: 0x4000,
   ram_palette_size: 0x0018, // 24B = 8x24bits
+  ram_gamepad_offset: 0x5010,
+  ram_gamepad_size: 0x0004, // 4B = 4x(4+4)bits (4b directions + 4b buttons)
   ram_screen_offset: 0x6000,
   ram_screen_size: 0x2000,
 };
