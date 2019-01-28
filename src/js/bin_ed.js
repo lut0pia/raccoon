@@ -73,7 +73,7 @@ rcn_bin_ed.prototype.delete_bin = function(bin_index) {
 rcn_bin_ed.prototype.save_to_storage = function() {
   try {
     localStorage.rcn_bins = JSON.stringify(this.bins.map(function(bin) {
-      return bin.save_to_text();
+      return JSON.stringify(bin.save_to_json());
     }));
   } catch(e) {
     rcn_log('Could not save bins to storage!');
@@ -84,7 +84,7 @@ rcn_bin_ed.prototype.load_from_storage = function() {
   try {
     this.bins = JSON.parse(localStorage.rcn_bins || '[]').map(function(bin_text) {
       var bin = new rcn_bin();
-      bin.load_from_text(bin_text);
+      bin.load_from_json(JSON.parse(bin_text));
       return bin;
     });
   } catch(e) {

@@ -15,8 +15,7 @@ rcn_bin.prototype.clone = function() {
   return bin_clone;
 }
 
-rcn_bin.prototype.load_from_text = function(text) {
-  var bin = JSON.parse(text);
+rcn_bin.prototype.load_from_json = function(bin) {
   if(bin.version == 1) {
     this.name = bin.name;
     this.code = bin.code;
@@ -28,19 +27,19 @@ rcn_bin.prototype.load_from_text = function(text) {
   }
 }
 
-rcn_bin.prototype.save_to_text = function() {
+rcn_bin.prototype.save_to_json = function() {
   var romhex = '';
 
   this.rom.forEach(function(byte) {
     romhex += ('00'+byte.toString(16)).slice(-2);
   });
 
-  return JSON.stringify({
+  return {
     name: this.name,
     version: 1,
     code: this.code,
     rom: romhex,
-  });
+  };
 }
 
 rcn_bin.prototype.patch_memory = function(bytes, offset) {
