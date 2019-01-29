@@ -78,7 +78,7 @@ function rcn_window_onmousemove(e) {
 
   var node = rcn_window_drag.node;
   node.style.left = (node.offsetLeft + dx) + "px";
-  node.style.top = (node.offsetTop + dy) + "px";
+  node.style.top = Math.max(0, (node.offsetTop + dy)) + "px";
 }
 
 rcn_window.prototype.add_child = function(node) {
