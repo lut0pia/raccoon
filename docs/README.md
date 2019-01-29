@@ -60,7 +60,7 @@ Screen data is 128x128 pixels.
 - `rnd(x?)`: Returns a random integer between 0 and `x` excluded if `x` is specified, otherwise a random number between 0 and 1
 - `sin(x)`: Returns the sine of `x`
 - `cos(x)`: Returns the cosine of `x`
-- `atan2(x, y)`: Returns the angle (in radians) between the positive x-axis and the ray that starts from the origin and passes through (`x`;`y`)
+- `atan2(y, x)`: Returns the counterclockwise angle (in radians) between the positive x-axis and the ray that starts from the origin and passes through (`x`;`y`)
 
 ### 2.3. Input
 
