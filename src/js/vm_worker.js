@@ -57,7 +57,7 @@ function rcn_vm_worker_function(rcn_const) {
   pset = function(x, y, p) {
     var pixel_index = screen_pixel_index(x, y);
     var pixel = ram[pixel_index];
-    if((x % 2) == 0) {
+    if((x % 2) < 1) {
       pixel &= 0xf0;
       pixel |= p;
     } else {
@@ -68,7 +68,7 @@ function rcn_vm_worker_function(rcn_const) {
   }
   pget = function(x, y) {
     var pixel = ram[screen_pixel_index(x, y)];
-    if((x % 2) == 0) {
+    if((x % 2) < 1) {
       return pixel & 0xf;
     } else {
       return pixel >> 4;
