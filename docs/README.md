@@ -1,8 +1,8 @@
 # Raccoon documentation
 
 ## Table of contents
-1. [Memory](#1.-Memory)
-2. [Programming Interface](#2.-Programming-Interface)
+1. [Memory](#1-memory)
+2. [Programming Interface](#2-programming-interface)
 
 ## 1. Memory
 
