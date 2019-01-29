@@ -22,7 +22,7 @@ function rcn_vm_ed() {
   this.vm.vm_ed = this;
   this.vm.onexception = function(e) {
     var error_message = document.createElement('p');
-    error_message.innerText = e.message + '(line: ' + e.line + ', column: ' + e.column + ')';
+    error_message.innerText = 'Error: ' + e.message + ' (line: ' + e.line + ', column: ' + e.column + ')';
     this.vm_ed.error_log.appendChild(error_message);
   }
   this.window.add_child(this.error_log);
