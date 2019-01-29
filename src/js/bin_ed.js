@@ -60,7 +60,6 @@ rcn_bin_ed.prototype.save_bin = function() {
 
 rcn_bin_ed.prototype.change_bin = function(new_bin) {
   rcn_global_bin = new_bin;
-  rcn_global_vm.load_bin(new_bin);
   this.onbinchange.forEach(function(f) { f(new_bin); });
 }
 

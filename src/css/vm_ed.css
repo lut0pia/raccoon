@@ -7,5 +7,15 @@
   display: block;
   margin: auto;
   max-width: 100%;
-  max-height: calc(100% - 24px);
+  max-height: calc(100% - 100px);
+}
+
+.window.vm_ed content .error_log {
+  height: 64px;
+  overflow: auto;
+}
+
+.window.vm_ed content .error_log p {
+  margin: 0px;
+  color: #a73737;
 }
