@@ -68,5 +68,8 @@ rcn_vm.prototype.onmessage = function(e) {
       this.canvas.blit(e.data.x, e.data.y, e.data.w, e.data.h, e.data.pixels, e.data.palette);
       this.canvas.flush();
       break;
+    default:
+      rcn_log('Unhandled VM message: ', e.data);
+      break;
   }
 }
