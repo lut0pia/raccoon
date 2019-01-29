@@ -27,6 +27,10 @@ function rcn_vm_worker_function(rcn_const) {
   var ram = new _Uint8Array(rcn_ram_size);
 
   // Local helper functions
+  var send_exception = function(e) {
+    // e.lineNumber is off by 2 for some reason
+    _postMessage({type:'exception', message:e.message, line:e.lineNumber-2, column:e.columnNumber});
+  }
   var screen_pixel_index = function(x, y) {
     return rcn_ram_screen_offset+(y<<6)+(x>>1);
   }
@@ -112,7 +116,11 @@ function rcn_vm_worker_function(rcn_const) {
         // Allow function thing() {} syntax to work as expected
         // by replacing it with thing = function() {}
         code = code.replace(/function ([a-z]+)(\s*)(\([^\)]*\))/gim, '$1 = function$2$3');
-        (new _Function(code))();
+        try {
+          (new _Function(code))();
+        } catch(e) {
+          send_exception(e);
+        }
         break;
       case 'memory':
         var offset = e.data.offset;
@@ -123,7 +131,12 @@ function rcn_vm_worker_function(rcn_const) {
         break;
       case 'update':
         if(typeof update !== 'undefined') {
-          update(); // This is user-defined
+          try {
+            update(); // This is user-defined
+          }
+          catch(e) {
+            send_exception(e);
+          }
         }
         _postMessage({
           type:'blit', x:0, y:0, w:128, h:128,
