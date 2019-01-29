@@ -46,7 +46,7 @@ function rcn_vm_worker_function(rcn_const) {
     if(x) {
       return _Math.floor(_Math.random()*x);
     } else {
-      return _Math.random;
+      return _Math.random();
     }
   }
   sin = _Math.sin;
