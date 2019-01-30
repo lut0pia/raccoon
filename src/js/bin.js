@@ -16,29 +16,61 @@ rcn_bin.prototype.clone = function() {
 }
 
 rcn_bin.prototype.load_from_json = function(bin) {
-  if(bin.version == 1) {
+  if(bin.version <= 2) {
     this.name = bin.name;
-    this.code = bin.code;
-    for(var i=0; i<rcn_const.rom_size; i++) {
-      this.rom[i] = parseInt(bin.rom.substr(i*2, 2), 16);
+
+    if(typeof bin.code == 'string') { // Old one string version
+      this.code = bin.code;
+    } else { // Array of lines version
+      var code = '';
+      bin.code.forEach(function(line) {
+        code += line + '\n';
+      });
+      this.code = code;
+    }
+
+    var hex_to_rom = function(rom, offset, size, hex_lines) {
+      for(var i=0; i<size; i++) {
+        rom[offset+i] = parseInt(hex_lines[Math.floor(i/64)].substr((i%64)*2, 2), 16);
+      }
+    }
+    if(typeof bin.rom == 'string') { // Old one string version
+      for(var i=0; i<rcn_const.rom_size; i++) {
+        this.rom[i] = parseInt(bin.rom.substr(i*2, 2), 16);
+      }
+    } else {
+      if(bin.rom.pal) {
+        hex_to_rom(this.rom, rcn_const.ram_palette_offset, rcn_const.ram_palette_size, bin.rom.pal);
+      }
     }
   } else {
-    console.log('Unable to read bin with version: '+bin.version);
+    rcn_log('Unable to read bin with version: '+bin.version);
   }
 }
 
 rcn_bin.prototype.save_to_json = function() {
-  var romhex = '';
+  var rom_to_hex = function(rom, offset, size) {
+    var hex_lines = [];
+    var hex = '';
+    for(var i=0; i<size; i++) {
+      hex += ('00'+rom[offset+i].toString(16)).slice(-2);
 
-  this.rom.forEach(function(byte) {
-    romhex += ('00'+byte.toString(16)).slice(-2);
-  });
+      if(i % 64 == 63 || i == size-1) {
+        hex_lines.push(hex);
+        hex = '';
+      }
+    }
+
+    return hex_lines;
+  }
 
   return {
     name: this.name,
-    version: 1,
-    code: this.code,
-    rom: romhex,
+    version: 2,
+    code: this.code.split('\n'),
+    rom: {
+      pal: rom_to_hex(this.rom, rcn_const.ram_palette_offset, rcn_const.ram_palette_size),
+    },
   };
 }
 
