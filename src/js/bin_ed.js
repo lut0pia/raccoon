@@ -3,7 +3,7 @@
 function rcn_bin_ed() {
   this.window = new rcn_window('bin_ed', 'Bin Browser');
   this.onbinchange = [];
-  
+
   var bin_ed = this;
 
   // Create new button
@@ -72,7 +72,7 @@ rcn_bin_ed.prototype.delete_bin = function(bin_index) {
 rcn_bin_ed.prototype.save_to_storage = function() {
   try {
     localStorage.rcn_bins = JSON.stringify(this.bins.map(function(bin) {
-      return JSON.stringify(bin.save_to_json());
+      return bin.save_to_json();
     }));
   } catch(e) {
     rcn_log('Could not save bins to storage!');
@@ -81,9 +81,13 @@ rcn_bin_ed.prototype.save_to_storage = function() {
 
 rcn_bin_ed.prototype.load_from_storage = function() {
   try {
-    this.bins = JSON.parse(localStorage.rcn_bins || '[]').map(function(bin_text) {
+    this.bins = JSON.parse(localStorage.rcn_bins || '[]').map(function(bin_json) {
       var bin = new rcn_bin();
-      bin.load_from_json(JSON.parse(bin_text));
+      try {
+        bin.load_from_json(JSON.parse(bin_json));
+      } catch(e) {
+        bin.load_from_json(bin_json);
+      }
       return bin;
     });
   } catch(e) {
