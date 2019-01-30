@@ -36,6 +36,49 @@ function rcn_bin_ed() {
   }
   this.window.add_child(this.save_button);
 
+  // Create download button
+  this.download_button = document.createElement('input');
+  this.download_button.type = 'button';
+  this.download_button.value = 'Download';
+  this.download_button.onclick = function() {
+    var bin_json = rcn_global_bin.save_to_json();
+    var bin_text = JSON.stringify(bin_json, null, 2);
+
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(bin_text));
+    element.setAttribute('download', rcn_global_bin.name+".rcn.json");
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+  this.window.add_child(this.download_button);
+
+  // Create file input
+  this.file_input = document.createElement('input');
+  this.file_input.type = 'file';
+  this.file_input.onchange = function(e) {
+    if(this.files.length>0) {
+      var file = this.files[0];
+      if(file.name.match(/\.rcn\.json$/i)) { // It's a text format
+        var file_reader = new FileReader();
+        file_reader.onload = function() {
+          var bin = new rcn_bin();
+          bin.load_from_json(JSON.parse(this.result));
+          bin_ed.change_bin(bin);
+        }
+        file_reader.readAsText(file);
+      } else {
+        alert('Unable to load file: '+file.name);
+      }
+    }
+    this.value = null;
+  }
+  this.window.add_child(this.file_input);
+
   this.load_from_storage();
   this.refresh_bins_ui();
 }
