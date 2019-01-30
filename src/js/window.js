@@ -7,11 +7,12 @@ function rcn_window(type, title) {
   this.section = document.createElement('section');
   this.section.classList.add('window');
   this.section.classList.add(type);
+  this.section.onmousedown = rcn_window_onmousedown;
   document.body.appendChild(this.section);
 
   // Create header
   this.header = document.createElement('header');
-  this.header.onmousedown = rcn_window_onmousedown;
+  this.header.onmousedown = rcn_window_header_onmousedown;
   this.header.innerText = title;
   this.section.appendChild(this.header);
 
@@ -51,6 +52,17 @@ rcn_window.prototype.load_from_storage = function() {
 }
 
 function rcn_window_onmousedown(e) {
+  // Set window's z-index greater than any other
+  this.style.zIndex = rcn_windows.length+1;
+  var z_index = 0;
+  rcn_windows.slice().sort(function(a, b) { // Sort windows by z-index
+    return a.section.style.zIndex - b.section.style.zIndex;
+  }).forEach(function(window) { // Assign incrementally greater z-indices starting from 0
+    window.section.style.zIndex = z_index++;
+  });
+}
+
+function rcn_window_header_onmousedown(e) {
   e = e || window.event;
   e.preventDefault();
 
@@ -81,15 +93,6 @@ function rcn_window_onmousemove(e) {
   var node = rcn_window_drag.node;
   node.style.left = (node.offsetLeft + dx) + "px";
   node.style.top = Math.max(0, (node.offsetTop + dy)) + "px";
-
-  // Set dragged window's z-index greater than any other
-  node.style.zIndex = rcn_windows.length+1;
-  var z_index = 0;
-  rcn_windows.slice().sort(function(a, b) { // Sort windows by z-index
-    return a.section.style.zIndex - b.section.style.zIndex;
-  }).forEach(function(window) { // Assign incrementally greater z-indices starting from 0
-    window.section.style.zIndex = z_index++;
-  });
 }
 
 rcn_window.prototype.add_child = function(node) {
