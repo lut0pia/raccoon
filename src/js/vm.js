@@ -7,7 +7,7 @@ const rcn_keycode_to_gamepad = {
 };
 
 function rcn_vm() {
-  this.gamepad_state = new Uint8Array(rcn_const.ram_gamepad_size);
+  this.gamepad_state = new Uint8Array(rcn.ram_gamepad_size);
 
   this.canvas = new rcn_canvas();
   this.canvas.node.tabIndex = 0; // Means we can focus the canvas and receive input
@@ -50,7 +50,7 @@ rcn_vm.prototype.load_memory = function(bytes, offset) {
 }
 
 rcn_vm.prototype.update = function() {
-  this.worker.postMessage({type:'memory', offset:rcn_const.ram_gamepad_offset, bytes:this.gamepad_state});
+  this.worker.postMessage({type:'memory', offset:rcn.ram_gamepad_offset, bytes:this.gamepad_state});
   this.worker.postMessage({type:'update'});
 }
 

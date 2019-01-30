@@ -1,13 +1,13 @@
 // Raccoon virtual machine
 // This is the worker script that gets executed inside a web worker
 
-function rcn_vm_worker_function(rcn_const) {
-  const rcn_ram_size = rcn_const.ram_size;
-  const rcn_ram_palette_offset = rcn_const.ram_palette_offset;
-  const rcn_ram_palette_size = rcn_const.ram_palette_size;
-  const rcn_ram_gamepad_offset = rcn_const.ram_gamepad_offset;
-  const rcn_ram_screen_offset = rcn_const.ram_screen_offset;
-  const rcn_ram_screen_size = rcn_const.ram_screen_size;
+function rcn_vm_worker_function(rcn) {
+  const rcn_ram_size = rcn.ram_size;
+  const rcn_ram_palette_offset = rcn.ram_palette_offset;
+  const rcn_ram_palette_size = rcn.ram_palette_size;
+  const rcn_ram_gamepad_offset = rcn.ram_gamepad_offset;
+  const rcn_ram_screen_offset = rcn.ram_screen_offset;
+  const rcn_ram_screen_size = rcn.ram_screen_size;
 
   // Keep parts of the API local
   var _Function = Function;
@@ -149,5 +149,5 @@ function rcn_vm_worker_function(rcn_const) {
 }
 
 const rcn_vm_worker_url = URL.createObjectURL(new Blob(
-  ['('+rcn_vm_worker_function.toString()+')('+JSON.stringify(rcn_const)+')'],
+  ['('+rcn_vm_worker_function.toString()+')('+JSON.stringify(rcn)+')'],
   {type: 'text/javascript'}));

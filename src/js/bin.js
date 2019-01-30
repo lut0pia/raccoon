@@ -4,7 +4,7 @@
 function rcn_bin() {
   this.name = 'Untitled';
   this.code = '';
-  this.rom = new Uint8Array(rcn_const.rom_size);
+  this.rom = new Uint8Array(rcn.rom_size);
 }
 
 rcn_bin.prototype.clone = function() {
@@ -35,12 +35,12 @@ rcn_bin.prototype.load_from_json = function(bin) {
       }
     }
     if(typeof bin.rom == 'string') { // Old one string version
-      for(var i=0; i<rcn_const.rom_size; i++) {
+      for(var i=0; i<rcn.rom_size; i++) {
         this.rom[i] = parseInt(bin.rom.substr(i*2, 2), 16);
       }
     } else {
       if(bin.rom.pal) {
-        hex_to_rom(this.rom, rcn_const.ram_palette_offset, rcn_const.ram_palette_size, bin.rom.pal);
+        hex_to_rom(this.rom, rcn.ram_palette_offset, rcn.ram_palette_size, bin.rom.pal);
       }
     }
   } else {
@@ -69,7 +69,7 @@ rcn_bin.prototype.save_to_json = function() {
     version: 2,
     code: this.code.split('\n'),
     rom: {
-      pal: rom_to_hex(this.rom, rcn_const.ram_palette_offset, rcn_const.ram_palette_size),
+      pal: rom_to_hex(this.rom, rcn.ram_palette_offset, rcn.ram_palette_size),
     },
   };
 }

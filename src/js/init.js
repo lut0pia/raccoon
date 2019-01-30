@@ -2,7 +2,7 @@
 
 var rcn_log = (location.protocol == 'file:') ? console.log : function() {};
 
-const rcn_const = {
+const rcn = {
   rom_size: 0x6000, // = 24KiB
   ram_size: 0x8000, // = 32KiB
   ram_palette_offset: 0x4000,
@@ -31,7 +31,7 @@ function rcn_load_script(script) {
 function rcn_load_scripts(scripts) {
   var script_promises = [];
   scripts.forEach(function(script) {
-    script_promises.push(rcn_load_script(script));  
+    script_promises.push(rcn_load_script(script));
   });
   return Promise.all(script_promises);
 }
@@ -47,7 +47,7 @@ function rcn_load_style(style) {
 function rcn_load_styles(styles) {
   var style_promises = [];
   styles.forEach(function(style) {
-    style_promises.push(rcn_load_style(style));  
+    style_promises.push(rcn_load_style(style));
   });
   return Promise.all(style_promises);
 }

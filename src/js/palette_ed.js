@@ -2,7 +2,7 @@
 
 function rcn_palette_ed() {
   this.window = new rcn_window('palette_ed', 'Palette Editor');
-  
+
   var palette_ed = this;
 
   // Create color inputs
@@ -10,7 +10,7 @@ function rcn_palette_ed() {
   for(var i=0; i<8; i++) {
     var color_input_id = 'color_input_'+i;
     var color_label = document.createElement('label');
-    color_label.innerText = i; 
+    color_label.innerText = i;
     color_label.htmlFor = color_input_id;
     this.window.add_child(color_label);
 
@@ -19,9 +19,9 @@ function rcn_palette_ed() {
     color_input.id = color_input_id;
     color_input.onchange = function() {
       // Update bin's palette with UI palette
-      rcn_global_bin.patch_memory(palette_ed.to_palette_bytes(), rcn_const.ram_palette_offset);
+      rcn_global_bin.patch_memory(palette_ed.to_palette_bytes(), rcn.ram_palette_offset);
     }
-    
+
     this.color_inputs.push(color_input);
     this.window.add_child(color_input);
   }
@@ -34,12 +34,12 @@ function rcn_palette_ed() {
 
   this.apply_button.onclick = function() {
     // Update VM palette with UI palette
-    rcn_global_vm.load_memory(palette_ed.to_palette_bytes(), rcn_const.ram_palette_offset);
+    rcn_global_vm.load_memory(palette_ed.to_palette_bytes(), rcn.ram_palette_offset);
   }
 
   rcn_global_bin_ed.onbinchange.push(function(bin) {
     // Update UI palette with bin's palette
-    palette_ed.from_palette_bytes(bin.rom.slice(rcn_const.ram_palette_offset, rcn_const.ram_palette_offset + rcn_const.ram_palette_size));
+    palette_ed.from_palette_bytes(bin.rom.slice(rcn.ram_palette_offset, rcn.ram_palette_offset + rcn.ram_palette_size));
   });
 }
 
@@ -54,7 +54,7 @@ rcn_palette_ed.prototype.from_palette_bytes = function(palette_bytes) {
 }
 
 rcn_palette_ed.prototype.to_palette_bytes = function() {
-  var palette_bytes = new Uint8Array(rcn_const.ram_palette_size); // 8 RGB values
+  var palette_bytes = new Uint8Array(rcn.ram_palette_size); // 8 RGB values
   for(var i=0; i<8; i++) {
     var rgb_int = parseInt(this.color_inputs[i].value.slice(1), 16);
     palette_bytes[i*3+0] = (rgb_int>>16);
