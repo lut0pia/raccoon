@@ -62,7 +62,9 @@ rcn_load_scripts(['bin','bin_ed','canvas','code_ed','docs_ed','gl','palette_ed',
   rcn_global_docs_ed = new rcn_docs_ed();
   rcn_global_palette_ed = new rcn_palette_ed();
 
-  rcn_global_bin_ed.change_bin(new rcn_bin());
+  var bin = new rcn_bin();
+  bin.from_env();
+  rcn_global_bin_ed.change_bin(bin);
 
   setInterval(function() { rcn_global_vm.update(); }, 1000/30);
 });
