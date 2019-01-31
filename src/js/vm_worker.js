@@ -46,7 +46,7 @@ function rcn_vm_worker_function(rcn) {
     return _Math.max(_Math.min(a, b), _Math.min(_Math.max(a, b), c));
   }
   sqrt = _Math.sqrt;
-  rnd = function(x) {
+  rnd = r = function(x) {
     if(x) {
       return _Math.floor(_Math.random()*x);
     } else {
@@ -58,7 +58,7 @@ function rcn_vm_worker_function(rcn) {
   atan2 = _Math.atan2;
 
   // Raccoon rendering API
-  pset = function(x, y, p) {
+  pset = p = function(x, y, p) {
     var pixel_index = screen_pixel_index(x, y);
     var pixel = ram[pixel_index];
     if((x % 2) < 1) {
@@ -83,14 +83,14 @@ function rcn_vm_worker_function(rcn) {
     ram[rcn_ram_palette_offset+i*3+1] = g;
     ram[rcn_ram_palette_offset+i*3+2] = b;
   }
-  cls = function(c) {
+  cls = c = function(c) {
     c = c || 0; // Default color is 0
     c |= c<<4; // Left and right pixel to same color
     ram.fill(c, rcn_ram_screen_offset, rcn_ram_screen_offset + rcn_ram_screen_size);
   }
 
   // Raccoon input API
-  btn = function(i, p) {
+  btn = b = function(i, p) {
     p = p || 0; // First player by default
     return (ram[rcn_ram_gamepad_offset+p] & (1 << i)) != 0;
   }
