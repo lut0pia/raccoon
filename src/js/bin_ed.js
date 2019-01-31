@@ -41,7 +41,7 @@ function rcn_bin_ed() {
   this.download_button.type = 'button';
   this.download_button.value = 'Download';
   this.download_button.onclick = function() {
-    var bin_json = rcn_global_bin.save_to_json();
+    var bin_json = rcn_global_bin.to_json();
     var bin_text = JSON.stringify(bin_json, null, 2);
 
     var element = document.createElement('a');
@@ -67,7 +67,7 @@ function rcn_bin_ed() {
         var file_reader = new FileReader();
         file_reader.onload = function() {
           var bin = new rcn_bin();
-          bin.load_from_json(JSON.parse(this.result));
+          bin.from_json(JSON.parse(this.result));
           bin_ed.change_bin(bin);
         }
         file_reader.readAsText(file);
@@ -115,7 +115,7 @@ rcn_bin_ed.prototype.delete_bin = function(bin_index) {
 rcn_bin_ed.prototype.save_to_storage = function() {
   try {
     localStorage.rcn_bins = JSON.stringify(this.bins.map(function(bin) {
-      return bin.save_to_json();
+      return bin.to_json();
     }));
   } catch(e) {
     rcn_log('Could not save bins to storage!');
@@ -127,9 +127,9 @@ rcn_bin_ed.prototype.load_from_storage = function() {
     this.bins = JSON.parse(localStorage.rcn_bins || '[]').map(function(bin_json) {
       var bin = new rcn_bin();
       try {
-        bin.load_from_json(JSON.parse(bin_json));
+        bin.from_json(JSON.parse(bin_json));
       } catch(e) {
-        bin.load_from_json(bin_json);
+        bin.from_json(bin_json);
       }
       return bin;
     });

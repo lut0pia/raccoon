@@ -15,7 +15,7 @@ rcn_bin.prototype.clone = function() {
   return bin_clone;
 }
 
-rcn_bin.prototype.load_from_json = function(bin) {
+rcn_bin.prototype.from_json = function(bin) {
   if(bin.version <= 2) {
     this.name = bin.name;
 
@@ -48,7 +48,7 @@ rcn_bin.prototype.load_from_json = function(bin) {
   }
 }
 
-rcn_bin.prototype.save_to_json = function() {
+rcn_bin.prototype.to_json = function() {
   var rom_to_hex = function(rom, offset, size) {
     var hex_lines = [];
     var hex = '';
