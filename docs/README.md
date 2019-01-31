@@ -74,3 +74,12 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `memset(dst, val, len)`: Set `len` bytes in RAM to value `val` at `dst`
 - `read(addr)`: Returns the value of the byte at address `addr` in RAM
 - `write(addr, val)`: Writes value `val` to the byte at address `addr` in RAM
+
+### 2.5. Shortcuts
+
+Some common functions have one-letter shortcuts, useful for keeping code small.
+
+- `c` = `cls`
+- `p` = `pset`
+- `r` = `rnd`
+- `b` = `btn`
