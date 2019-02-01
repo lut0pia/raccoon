@@ -37,9 +37,13 @@ function rcn_palette_ed() {
     rcn_global_vm.load_memory(palette_ed.to_palette_bytes(), rcn.ram_palette_offset);
   }
 
-  rcn_global_bin_ed.onbinchange.push(function(bin) {
-    // Update UI palette with bin's palette
-    palette_ed.from_palette_bytes(bin.rom.slice(rcn.ram_palette_offset, rcn.ram_palette_offset + rcn.ram_palette_size));
+  this.window.addEventListener('rcnbinchange', function(e) {
+    const ram_palette_begin = rcn.ram_palette_offset;
+    const ram_palette_end = rcn.ram_palette_offset + rcn.ram_palette_size;
+    if(e.detail.begin < ram_palette_end && e.detail.end > ram_palette_begin) {
+      // Update UI palette with bin's palette
+      palette_ed.from_palette_bytes(rcn_global_bin.rom.slice(rcn.ram_palette_offset, rcn.ram_palette_offset + rcn.ram_palette_size));
+    }
   });
 }
 

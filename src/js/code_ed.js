@@ -18,8 +18,10 @@ function rcn_code_ed() {
   this.apply_button.onclick = function() {
     rcn_global_vm.load_code(code_ed.textarea.value);
   }
-  rcn_global_bin_ed.onbinchange.push(function(bin) {
-    code_ed.textarea.value = bin.code;
+  this.window.addEventListener('rcnbinchange', function(e) {
+    if(e.detail.code) {
+      code_ed.textarea.value = rcn_global_bin.code;
+    }
   });
 }
 

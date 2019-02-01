@@ -28,8 +28,10 @@ function rcn_vm_ed() {
   this.window.add_child(this.error_log);
 
   var vm_ed = this;
-  rcn_global_bin_ed.onbinchange.push(function() {
-    vm_ed.reboot();
+  this.window.addEventListener('rcnbinchange', function(e) {
+    if(e.detail.load) {
+      vm_ed.reboot();
+    }
   });
 }
 
@@ -37,5 +39,5 @@ rcn_vm_ed.prototype.reboot = function() {
   while (this.error_log.firstChild) {
     this.error_log.removeChild(this.error_log.firstChild);
   }
-  this.vm.load_bin(rcn_global_bin);  
+  this.vm.load_bin(rcn_global_bin);
 }

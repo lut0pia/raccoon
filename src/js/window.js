@@ -51,6 +51,10 @@ rcn_window.prototype.load_from_storage = function() {
   }
 }
 
+rcn_window.prototype.addEventListener = function(type, listener, options) {
+  this.section.addEventListener(type, listener, options);
+}
+
 function rcn_window_onmousedown(e) {
   // Set window's z-index greater than any other
   this.style.zIndex = rcn_windows.length+1;
@@ -113,3 +117,10 @@ window.addEventListener('unload', function() {
     window.save_to_storage();
   });
 })
+
+function rcn_dispatch_ed_event(type, detail) {
+  var event = new CustomEvent(type, {detail: detail});
+  for(var i=0; i<document.body.childElementCount; i++) {
+    document.body.children[i].dispatchEvent(event);
+  }
+}

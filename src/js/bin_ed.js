@@ -2,7 +2,6 @@
 
 function rcn_bin_ed() {
   this.window = new rcn_window('bin_ed', 'Bin Browser');
-  this.onbinchange = [];
 
   var bin_ed = this;
 
@@ -22,8 +21,8 @@ function rcn_bin_ed() {
   this.name_input.onchange = function() { // Update bin name on input change
     rcn_global_bin.name = this.value;
   }
-  this.onbinchange.push(function(bin) { // Update name input on bin change
-    bin_ed.name_input.value = bin.name;
+  this.window.addEventListener('rcnbinchange', function() { // Update name input on bin change
+    bin_ed.name_input.value = rcn_global_bin.name;
   });
   this.window.add_child(this.name_input);
 
@@ -103,7 +102,12 @@ rcn_bin_ed.prototype.save_bin = function() {
 
 rcn_bin_ed.prototype.change_bin = function(new_bin) {
   rcn_global_bin = new_bin;
-  this.onbinchange.forEach(function(f) { f(new_bin); });
+  rcn_dispatch_ed_event('rcnbinchange',{
+    begin: 0,
+    end: rcn.rom_size,
+    code: true,
+    load: true,
+  });
 }
 
 rcn_bin_ed.prototype.delete_bin = function(bin_index) {
