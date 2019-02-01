@@ -171,7 +171,9 @@ rcn_bin_ed.prototype.add_bin_ui = function(bin_index) {
   delete_button.type = 'button';
   delete_button.value = 'Delete';
   delete_button.onclick = function() {
-    bin_ed.delete_bin(bin_index);
+    if(confirm('Are you sure you want to delete '+bin.name+'?')) {
+      bin_ed.delete_bin(bin_index);
+    }
   }
   p.appendChild(delete_button);
   this.bin_node.appendChild(p);
