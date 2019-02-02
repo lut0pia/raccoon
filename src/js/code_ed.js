@@ -2,9 +2,14 @@
 
 function rcn_code_ed() {
   this.window = new rcn_window('code_ed', 'Code Editor');
-  this.textarea = document.createElement('textarea');
-
   var code_ed = this;
+
+  this.textmirror = document.createElement('div');
+  this.textmirror.classList.add('textmirror');
+  this.window.add_child(this.textmirror);
+
+  this.textarea = document.createElement('textarea');
+  this.textarea.setAttribute('wrap', 'off');
   this.textarea.onkeydown = function(e) {
     const key_code = e.keyCode || e.which;
     const tab_size = 2;
@@ -40,8 +45,15 @@ function rcn_code_ed() {
         }
       }
     }
+
+    code_ed.update_mirror();
   };
-  this.textarea.onchange = function() {
+  this.textarea.onscroll = function(e) {
+    code_ed.textmirror.scrollTop = code_ed.textarea.scrollTop;
+    code_ed.textmirror.scrollLeft = code_ed.textarea.scrollLeft;
+  }
+  this.textarea.oninput = function() {
+    code_ed.update_mirror();
     rcn_global_bin.code = this.value;
   };
   this.window.add_child(this.textarea);
@@ -57,12 +69,27 @@ function rcn_code_ed() {
   this.window.addEventListener('rcnbinchange', function(e) {
     if(e.detail.code) {
       code_ed.textarea.value = rcn_global_bin.code;
+      code_ed.update_mirror();
     }
   });
 }
 
 rcn_code_ed.prototype.apply = function() {
   rcn_global_vm.load_code(this.textarea.value);
+}
+
+rcn_code_ed.prototype.update_mirror = function() {
+  const keywords = ['const', 'for', 'function', 'in', 'let', 'new', 'this', 'var', 'while'];
+  const keyword_regexp = new RegExp('\\b('+keywords.join('|')+')\\b','g');
+  var code_html = this.textarea.value
+    .replace(/ /gi, '&nbsp;')
+    .replace(/\n/gi, '<br>')
+    .replace(keyword_regexp, '<span class="keyword">$1</span>')
+    .replace(/\b(0x[\da-f]+)\b/gi, '<span class="number hex">$1</span>')
+    .replace(/\b(\d+)\b/gi, '<span class="number dec">$1</span>');
+
+  code_html += '<br>'; // There's an implicit newline at the end of the textarea
+  this.textmirror.innerHTML = code_html;
 }
 
 function rcn_code_ed_textarea_insert_text(textarea, text) {

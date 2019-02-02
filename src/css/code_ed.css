@@ -3,8 +3,51 @@
   height: 256px;
 }
 
-.window.code_ed textarea {
-  resize: none;
+.window.code_ed textarea, .window.code_ed .textmirror {
   width: 100%;
   height: calc(100% - 32px);
+  font-family: monospace;
+  font-size: 1em;
+  background: none;
+  overflow: auto;
+  overflow-wrap: normal;
+  word-break: initial;
+}
+
+.window.code_ed textarea {
+  resize: none;
+  color: #00000000;
+  caret-color: black;
+}
+
+.window.code_ed textarea::selection {
+  background-color: #00000020;
+  color: #00000000;
+}
+
+.window.code_ed .textmirror {
+  width: calc(100% - 20px);
+  height: calc(100% - 86px);
+  position: absolute;
+  margin: 3px;
+  z-index: -1;
+  white-space: nowrap;
+}
+
+/* Syntax highlighting */
+.window.code_ed .textmirror .keyword {
+  color: #0047f2;
+  font-weight: bold;
+}
+
+.window.code_ed .textmirror .number {
+  font-weight: bold;
+}
+
+.window.code_ed .textmirror .number.dec {
+  color: #579030;
+}
+
+.window.code_ed .textmirror .number.hex {
+  color: #9c9c1e;
 }
