@@ -10,6 +10,7 @@ function rcn_code_ed() {
 
   this.textarea = document.createElement('textarea');
   this.textarea.setAttribute('wrap', 'off');
+  this.textarea.setAttribute('spellcheck', 'false');
   this.textarea.onkeydown = function(e) {
     const key_code = e.keyCode || e.which;
     const tab_size = 2;
