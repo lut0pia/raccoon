@@ -58,10 +58,11 @@ rcn_load_styles(['reset','bin_ed','code_ed','docs_ed','palette_ed','vm_ed','wind
 rcn_load_scripts([
   // Raccoon core
   'bin','vm','vm_worker',
+  // Utility
+  'canvas','gl','ui','window',
   // Editors
   'bin_ed','code_ed','docs_ed','palette_ed','vm_ed',
-  // Utility
-  'canvas','gl','ui','window',])
+])
 .then(function() {
   var bin_ed = new rcn_bin_ed();
   new rcn_vm_ed();
