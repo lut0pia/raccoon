@@ -64,10 +64,17 @@ rcn_bin.prototype.to_json = function() {
     return hex_lines;
   }
 
+  var code_lines = this.code.split('\n');
+
+  // Remove trailing empty lines
+  while(code_lines.length>0 && code_lines[code_lines.length-1].match(/^\s*$/)) {
+    code_lines.pop();
+  }
+
   return {
     name: this.name,
     version: 2,
-    code: this.code.split('\n'),
+    code: code_lines,
     rom: {
       pal: rom_to_hex(this.rom, rcn.ram_palette_offset, rcn.ram_palette_size),
     },
