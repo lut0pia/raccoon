@@ -88,6 +88,18 @@ function rcn_vm_worker_function(rcn) {
     c |= c<<4; // Left and right pixel to same color
     ram.fill(c, rcn_ram_screen_offset, rcn_ram_screen_offset + rcn_ram_screen_size);
   }
+  spr = function(n, x, y, w, h, flip_x, flip_y) {
+    w = w || 1.0;
+    h = h || 1.0;
+    var pixel_index = screen_pixel_index(x, y);
+    var texel_index = n << 2;
+
+    for(var r=0; r<h*8; r++) {
+      var row_index = texel_index + r * 64;
+      var row_size = _Math.floor(4 * w);
+      ram.copyWithin(pixel_index + r * 64, row_index, row_index + row_size);
+    }
+  }
 
   // Raccoon input API
   btn = b = function(i, p) {
