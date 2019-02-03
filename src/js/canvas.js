@@ -57,10 +57,24 @@ rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, pa
 rcn_canvas.prototype.flush = function() {
   const gl = this.gl;
 
+  // Render at the client size
+  this.node.width = this.node.clientWidth;
+  this.node.height = this.node.clientHeight;
+
+  // We want to render pixel perfect, so we find a viewport size
+  // that is a multiple of the texture size and fits the actual size
+  var vp_mul = Math.floor(Math.min(this.node.width / this.width, this.node.height / this.height));
+  var vp_width = vp_mul * this.width;
+  var vp_height = vp_mul * this.height;
+  var vp_x = (this.node.width - vp_width) / 2;
+  var vp_y = (this.node.height - vp_height) / 2;
+  gl.viewport(vp_x, vp_y, vp_width, vp_height);
+
+  // Set and upload texture
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.width, this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.img);
-  
+
   gl.useProgram(this.program);
   gl.uniform1i(gl.getUniformLocation(this.program, 'sampler'), 0);
 
@@ -77,8 +91,7 @@ rcn_canvas.prototype.set_size = function(width, height, internal_width, internal
   this.width = internal_width;
   this.height = internal_height;
   this.img = new Uint8Array(internal_width * internal_height * 4);
-  this.gl.viewport(0, 0, width, height);
-  
+
   // Set all alpha values to 255 in advance to avoid doing it later
   for(var i=3; i < this.img.length; i+=4) {
     this.img[i] = 255;
