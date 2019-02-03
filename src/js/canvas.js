@@ -36,6 +36,11 @@ function rcn_canvas() {
 }
 
 rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, palette) {
+  if(!palette) {
+    // Use current bin palette if unspecified
+    palette = rcn_global_bin.rom.slice(rcn.ram_palette_offset, rcn.ram_palette_offset + rcn.ram_palette_size);
+  }
+
   const x_end = x_start + width;
   const y_end = y_start + height;
   for(var x = x_start; x < x_end; x++) {
