@@ -19,30 +19,9 @@ function rcn_sprite_ed() {
   this.draw_canvas.node.addEventListener('click', function(e) {
     var canvas_coords = this.getBoundingClientRect();
     var tex_coords = sprite_ed.draw_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
-    if(!tex_coords) {
-      // Did not click on a texture pixel
-      return;
+    if(tex_coords) {
+      sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
     }
-    // TODO: factor this shit
-    var spritesheet_offset_x = (sprite_ed.current_sprite & 0xf) << 3;
-    var spritesheet_offset_y = (sprite_ed.current_sprite >> 4) << 3;
-    var x = tex_coords.x + spritesheet_offset_x;
-    var y = tex_coords.y + spritesheet_offset_y;
-    var texel_index = rcn.ram_spritesheet_offset+(y<<6)+(x>>1);
-    var texel = rcn_global_bin.rom[texel_index];
-    if((x % 2) < 1) {
-      texel &= 0xf0;
-      texel |= sprite_ed.current_color;
-    } else {
-      texel &= 0xf;
-      texel |= sprite_ed.current_color << 4;
-    }
-    rcn_global_bin.rom[texel_index] = texel;
-
-    rcn_dispatch_ed_event('rcnbinchange', {
-      begin: texel_index,
-      end: texel_index+1,
-    });
   });
   this.add_child(this.draw_canvas.node);
 
@@ -147,6 +126,28 @@ rcn_sprite_ed.prototype.get_palette_bytes = function() {
     palette_bytes[i*3+2] = rgb_int & 0xff;
   }
   return palette_bytes;
+}
+
+rcn_sprite_ed.prototype.set_pixel = function(draw_x, draw_y) {
+  var spritesheet_offset_x = (this.current_sprite & 0xf) << 3;
+  var spritesheet_offset_y = (this.current_sprite >> 4) << 3;
+  var x = draw_x + spritesheet_offset_x;
+  var y = draw_y + spritesheet_offset_y;
+  var texel_index = rcn.ram_spritesheet_offset+(y<<6)+(x>>1);
+  var texel = rcn_global_bin.rom[texel_index];
+  if((x % 2) < 1) {
+    texel &= 0xf0;
+    texel |= this.current_color;
+  } else {
+    texel &= 0xf;
+    texel |= this.current_color << 4;
+  }
+  rcn_global_bin.rom[texel_index] = texel;
+
+  rcn_dispatch_ed_event('rcnbinchange', {
+    begin: texel_index,
+    end: texel_index+1,
+  });
 }
 
 rcn_sprite_ed.prototype.update_draw_canvas = function() {
