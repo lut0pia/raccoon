@@ -16,30 +16,35 @@ function rcn_sprite_ed() {
   // Create draw canvas
   this.draw_canvas = new rcn_canvas();
   this.draw_canvas.node.classList.add('draw');
-  this.draw_canvas.node.addEventListener('click', function(e) {
-    var canvas_coords = this.getBoundingClientRect();
-    var tex_coords = sprite_ed.draw_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
-    if(tex_coords) {
-      sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
+  var draw_mouse_callback = function(e) {
+    if(e.buttons === 1) { // Left button
+      var canvas_coords = this.getBoundingClientRect();
+      var tex_coords = sprite_ed.draw_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
+      if(tex_coords) {
+        sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
+      }
     }
-  });
+  }
+  this.draw_canvas.node.addEventListener('mousedown', draw_mouse_callback);
+  this.draw_canvas.node.addEventListener('mousemove', draw_mouse_callback);
   this.add_child(this.draw_canvas.node);
 
   // Create spritesheet canvas
   this.spritesheet_canvas = new rcn_canvas();
   this.spritesheet_canvas.node.classList.add('spritesheet');
   this.spritesheet_canvas.set_size(128, 32);
-  this.spritesheet_canvas.node.addEventListener('click', function(e) {
-    var canvas_coords = this.getBoundingClientRect();
-    var tex_coords = sprite_ed.spritesheet_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
-    if(!tex_coords) {
-      // Did not click on a texture pixel
-      return;
+  var sheet_mouse_callback = function(e) {
+    if(e.buttons === 1) { // Left button
+      var canvas_coords = this.getBoundingClientRect();
+      var tex_coords = sprite_ed.spritesheet_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
+      if(tex_coords) {
+        sprite_ed.current_sprite = (tex_coords.x >> 3) + ((tex_coords.y >> 3) << 4);
+        sprite_ed.update_draw_canvas();
+      }
     }
-    sprite_ed.current_sprite = (tex_coords.x >> 3) + ((tex_coords.y >> 3) << 4);
-    sprite_ed.update_draw_canvas();
-    console.log(sprite_ed.current_sprite);
-  });
+  }
+  this.spritesheet_canvas.node.addEventListener('mousedown', sheet_mouse_callback);
+  this.spritesheet_canvas.node.addEventListener('mousemove', sheet_mouse_callback);
   this.add_child(this.spritesheet_canvas.node);
 
   // Create color inputs
