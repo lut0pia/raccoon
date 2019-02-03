@@ -1,7 +1,8 @@
 // Raccoon palette editor
 
+rcn_palette_ed.prototype = Object.create(rcn_window.prototype);
 function rcn_palette_ed() {
-  this.window = new rcn_window('palette_ed', 'Palette Editor');
+  rcn_window.call(this, 'palette_ed', 'Palette Editor');
 
   var palette_ed = this;
 
@@ -12,7 +13,7 @@ function rcn_palette_ed() {
     var color_label = document.createElement('label');
     color_label.innerText = i;
     color_label.htmlFor = color_input_id;
-    this.window.add_child(color_label);
+    this.add_child(color_label);
 
     var color_input = document.createElement('input');
     color_input.type = 'color';
@@ -23,21 +24,21 @@ function rcn_palette_ed() {
     }
 
     this.color_inputs.push(color_input);
-    this.window.add_child(color_input);
+    this.add_child(color_input);
   }
 
   // Create apply button
   this.apply_button = document.createElement('input');
   this.apply_button.type = 'button';
   this.apply_button.value = 'Apply';
-  this.window.add_child(this.apply_button);
+  this.add_child(this.apply_button);
 
   this.apply_button.onclick = function() {
     // Update VM palette with UI palette
     rcn_global_vm.load_memory(palette_ed.to_palette_bytes(), rcn.ram_palette_offset);
   }
 
-  this.window.addEventListener('rcnbinchange', function(e) {
+  this.addEventListener('rcnbinchange', function(e) {
     const ram_palette_begin = rcn.ram_palette_offset;
     const ram_palette_end = rcn.ram_palette_offset + rcn.ram_palette_size;
     if(e.detail.begin < ram_palette_end && e.detail.end > ram_palette_begin) {

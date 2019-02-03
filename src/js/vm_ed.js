@@ -1,10 +1,11 @@
 // Raccoon vm editor
 
+rcn_vm_ed.prototype = Object.create(rcn_window.prototype);
 function rcn_vm_ed() {
-  this.window = new rcn_window('vm_ed', 'Virtual Machine');
+  rcn_window.call(this, 'vm_ed', 'Virtual Machine');
 
   this.vm = rcn_global_vm = new rcn_vm();
-  this.window.add_child(this.vm.canvas.node);
+  this.add_child(this.vm.canvas.node);
 
   // Create reboot button
   this.reboot_button = document.createElement('input');
@@ -14,7 +15,7 @@ function rcn_vm_ed() {
   this.reboot_button.onclick = function() {
     this.vm_ed.reboot();
   }
-  this.window.add_child(this.reboot_button);
+  this.add_child(this.reboot_button);
 
   // Create error log
   this.error_log = document.createElement('div');
@@ -25,10 +26,10 @@ function rcn_vm_ed() {
     error_message.innerText = 'Error: ' + e.message + ' (line: ' + e.line + ', column: ' + e.column + ')';
     this.vm_ed.error_log.appendChild(error_message);
   }
-  this.window.add_child(this.error_log);
+  this.add_child(this.error_log);
 
   var vm_ed = this;
-  this.window.addEventListener('rcnbinchange', function(e) {
+  this.addEventListener('rcnbinchange', function(e) {
     if(e.detail.load) {
       vm_ed.reboot();
     }

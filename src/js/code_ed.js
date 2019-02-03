@@ -1,12 +1,13 @@
 // Raccoon code editor
 
+rcn_code_ed.prototype = Object.create(rcn_window.prototype);
 function rcn_code_ed() {
-  this.window = new rcn_window('code_ed', 'Code Editor');
+  rcn_window.call(this, 'code_ed', 'Code Editor');
   var code_ed = this;
 
   this.textmirror = document.createElement('div');
   this.textmirror.classList.add('textmirror');
-  this.window.add_child(this.textmirror);
+  this.add_child(this.textmirror);
 
   this.textarea = document.createElement('textarea');
   this.textarea.setAttribute('wrap', 'off');
@@ -57,17 +58,17 @@ function rcn_code_ed() {
     code_ed.update_mirror();
     rcn_global_bin.code = this.value;
   };
-  this.window.add_child(this.textarea);
+  this.add_child(this.textarea);
 
   this.apply_button = rcn_ui_button({
-    window: this.window,
+    window: this,
     value:'Apply',
     onclick: function() {
       code_ed.apply();
     },
   });
 
-  this.window.addEventListener('rcnbinchange', function(e) {
+  this.addEventListener('rcnbinchange', function(e) {
     if(e.detail.code) {
       code_ed.textarea.value = rcn_global_bin.code;
       code_ed.update_mirror();

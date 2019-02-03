@@ -1,8 +1,9 @@
 // Raccoon docs viewer
 
+rcn_docs_ed.prototype = Object.create(rcn_window.prototype);
 function rcn_docs_ed() {
-  this.window = new rcn_window('docs_ed', 'Documentation Viewer');
+  rcn_window.call(this, 'docs_ed', 'Documentation Viewer');
   this.iframe = document.createElement('iframe');
   this.iframe.src = location.protocol=='file:' ? 'docs/README.md' : location.href + '/docs/';
-  this.window.add_child(this.iframe);
+  this.add_child(this.iframe);
 }

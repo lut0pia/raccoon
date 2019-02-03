@@ -1,7 +1,8 @@
 // Raccoon bin browser
 
+rcn_bin_ed.prototype = Object.create(rcn_window.prototype);
 function rcn_bin_ed() {
-  this.window = new rcn_window('bin_ed', 'Bin Browser');
+  rcn_window.call(this, 'bin_ed', 'Bin Browser');
 
   var bin_ed = this;
 
@@ -12,7 +13,7 @@ function rcn_bin_ed() {
   this.new_button.onclick = function() {
     bin_ed.change_bin(new rcn_bin());
   };
-  this.window.add_child(this.new_button);
+  this.add_child(this.new_button);
 
   // Create name input
   this.name_input = document.createElement('input');
@@ -21,10 +22,10 @@ function rcn_bin_ed() {
   this.name_input.onchange = function() { // Update bin name on input change
     rcn_global_bin.name = this.value;
   }
-  this.window.addEventListener('rcnbinchange', function() { // Update name input on bin change
+  this.addEventListener('rcnbinchange', function() { // Update name input on bin change
     bin_ed.name_input.value = rcn_global_bin.name;
   });
-  this.window.add_child(this.name_input);
+  this.add_child(this.name_input);
 
   // Create save button
   this.save_button = document.createElement('input');
@@ -33,7 +34,7 @@ function rcn_bin_ed() {
   this.save_button.onclick = function() {
     bin_ed.save_bin();
   }
-  this.window.add_child(this.save_button);
+  this.add_child(this.save_button);
 
   // Create download button
   this.download_button = document.createElement('input');
@@ -54,7 +55,7 @@ function rcn_bin_ed() {
 
     document.body.removeChild(element);
   }
-  this.window.add_child(this.download_button);
+  this.add_child(this.download_button);
 
   // Create file input
   this.file_input = document.createElement('input');
@@ -76,9 +77,9 @@ function rcn_bin_ed() {
     }
     this.value = null;
   }
-  this.window.add_child(this.file_input);
+  this.add_child(this.file_input);
 
-  this.load_from_storage();
+  this.load_bins_from_storage();
   this.refresh_bins_ui();
 }
 
@@ -97,7 +98,7 @@ rcn_bin_ed.prototype.save_bin = function() {
     rcn_log('Overwriting old bin: '+bin_clone.name);
     this.bins[save_index] = bin_clone;
   }
-  this.save_to_storage();
+  this.save_bins_to_storage();
 }
 
 rcn_bin_ed.prototype.change_bin = function(new_bin) {
@@ -113,10 +114,10 @@ rcn_bin_ed.prototype.change_bin = function(new_bin) {
 rcn_bin_ed.prototype.delete_bin = function(bin_index) {
   this.bins.splice(bin_index, 1);
   this.refresh_bins_ui();
-  this.save_to_storage();
+  this.save_bins_to_storage();
 }
 
-rcn_bin_ed.prototype.save_to_storage = function() {
+rcn_bin_ed.prototype.save_bins_to_storage = function() {
   try {
     localStorage.rcn_bins = JSON.stringify(this.bins.map(function(bin) {
       return bin.to_json();
@@ -126,7 +127,7 @@ rcn_bin_ed.prototype.save_to_storage = function() {
   }
 }
 
-rcn_bin_ed.prototype.load_from_storage = function() {
+rcn_bin_ed.prototype.load_bins_from_storage = function() {
   try {
     this.bins = JSON.parse(localStorage.rcn_bins || '[]').map(function(bin_json) {
       var bin = new rcn_bin();
@@ -152,7 +153,7 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
   for(var i in this.bins) {
     this.add_bin_ui(i);
   }
-  this.window.add_child(this.bin_node);
+  this.add_child(this.bin_node);
 }
 
 rcn_bin_ed.prototype.add_bin_ui = function(bin_index) {
