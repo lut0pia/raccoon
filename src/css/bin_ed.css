@@ -1,3 +1,8 @@
 .window.bin_ed p input {
   float: right;
 }
+
+.window.bin_ed p {
+  padding: 4px;
+  border-bottom: 1px grey solid;
+}
