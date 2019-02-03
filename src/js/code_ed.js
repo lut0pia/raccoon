@@ -1,7 +1,7 @@
 // Raccoon code editor
 
-rcn_code_ed.prototype = Object.create(rcn_window.prototype);
 function rcn_code_ed() {
+  this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this, 'code_ed', 'Code Editor');
   var code_ed = this;
 

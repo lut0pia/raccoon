@@ -1,7 +1,7 @@
 // Raccoon bin browser
 
-rcn_bin_ed.prototype = Object.create(rcn_window.prototype);
 function rcn_bin_ed() {
+  this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this, 'bin_ed', 'Bin Browser');
 
   var bin_ed = this;

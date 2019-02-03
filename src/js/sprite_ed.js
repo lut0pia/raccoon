@@ -1,7 +1,7 @@
 // Raccoon sprite editor
 
-rcn_sprite_ed.prototype = Object.create(rcn_window.prototype);
 function rcn_sprite_ed() {
+  this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this, 'sprite_ed', 'Sprite Editor');
 
   // Init sprite editing state

@@ -1,7 +1,7 @@
 // Raccoon vm editor
 
-rcn_vm_ed.prototype = Object.create(rcn_window.prototype);
 function rcn_vm_ed() {
+  this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this, 'vm_ed', 'Virtual Machine');
 
   this.vm = rcn_global_vm = new rcn_vm();
