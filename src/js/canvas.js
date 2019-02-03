@@ -33,8 +33,6 @@ function rcn_canvas() {
     -1, 3, 0, 0,
     3, -1, 2, 2,
   ]));
-
-  this.set_size(2048, 2048, 128, 128);
 }
 
 rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, palette) {
@@ -85,12 +83,10 @@ rcn_canvas.prototype.flush = function() {
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
-rcn_canvas.prototype.set_size = function(width, height, internal_width, internal_height) {
-  this.node.width = width;
-  this.node.height = height;
-  this.width = internal_width;
-  this.height = internal_height;
-  this.img = new Uint8Array(internal_width * internal_height * 4);
+rcn_canvas.prototype.set_size = function(width, height) {
+  this.width = width;
+  this.height = height;
+  this.img = new Uint8Array(width * height * 4);
 
   // Set all alpha values to 255 in advance to avoid doing it later
   for(var i=3; i < this.img.length; i+=4) {

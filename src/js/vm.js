@@ -10,6 +10,7 @@ function rcn_vm() {
   this.gamepad_state = new Uint8Array(rcn.ram_gamepad_size);
 
   this.canvas = new rcn_canvas();
+  this.canvas.set_size(128, 128);
   this.canvas.node.tabIndex = 0; // Means we can focus the canvas and receive input
   this.canvas.node.vm = this;
   this.canvas.node.addEventListener('keydown', function(e) {
