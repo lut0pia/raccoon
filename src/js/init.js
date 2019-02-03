@@ -62,10 +62,12 @@ rcn_load_scripts([
   'bin','vm','vm_worker',
   // Utility
   'canvas','gl','ui','window',
+]).then(function() {
   // Editors
-  'bin_ed','code_ed','docs_ed','sprite_ed','vm_ed',
-])
-.then(function() {
+  return rcn_load_scripts([
+    'bin_ed','code_ed','docs_ed','sprite_ed','vm_ed',
+  ]);
+}).then(function() {
   var bin_ed = new rcn_bin_ed();
   new rcn_vm_ed();
   new rcn_code_ed();
