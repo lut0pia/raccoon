@@ -124,6 +124,7 @@ rcn_bin_ed.prototype.save_bins_to_storage = function() {
     }));
   } catch(e) {
     rcn_log('Could not save bins to storage!');
+    console.log(e);
   }
 }
 
@@ -132,14 +133,14 @@ rcn_bin_ed.prototype.load_bins_from_storage = function() {
     this.bins = JSON.parse(localStorage.rcn_bins || '[]').map(function(bin_json) {
       var bin = new rcn_bin();
       try {
-        bin.from_json(JSON.parse(bin_json));
-      } catch(e) {
-        bin.from_json(bin_json);
-      }
+        bin_json = JSON.parse(bin_json);
+      } catch(e) {}
+      bin.from_json(bin_json);
       return bin;
     });
   } catch(e) {
     rcn_log('Could not load bins from storage!');
+    console.log(e);
     this.bins = [];
   }
 }

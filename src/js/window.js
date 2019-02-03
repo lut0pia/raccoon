@@ -35,6 +35,7 @@ rcn_window.prototype.save_to_storage = function() {
     });
   } catch(e) {
     rcn_log('Could not save window to storage')
+    console.log(e);
   }
 }
 
@@ -48,6 +49,7 @@ rcn_window.prototype.load_from_storage = function() {
     this.content.style.height = save.height;
   } catch(e) {
     rcn_log('Could not load window from storage')
+    console.log(e);
   }
 }
 
