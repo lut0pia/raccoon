@@ -56,21 +56,21 @@ function rcn_load_styles(styles) {
 
 document.title = 'raccoon';
 
-rcn_load_styles(['reset','bin_ed','code_ed','docs_ed','palette_ed','vm_ed','window']);
+rcn_load_styles(['reset','bin_ed','code_ed','docs_ed','sprite_ed','vm_ed','window']);
 rcn_load_scripts([
   // Raccoon core
   'bin','vm','vm_worker',
   // Utility
   'canvas','gl','ui','window',
   // Editors
-  'bin_ed','code_ed','docs_ed','palette_ed','vm_ed',
+  'bin_ed','code_ed','docs_ed','sprite_ed','vm_ed',
 ])
 .then(function() {
   var bin_ed = new rcn_bin_ed();
   new rcn_vm_ed();
   new rcn_code_ed();
   new rcn_docs_ed();
-  new rcn_palette_ed();
+  new rcn_sprite_ed();
 
   var bin = new rcn_bin();
   bin.from_env();
