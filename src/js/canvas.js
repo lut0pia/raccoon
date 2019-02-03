@@ -98,3 +98,19 @@ rcn_canvas.prototype.set_size = function(width, height) {
     this.img[i] = 255;
   }
 }
+
+rcn_canvas.prototype.client_to_texture_coords = function(x, y) {
+  var vp_mul = Math.floor(Math.min(this.node.width / this.width, this.node.height / this.height));
+  var vp_width = vp_mul * this.width;
+  var vp_height = vp_mul * this.height;
+  var vp_x = (this.node.width - vp_width) / 2;
+  var vp_y = (this.node.height - vp_height) / 2;
+  if(vp_x <= x && vp_y <= y && x < vp_x + vp_width  && y < vp_y + vp_height) {
+    return {
+      x: Math.floor((x - vp_x) / vp_mul - 0.5),
+      y: Math.floor((y - vp_y) / vp_mul - 0.5),
+    };
+  } else {
+    return null;
+  }
+}
