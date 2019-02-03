@@ -17,14 +17,19 @@ function rcn_sprite_ed() {
   this.draw_canvas = new rcn_canvas();
   this.draw_canvas.node.classList.add('draw');
   var draw_mouse_callback = function(e) {
-    if(e.buttons === 1) { // Left button
+    if(e.buttons > 0) {
       var canvas_coords = this.getBoundingClientRect();
       var tex_coords = sprite_ed.draw_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
       if(tex_coords) {
-        sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
+        if(e.buttons == 1) { // Left button: draw
+          sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
+        } else if(e.buttons == 2) { // Right button: color pick
+          sprite_ed.set_current_color(sprite_ed.get_pixel(tex_coords.x, tex_coords.y))
+        }
       }
     }
   }
+  this.draw_canvas.node.addEventListener('contextmenu', function(e){e.preventDefault()});
   this.draw_canvas.node.addEventListener('mousedown', draw_mouse_callback);
   this.draw_canvas.node.addEventListener('mousemove', draw_mouse_callback);
   this.add_child(this.draw_canvas.node);
@@ -34,7 +39,7 @@ function rcn_sprite_ed() {
   this.spritesheet_canvas.node.classList.add('spritesheet');
   this.spritesheet_canvas.set_size(128, 32);
   var sheet_mouse_callback = function(e) {
-    if(e.buttons === 1) { // Left button
+    if(e.buttons === 1) { // Left button: select sprite
       var canvas_coords = this.getBoundingClientRect();
       var tex_coords = sprite_ed.spritesheet_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
       if(tex_coords) {
@@ -49,6 +54,7 @@ function rcn_sprite_ed() {
 
   // Create color inputs
   this.color_inputs = [];
+  this.color_radios = [];
   for(var i=0; i<8; i++) {
     var color_wrapper = document.createElement('div');
     var color_radio = document.createElement('input');
@@ -59,6 +65,7 @@ function rcn_sprite_ed() {
     color_radio.onchange = function() {
       sprite_ed.current_color = this.color_index;
     }
+    this.color_radios.push(color_radio);
     color_wrapper.appendChild(color_radio);
 
     var color_input_id = 'color_input_'+i;
@@ -133,14 +140,18 @@ rcn_sprite_ed.prototype.get_palette_bytes = function() {
   return palette_bytes;
 }
 
-rcn_sprite_ed.prototype.set_pixel = function(draw_x, draw_y) {
+rcn_sprite_ed.prototype.get_texel_index = function(draw_x, draw_y) {
   var spritesheet_offset_x = (this.current_sprite & 0xf) << 3;
   var spritesheet_offset_y = (this.current_sprite >> 4) << 3;
   var x = draw_x + spritesheet_offset_x;
   var y = draw_y + spritesheet_offset_y;
-  var texel_index = rcn.ram_spritesheet_offset+(y<<6)+(x>>1);
+  return rcn.ram_spritesheet_offset+(y<<6)+(x>>1);
+}
+
+rcn_sprite_ed.prototype.set_pixel = function(draw_x, draw_y) {
+  var texel_index = this.get_texel_index(draw_x, draw_y);
   var texel = rcn_global_bin.rom[texel_index];
-  if((x % 2) < 1) {
+  if((draw_x % 2) < 1) {
     texel &= 0xf0;
     texel |= this.current_color;
   } else {
@@ -153,6 +164,21 @@ rcn_sprite_ed.prototype.set_pixel = function(draw_x, draw_y) {
     begin: texel_index,
     end: texel_index+1,
   });
+}
+
+rcn_sprite_ed.prototype.get_pixel = function(draw_x, draw_y) {
+  var texel_index = this.get_texel_index(draw_x, draw_y);
+  var texel = rcn_global_bin.rom[texel_index];
+  if((draw_x % 2) < 1) {
+    return texel & 0xf;
+  } else {
+    return texel >> 4;
+  }
+}
+
+rcn_sprite_ed.prototype.set_current_color = function(color) {
+  this.current_color = color;
+  this.color_radios[color].checked = true;
 }
 
 rcn_sprite_ed.prototype.update_draw_canvas = function() {
