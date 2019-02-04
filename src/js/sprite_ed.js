@@ -185,7 +185,7 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
   var spr_w = this.current_sprite_width;
   var spr_h = this.current_sprite_height;
   var pixels = new Uint8Array((spr_w * spr_h) >> 1);
-  var texel_index = (this.current_sprite << 2) + ((this.current_sprite >> 4) << 9);
+  var texel_index = ((this.current_sprite & 0xf) << 2) + ((this.current_sprite >> 4) << 9);
   var row_size = spr_w >> 1;
 
   for(var i=0; i < spr_h; i++) {
