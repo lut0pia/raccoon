@@ -105,8 +105,7 @@ function rcn_sprite_ed() {
     const ram_palette_begin = rcn.ram_palette_offset;
     const ram_palette_end = rcn.ram_palette_offset + rcn.ram_palette_size;
     if(e.detail.begin < ram_palette_end && e.detail.end > ram_palette_begin) {
-      // Update UI palette with bin palette
-      sprite_ed.set_palette_bytes(rcn_global_bin.rom.slice(rcn.ram_palette_offset, rcn.ram_palette_offset + rcn.ram_palette_size));
+      sprite_ed.update_color_inputs();
     }
 
     // Draw canvas update
@@ -119,9 +118,10 @@ function rcn_sprite_ed() {
   });
 }
 
-rcn_sprite_ed.prototype.set_palette_bytes = function(palette_bytes) {
+rcn_sprite_ed.prototype.update_color_inputs = function() {
+  var palette_bytes = rcn_global_bin.rom.slice(rcn.ram_palette_offset, rcn.ram_palette_offset + rcn.ram_palette_size);
   for(var i=0; i<8; i++) {
-    var rgb_str = '#'
+    var rgb_str = '#';
     for(var j=0; j<3; j++) {
       rgb_str += ('00'+palette_bytes[i*3+j].toString(16)).slice(-2);
     }
