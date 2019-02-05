@@ -48,6 +48,7 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `cls(c=0)`: Clears the whole screen to the `c` color
 - `pset(x, y, c)`: Sets the pixel at coordinates (`x`;`y`) to the `c` color
 - `pget(x, y)`: Returns the color of the pixel at coordinates (`x`;`y`)
+- `spr(n, x, y, w=1.0, h=1.0)`: Draws the `n`th sprite at screen coordinates (`x`;`y`) `w` and `h` are the width and height of the drawing in sprite length (8 pixels per unit)
 
 ### 2.2. Math
 
