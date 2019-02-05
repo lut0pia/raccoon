@@ -43,4 +43,5 @@ function rcn_vm_ed() {
 
 rcn_vm_ed.prototype.reboot = function() {
   this.vm.load_bin(rcn_global_bin);
+  rcn_dispatch_ed_event('rcnreboot');
 }
