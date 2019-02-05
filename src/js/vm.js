@@ -50,6 +50,10 @@ rcn_vm.prototype.load_memory = function(bytes, offset) {
   this.worker.postMessage({type:'memory', offset:offset, bytes:bytes});
 }
 
+rcn_vm.prototype.load_memory_from_bin = function(offset, size) {
+  this.load_memory(rcn_global_bin.rom.slice(offset, offset + size), offset);
+}
+
 rcn_vm.prototype.update = function() {
   this.worker.postMessage({type:'memory', offset:rcn.ram_gamepad_offset, bytes:this.gamepad_state});
   this.worker.postMessage({type:'update'});
