@@ -95,9 +95,9 @@ function rcn_sprite_ed() {
 
   this.apply_button.onclick = function() {
     // Update VM spritesheet with bin spritesheet
-    rcn_global_vm.load_memory(rcn_global_bin.rom.slice(rcn.ram_spritesheet_offset, rcn.ram_spritesheet_offset + rcn.ram_spritesheet_size), rcn.ram_spritesheet_offset);
+    rcn_global_vm.load_memory_from_bin(rcn.ram_spritesheet_offset, rcn.ram_spritesheet_size);
     // Update VM palette with bin palette
-    rcn_global_vm.load_memory(rcn_global_bin.rom.slice(rcn.ram_palette_offset, rcn.ram_palette_offset + rcn.ram_palette_size), rcn.ram_palette_offset);
+    rcn_global_vm.load_memory_from_bin(rcn.ram_palette_offset, rcn.ram_palette_size);
   }
 
   this.addEventListener('rcnbinchange', function(e) {

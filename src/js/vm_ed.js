@@ -47,7 +47,7 @@ function rcn_vm_ed() {
       vm_ed.reboot();
     } else if(vm_ed.autoapply_checkbox.checked) {
       // If autoapply is on, we directly load changed rom into ram
-      vm_ed.vm.load_memory(rcn_global_bin.rom.slice(e.detail.begin, e.detail.end), e.detail.begin);
+      rcn_global_vm.load_memory_from_bin(e.detail.begin, e.detail.end - e.detail.begin);
     }
   });
 }
