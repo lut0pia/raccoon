@@ -20,18 +20,20 @@ const rcn_canvas_fs_source = `
 
 function rcn_canvas() {
   this.node = document.createElement('canvas');
-  this.gl = this.node.getContext('webgl');
+  const gl = this.gl = this.node.getContext('webgl');
 
-  this.texture = this.gl.createTexture();
-  this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-  this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
-  this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+  this.texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, this.texture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-  this.program = rcn_gl_create_program(this.gl, rcn_canvas_vs_source, rcn_canvas_fs_source);
-  this.vbo = rcn_gl_create_array_buffer(this.gl, new Float32Array([
-    -1, -1, 0, 2,
-    -1, 3, 0, 0,
-    3, -1, 2, 2,
+  this.program = rcn_gl_create_program(gl, rcn_canvas_vs_source, rcn_canvas_fs_source);
+  this.vbo = rcn_gl_create_array_buffer(gl, new Float32Array([
+    -1, -1, 0, 1,
+    -1, 3, 0, -1,
+    3, -1, 2, 1,
   ]));
 }
 
