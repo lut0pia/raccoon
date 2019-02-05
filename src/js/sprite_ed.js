@@ -43,7 +43,7 @@ function rcn_sprite_ed() {
       var canvas_coords = this.getBoundingClientRect();
       var tex_coords = sprite_ed.spritesheet_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
       if(tex_coords) {
-        sprite_ed.current_sprite = (tex_coords.x >> 3) + ((tex_coords.y >> 3) << 4);
+        sprite_ed.current_sprite = (sprite_ed.current_sprite_page << 6) + (tex_coords.x >> 3) + ((tex_coords.y >> 3) << 4);
         sprite_ed.update_draw_canvas();
       }
     }
