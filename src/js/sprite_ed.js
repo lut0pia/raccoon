@@ -212,6 +212,7 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
 }
 
 rcn_sprite_ed.prototype.update_spritesheet_canvas = function() {
-  this.spritesheet_canvas.blit(0, 0, 128, 32, rcn_global_bin.rom);
+  var page_index = this.current_sprite_page << 11;
+  this.spritesheet_canvas.blit(0, 0, 128, 32, rcn_global_bin.rom.slice(page_index));
   this.spritesheet_canvas.flush();
 }
