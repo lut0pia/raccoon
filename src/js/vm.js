@@ -74,9 +74,7 @@ rcn_vm.prototype.onmessage = function(e) {
       this.canvas.flush();
       break;
     case 'exception':
-      if(this.onexception) {
-        this.onexception(e.data);
-      }
+      rcn_dispatch_ed_event('rcnerror', e.data);
       break;
     default:
       rcn_log('Unhandled VM message: ', e.data);
