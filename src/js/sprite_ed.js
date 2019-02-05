@@ -52,6 +52,19 @@ function rcn_sprite_ed() {
   this.spritesheet_canvas.node.addEventListener('mousemove', sheet_mouse_callback);
   this.add_child(this.spritesheet_canvas.node);
 
+  // Create sprite size range
+  this.sprite_size_range = document.createElement('input');
+  this.sprite_size_range.type = 'range';
+  this.sprite_size_range.value = 8;
+  this.sprite_size_range.min = 8;
+  this.sprite_size_range.max = 32;
+  this.sprite_size_range.step = 8;
+  this.sprite_size_range.oninput = function(e) {
+    sprite_ed.current_sprite_width = sprite_ed.current_sprite_height = this.value;
+    sprite_ed.update_draw_canvas();
+  };
+  this.add_child(this.sprite_size_range);
+
   // Create color inputs
   this.color_inputs = [];
   this.color_radios = [];
