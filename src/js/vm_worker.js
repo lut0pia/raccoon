@@ -31,8 +31,11 @@ function rcn_vm_worker_function(rcn) {
     // e.lineNumber is off by 2 for some reason
     _postMessage({type:'exception', message:e.message, line:e.lineNumber-2, column:e.columnNumber});
   }
+  var sprite_pixel_index = function(x, y) {
+    return (y<<6)+(x>>1);
+  }
   var screen_pixel_index = function(x, y) {
-    return rcn_ram_screen_offset+(y<<6)+(x>>1);
+    return rcn_ram_screen_offset + sprite_pixel_index(x, y);
   }
 
   // Raccoon math API
@@ -91,13 +94,33 @@ function rcn_vm_worker_function(rcn) {
   spr = function(n, x, y, w, h, flip_x, flip_y) {
     w = w || 1.0;
     h = h || 1.0;
-    var pixel_index = screen_pixel_index(x, y);
-    var texel_index = n << 2;
 
-    for(var r=0; r<h*8; r++) {
-      var row_index = texel_index + r * 64;
-      var row_size = _Math.floor(4 * w);
-      ram.copyWithin(pixel_index + r * 64, row_index, row_index + row_size);
+    var first_texel_index = ((n & 0xf) << 2) + ((n >> 4) << 9);
+    if((x & 1) == 0 && !flip_x && !flip_y) { // Fast path
+      var pixel_index = screen_pixel_index(x, y);
+      for(var r=0; r<h*8; r++) {
+        var row_texel_index = first_texel_index + (r << 6);
+        var row_size = w << 2;
+        ram.copyWithin(pixel_index + (r << 6), row_texel_index, row_texel_index + row_size);
+      }
+    } else { // Slow path
+      for(var i=0; i<w*8; i++) {
+        for(var j=0; j<h*8; j++) {
+          // Fetch sprite color
+          var tex_index = first_texel_index + sprite_pixel_index(i, j);
+          var color = ((i % 2) < 1)
+            ? (ram[tex_index] & 0xf)
+            : (ram[tex_index] >> 4);
+
+          // Apply color to screen
+          var scr_x = x + i;
+          var scr_y = y + j;
+          var scr_index = screen_pixel_index(scr_x, scr_y);
+          ram[scr_index] = ((scr_x % 2) < 1)
+            ? ((ram[scr_index] & 0xf0) | color)
+            : ((ram[scr_index] & 0xf) | (color << 4));
+        }
+      }
     }
   }
 
