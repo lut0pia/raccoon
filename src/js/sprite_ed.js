@@ -53,6 +53,19 @@ function rcn_sprite_ed() {
   this.add_child(this.spritesheet_canvas.node);
 
   // Create sprite size range
+  this.sprite_page_range = document.createElement('input');
+  this.sprite_page_range.type = 'range';
+  this.sprite_page_range.value = 0
+  this.sprite_page_range.min = 0;
+  this.sprite_page_range.max = 3;
+  this.sprite_page_range.step = 1;
+  this.sprite_page_range.oninput = function(e) {
+    sprite_ed.current_sprite_page = this.value;
+    sprite_ed.update_spritesheet_canvas();
+  };
+  this.add_child(this.sprite_page_range);
+
+  // Create sprite size range
   this.sprite_size_range = document.createElement('input');
   this.sprite_size_range.type = 'range';
   this.sprite_size_range.value = 8;
