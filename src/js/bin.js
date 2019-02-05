@@ -40,10 +40,10 @@ rcn_bin.prototype.from_json = function(bin) {
       }
     } else {
       if(bin.rom.spr) {
-        hex_to_rom(this.rom, rcn.ram_spritesheet_offset, rcn.ram_spritesheet_size, bin.rom.spr);
+        hex_to_rom(this.rom, rcn.mem_spritesheet_offset, rcn.mem_spritesheet_size, bin.rom.spr);
       }
       if(bin.rom.pal) {
-        hex_to_rom(this.rom, rcn.ram_palette_offset, rcn.ram_palette_size, bin.rom.pal);
+        hex_to_rom(this.rom, rcn.mem_palette_offset, rcn.mem_palette_size, bin.rom.pal);
       }
     }
   } else {
@@ -79,8 +79,8 @@ rcn_bin.prototype.to_json = function() {
     version: 2,
     code: code_lines,
     rom: {
-      spr: rom_to_hex(this.rom, rcn.ram_spritesheet_offset, rcn.ram_spritesheet_size),
-      pal: rom_to_hex(this.rom, rcn.ram_palette_offset, rcn.ram_palette_size),
+      spr: rom_to_hex(this.rom, rcn.mem_spritesheet_offset, rcn.mem_spritesheet_size),
+      pal: rom_to_hex(this.rom, rcn.mem_palette_offset, rcn.mem_palette_size),
     },
   };
 }

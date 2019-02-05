@@ -3,11 +3,11 @@
 
 function rcn_vm_worker_function(rcn) {
   const rcn_ram_size = rcn.ram_size;
-  const rcn_ram_palette_offset = rcn.ram_palette_offset;
-  const rcn_ram_palette_size = rcn.ram_palette_size;
-  const rcn_ram_gamepad_offset = rcn.ram_gamepad_offset;
-  const rcn_ram_screen_offset = rcn.ram_screen_offset;
-  const rcn_ram_screen_size = rcn.ram_screen_size;
+  const rcn_mem_palette_offset = rcn.mem_palette_offset;
+  const rcn_mem_palette_size = rcn.mem_palette_size;
+  const rcn_mem_gamepad_offset = rcn.mem_gamepad_offset;
+  const rcn_mem_screen_offset = rcn.mem_screen_offset;
+  const rcn_mem_screen_size = rcn.mem_screen_size;
 
   // Keep parts of the API local
   var _Function = Function;
@@ -35,7 +35,7 @@ function rcn_vm_worker_function(rcn) {
     return (y<<6)+(x>>1);
   }
   var screen_pixel_index = function(x, y) {
-    return rcn_ram_screen_offset + sprite_pixel_index(x, y);
+    return rcn_mem_screen_offset + sprite_pixel_index(x, y);
   }
 
   // Raccoon math API
@@ -82,14 +82,14 @@ function rcn_vm_worker_function(rcn) {
     }
   }
   palset = function(i, r, g, b) {
-    ram[rcn_ram_palette_offset+i*3+0] = r;
-    ram[rcn_ram_palette_offset+i*3+1] = g;
-    ram[rcn_ram_palette_offset+i*3+2] = b;
+    ram[rcn_mem_palette_offset+i*3+0] = r;
+    ram[rcn_mem_palette_offset+i*3+1] = g;
+    ram[rcn_mem_palette_offset+i*3+2] = b;
   }
   cls = c = function(c) {
     c = c || 0; // Default color is 0
     c |= c<<4; // Left and right pixel to same color
-    ram.fill(c, rcn_ram_screen_offset, rcn_ram_screen_offset + rcn_ram_screen_size);
+    ram.fill(c, rcn_mem_screen_offset, rcn_mem_screen_offset + rcn_mem_screen_size);
   }
   spr = function(n, x, y, w, h, flip_x, flip_y) {
     w = w || 1.0;
@@ -127,7 +127,7 @@ function rcn_vm_worker_function(rcn) {
   // Raccoon input API
   btn = b = function(i, p) {
     p = p || 0; // First player by default
-    return (ram[rcn_ram_gamepad_offset+p] & (1 << i)) != 0;
+    return (ram[rcn_mem_gamepad_offset+p] & (1 << i)) != 0;
   }
 
   // Raccoon memory API
@@ -175,8 +175,8 @@ function rcn_vm_worker_function(rcn) {
         }
         _postMessage({
           type:'blit', x:0, y:0, w:128, h:128,
-          pixels:ram.slice(rcn_ram_screen_offset, rcn_ram_screen_offset + rcn_ram_screen_size),
-          palette:ram.slice(rcn_ram_palette_offset, rcn_ram_palette_offset + rcn_ram_palette_size),
+          pixels:ram.slice(rcn_mem_screen_offset, rcn_mem_screen_offset + rcn_mem_screen_size),
+          palette:ram.slice(rcn_mem_palette_offset, rcn_mem_palette_offset + rcn_mem_palette_size),
         });
         break;
     }

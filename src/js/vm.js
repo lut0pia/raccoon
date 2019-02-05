@@ -7,7 +7,7 @@ const rcn_keycode_to_gamepad = {
 };
 
 function rcn_vm() {
-  this.gamepad_state = new Uint8Array(rcn.ram_gamepad_size);
+  this.gamepad_state = new Uint8Array(rcn.mem_gamepad_size);
 
   this.canvas = new rcn_canvas();
   this.canvas.set_size(128, 128);
@@ -55,7 +55,7 @@ rcn_vm.prototype.load_memory_from_bin = function(offset, size) {
 }
 
 rcn_vm.prototype.update = function() {
-  this.worker.postMessage({type:'memory', offset:rcn.ram_gamepad_offset, bytes:this.gamepad_state});
+  this.worker.postMessage({type:'memory', offset:rcn.mem_gamepad_offset, bytes:this.gamepad_state});
   this.worker.postMessage({type:'update'});
 }
 

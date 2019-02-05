@@ -79,7 +79,7 @@ function rcn_sprite_ed() {
     color_input.id = color_input_id;
     color_input.onchange = function() {
       // Update bin's palette with UI palette
-      rcn_global_bin.patch_memory(sprite_ed.get_palette_bytes(), rcn.ram_palette_offset);
+      rcn_global_bin.patch_memory(sprite_ed.get_palette_bytes(), rcn.mem_palette_offset);
     }
     this.color_inputs.push(color_input);
     color_wrapper.appendChild(color_input);
@@ -95,23 +95,23 @@ function rcn_sprite_ed() {
 
   this.apply_button.onclick = function() {
     // Update VM spritesheet with bin spritesheet
-    rcn_global_vm.load_memory_from_bin(rcn.ram_spritesheet_offset, rcn.ram_spritesheet_size);
+    rcn_global_vm.load_memory_from_bin(rcn.mem_spritesheet_offset, rcn.mem_spritesheet_size);
     // Update VM palette with bin palette
-    rcn_global_vm.load_memory_from_bin(rcn.ram_palette_offset, rcn.ram_palette_size);
+    rcn_global_vm.load_memory_from_bin(rcn.mem_palette_offset, rcn.mem_palette_size);
   }
 
   this.addEventListener('rcnbinchange', function(e) {
     // Palette update
-    const ram_palette_begin = rcn.ram_palette_offset;
-    const ram_palette_end = rcn.ram_palette_offset + rcn.ram_palette_size;
-    if(e.detail.begin < ram_palette_end && e.detail.end > ram_palette_begin) {
+    const mem_palette_begin = rcn.mem_palette_offset;
+    const mem_palette_end = rcn.mem_palette_offset + rcn.mem_palette_size;
+    if(e.detail.begin < mem_palette_end && e.detail.end > mem_palette_begin) {
       sprite_ed.update_color_inputs();
     }
 
     // Draw canvas update
-    const ram_spritesheet_begin = rcn.ram_spritesheet_offset;
-    const ram_spritesheet_end = rcn.ram_spritesheet_offset + rcn.ram_spritesheet_size;
-    if(e.detail.begin < ram_spritesheet_end && e.detail.end > ram_spritesheet_begin) {
+    const mem_spritesheet_begin = rcn.mem_spritesheet_offset;
+    const mem_spritesheet_end = rcn.mem_spritesheet_offset + rcn.mem_spritesheet_size;
+    if(e.detail.begin < mem_spritesheet_end && e.detail.end > mem_spritesheet_begin) {
       sprite_ed.update_draw_canvas();
       sprite_ed.update_spritesheet_canvas();
     }
@@ -119,7 +119,7 @@ function rcn_sprite_ed() {
 }
 
 rcn_sprite_ed.prototype.update_color_inputs = function() {
-  var palette_bytes = rcn_global_bin.rom.slice(rcn.ram_palette_offset, rcn.ram_palette_offset + rcn.ram_palette_size);
+  var palette_bytes = rcn_global_bin.rom.slice(rcn.mem_palette_offset, rcn.mem_palette_offset + rcn.mem_palette_size);
   for(var i=0; i<8; i++) {
     var rgb_str = '#';
     for(var j=0; j<3; j++) {
@@ -130,7 +130,7 @@ rcn_sprite_ed.prototype.update_color_inputs = function() {
 }
 
 rcn_sprite_ed.prototype.get_palette_bytes = function() {
-  var palette_bytes = new Uint8Array(rcn.ram_palette_size); // 8 RGB values
+  var palette_bytes = new Uint8Array(rcn.mem_palette_size); // 8 RGB values
   for(var i=0; i<8; i++) {
     var rgb_int = parseInt(this.color_inputs[i].value.slice(1), 16);
     palette_bytes[i*3+0] = (rgb_int>>16);
@@ -145,7 +145,7 @@ rcn_sprite_ed.prototype.get_texel_index = function(draw_x, draw_y) {
   var spritesheet_offset_y = (this.current_sprite >> 4) << 3;
   var x = draw_x + spritesheet_offset_x;
   var y = draw_y + spritesheet_offset_y;
-  return rcn.ram_spritesheet_offset+(y<<6)+(x>>1);
+  return rcn.mem_spritesheet_offset+(y<<6)+(x>>1);
 }
 
 rcn_sprite_ed.prototype.set_pixel = function(draw_x, draw_y) {
