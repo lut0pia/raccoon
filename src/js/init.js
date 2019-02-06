@@ -7,6 +7,8 @@ const rcn = {
   ram_size: 0x8000, // = 32KiB
   mem_spritesheet_offset: 0x0000,
   mem_spritesheet_size: 0x2000,
+  mem_map_offset: 0x2000,
+  mem_map_size: 0x2000,
   mem_palette_offset: 0x4000,
   mem_palette_size: 0x0018, // 24B = 8x24bits
   mem_gamepad_offset: 0x5010,
