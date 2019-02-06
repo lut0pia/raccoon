@@ -13,7 +13,7 @@ N.B. Ranges in memory are expressed with their end excluded.
 | Memory range | Usage | Lifetime | Breakdown
 | --- | --- | --- | ---
 | `0x0000-0x2000` | [Spritesheet](#11-spritesheet) | ROM | 128x128x4bits
-| `0x2000-0x4000` | [Map](#12-map) | ROM | 256x8bits
+| `0x2000-0x4000` | [Map](#12-map) | ROM | 128x64x8bits
 | `0x4000-0x4018` | [Palette](#13-palette) | ROM | 8x24bits
 | `0x4100-0x4200` | [Sprite flags](#14-sprite-flags) | ROM | 256x8bits
 | `0x5010-0x5014` | [Gamepad state](#15-gamepad-state) | RAM | 4x(4+4)bits
@@ -24,6 +24,8 @@ N.B. Ranges in memory are expressed with their end excluded.
 Spritesheet data is 128x128 pixels, arranged in 256 8x8 sprites from left to right, top to bottom.
 
 #### 1.2. Map
+
+Map data is 128x64 tiles, where each tile is a byte-sized sprite index.
 
 #### 1.3. Palette
 
