@@ -15,6 +15,23 @@ const rcn = {
   mem_screen_size: 0x2000,
 };
 
+// Raccoon storage
+try {
+  rcn_storage = JSON.parse(localStorage.rcn);
+} catch(e) {
+  rcn_log('Could not read localStorage');
+  rcn_storage = {};
+  console.log(e);
+}
+window.addEventListener('unload', function() {
+  try {
+    localStorage.rcn = JSON.stringify(rcn_storage);
+  } catch(e) {
+    rcn_log('Could not write to localStorage');
+    console.log(e);
+  }
+})
+
 function rcn_add_head_node(name) {
   var new_node = document.createElement(name);
   document.head.appendChild(new_node);

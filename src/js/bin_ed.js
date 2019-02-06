@@ -118,31 +118,30 @@ rcn_bin_ed.prototype.delete_bin = function(bin_index) {
 }
 
 rcn_bin_ed.prototype.save_bins_to_storage = function() {
-  try {
-    localStorage.rcn_bins = JSON.stringify(this.bins.map(function(bin) {
-      return bin.to_json();
-    }));
-  } catch(e) {
-    rcn_log('Could not save bins to storage!');
-    console.log(e);
-  }
+  rcn_storage.bins = this.bins.map(function(bin) {
+    return bin.to_json();
+  });
 }
 
 rcn_bin_ed.prototype.load_bins_from_storage = function() {
-  try {
-    this.bins = JSON.parse(localStorage.rcn_bins || '[]').map(function(bin_json) {
-      var bin = new rcn_bin();
-      try {
-        bin_json = JSON.parse(bin_json);
-      } catch(e) {}
-      bin.from_json(bin_json);
-      return bin;
-    });
-  } catch(e) {
-    rcn_log('Could not load bins from storage!');
-    console.log(e);
-    this.bins = [];
+  var json_bins = rcn_storage.bins;
+  if(!json_bins) {
+    // Try old path
+    try {
+      json_bins = JSON.parse(localStorage.rcn_bins || '[]')
+    } catch(e) {
+      json_bins = [];
+    }
   }
+
+  this.bins = json_bins.map(function(bin_json) {
+    var bin = new rcn_bin();
+    try {
+      bin_json = JSON.parse(bin_json);
+    } catch(e) {}
+    bin.from_json(bin_json);
+    return bin;
+  });
 }
 
 rcn_bin_ed.prototype.refresh_bins_ui = function() {
