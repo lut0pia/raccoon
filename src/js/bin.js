@@ -80,6 +80,7 @@ rcn_bin.prototype.to_json = function() {
     code: code_lines,
     rom: {
       spr: rom_to_hex(this.rom, rcn.mem_spritesheet_offset, rcn.mem_spritesheet_size),
+      map: rom_to_hex(this.rom, rcn.mem_map_offset, rcn.mem_map_size),
       pal: rom_to_hex(this.rom, rcn.mem_palette_offset, rcn.mem_palette_size),
     },
   };
