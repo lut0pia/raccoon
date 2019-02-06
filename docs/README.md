@@ -8,7 +8,7 @@
 
 Read-only memory (abbreviated ROM) is 20KiB long (`0x0000-0x5000`) and is contained in the bin. It is loaded in the random access memory (abbreviated RAM), which is 32KiB long (`0x0000-0x8000`) at startup. A program accesses only RAM during its execution.
 
-N.B. Ranges in memory are expressed with their end excluded. 
+N.B. Ranges in memory are expressed with their end excluded.
 
 | Memory range | Usage | Lifetime | Breakdown
 | --- | --- | --- | ---
