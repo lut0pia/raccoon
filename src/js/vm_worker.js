@@ -123,13 +123,18 @@ function rcn_vm_worker_function(rcn) {
       }
     }
   }
+  var _mget = mget = function(celx, cely) {
+    return ram[rcn.mem_map_offset + (cely << 7) + celx];
+  }
+  mset = function(celx, cely, n) {
+    ram[rcn.mem_map_offset + (cely << 7) + celx] = n;
+  }
   map = function(celx, cely, sx, sy, celw, celh, layer) {
     layer = layer || 0xff;
 
     for(var x = celx; x < celx + celw; x++) {
       for(var y = cely; y < cely + celh; y++) {
-        var spr_index = ram[rcn.mem_map_offset + (y << 7) + x];
-        _spr(spr_index, sx + (x << 3), sy + (y << 3));
+        _spr(_mget(x, y), sx + (x << 3), sy + (y << 3));
       }
     }
   }
