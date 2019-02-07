@@ -136,6 +136,8 @@ function rcn_sprite_ed() {
     const mem_palette_end = rcn.mem_palette_offset + rcn.mem_palette_size;
     if(e.detail.begin < mem_palette_end && e.detail.end > mem_palette_begin) {
       sprite_ed.update_color_inputs();
+      sprite_ed.update_draw_canvas();
+      sprite_ed.update_spritesheet_canvas();
     }
 
     // Draw canvas update
