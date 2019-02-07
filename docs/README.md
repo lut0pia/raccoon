@@ -51,6 +51,7 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `pset(x, y, c)`: Sets the pixel at coordinates (`x`;`y`) to the `c` color
 - `pget(x, y)`: Returns the color of the pixel at coordinates (`x`;`y`)
 - `spr(n, x, y, w=1.0, h=1.0)`: Draws the `n`th sprite at screen coordinates (`x`;`y`) `w` and `h` are the width and height of the drawing in sprite length (8 pixels per unit)
+- `map(celx, cely, sx, sy, celw, celh)`: Draws a rectangle of the map starting at (`celx`;`cely`) with an extent of (`celw`;`celh`) at the pixel (`sx`;`sy`)
 
 ### 2.2. Math
 
