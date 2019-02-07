@@ -158,11 +158,7 @@ function rcn_vm_worker_function(rcn) {
         }
         break;
       case 'memory':
-        var offset = e.data.offset;
-        var bytes = e.data.bytes;
-        for(var i=0; i<bytes.byteLength; i++) {
-          ram[offset+i] = bytes[i];
-        }
+        ram.set(e.data.bytes, e.data.offset);
         break;
       case 'update':
         if(typeof update !== 'undefined') {
