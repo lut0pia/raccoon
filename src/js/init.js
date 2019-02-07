@@ -82,12 +82,13 @@ rcn_load_scripts([
   // Utility
   'canvas','gl','ui','window',
   // Editors
-  'bin_ed','code_ed','docs_ed','log_ed','sprite_ed','vm_ed',
+  'bin_ed','code_ed','docs_ed','map_ed','log_ed','sprite_ed','vm_ed',
 ]).then(function() {
   var bin_ed = new rcn_bin_ed();
   new rcn_vm_ed();
   new rcn_code_ed();
   new rcn_docs_ed();
+  new rcn_map_ed();
   new rcn_log_ed();
   new rcn_sprite_ed();
 
