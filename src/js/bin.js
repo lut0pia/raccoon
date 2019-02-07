@@ -42,6 +42,9 @@ rcn_bin.prototype.from_json = function(bin) {
       if(bin.rom.spr) {
         hex_to_rom(this.rom, rcn.mem_spritesheet_offset, rcn.mem_spritesheet_size, bin.rom.spr);
       }
+      if(bin.rom.map) {
+        hex_to_rom(this.rom, rcn.mem_map_offset, rcn.mem_map_size, bin.rom.map);
+      }
       if(bin.rom.pal) {
         hex_to_rom(this.rom, rcn.mem_palette_offset, rcn.mem_palette_size, bin.rom.pal);
       }
