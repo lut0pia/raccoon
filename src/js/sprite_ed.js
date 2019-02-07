@@ -106,6 +106,10 @@ function rcn_sprite_ed() {
     color_input.onchange = function() {
       // Update bin's palette with UI palette
       rcn_global_bin.patch_memory(sprite_ed.get_palette_bytes(), rcn.mem_palette_offset);
+      rcn_dispatch_ed_event('rcnbinchange', {
+        begin: rcn.mem_palette_offset,
+        end: rcn.mem_palette_offset+rcn.mem_palette_size,
+      });
     }
     this.color_inputs.push(color_input);
     color_wrapper.appendChild(color_input);
