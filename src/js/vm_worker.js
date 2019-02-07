@@ -91,7 +91,7 @@ function rcn_vm_worker_function(rcn) {
     c |= c<<4; // Left and right pixel to same color
     ram.fill(c, rcn_mem_screen_offset, rcn_mem_screen_offset + rcn_mem_screen_size);
   }
-  spr = function(n, x, y, w, h, flip_x, flip_y) {
+  var _spr = spr = function(n, x, y, w, h, flip_x, flip_y) {
     w = w || 1.0;
     h = h || 1.0;
 
@@ -120,6 +120,16 @@ function rcn_vm_worker_function(rcn) {
             ? ((ram[scr_index] & 0xf0) | color)
             : ((ram[scr_index] & 0xf) | (color << 4));
         }
+      }
+    }
+  }
+  map = function(celx, cely, sx, sy, celw, celh, layer) {
+    layer = layer || 0xff;
+
+    for(var x = celx; x < celx + celw; x++) {
+      for(var y = cely; y < cely + celh; y++) {
+        var spr_index = ram[rcn.mem_map_offset + (y << 7) + x];
+        _spr(spr_index, sx + (x << 3), sy + (y << 3));
       }
     }
   }
