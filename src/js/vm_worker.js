@@ -112,19 +112,25 @@ function rcn_vm_worker_function(rcn) {
       return;
     }
 
-    var first_texel_index = ((n & 0xf) << 2) + ((n >> 4) << 9);
-    for(var i=iw*8; i<w*8; i++) {
-      for(var j=ih*8; j<h*8; j++) {
+    const first_texel_index = ((n & 0xf) << 2) + ((n >> 4) << 9);
+    const iwp = iw * 8;
+    const ihp = ih * 8;
+    const wp = w * 8;
+    const hp = h * 8;
+    for(var i=iwp; i < wp; i++) {
+      for(var j=ihp; j < hp; j++) {
         // Fetch sprite color
-        var tex_index = first_texel_index + sprite_pixel_index(i, j);
-        var color = ((i % 2) < 1)
+        const ti = flip_x ? (wp - i - 1) : i;
+        const tj = flip_y ? (hp - j - 1) : j;
+        const tex_index = first_texel_index + sprite_pixel_index(ti, tj);
+        const color = ((ti % 2) < 1)
           ? (ram[tex_index] & 0xf)
           : (ram[tex_index] >> 4);
 
         // Apply color to screen
-        var scr_x = x + i;
-        var scr_y = y + j;
-        var scr_index = screen_pixel_index(scr_x, scr_y);
+        const scr_x = x + i;
+        const scr_y = y + j;
+        const scr_index = screen_pixel_index(scr_x, scr_y);
         ram[scr_index] = ((scr_x % 2) < 1)
           ? ((ram[scr_index] & 0xf0) | color)
           : ((ram[scr_index] & 0xf) | (color << 4));
