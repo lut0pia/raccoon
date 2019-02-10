@@ -132,9 +132,9 @@ function rcn_vm_worker_function(rcn) {
   map = function(celx, cely, sx, sy, celw, celh, layer) {
     layer = layer || 0xff;
 
-    for(var x = celx; x < celx + celw; x++) {
-      for(var y = cely; y < cely + celh; y++) {
-        _spr(_mget(x, y), sx + (x << 3), sy + (y << 3));
+    for(var x = 0; x < celw; x++) {
+      for(var y = 0; y < celh; y++) {
+        _spr(_mget(celx + x, cely + y), sx + (x << 3), sy + (y << 3));
       }
     }
   }
