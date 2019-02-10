@@ -62,7 +62,10 @@ function rcn_vm_worker_function(rcn) {
 
   // Raccoon rendering API
   pset = p = function(x, y, p) {
-    var pixel_index = screen_pixel_index(x, y);
+    if(x < 0 || x >= 128 || y < 0 || y >= 128) {
+      return;
+    }
+    const pixel_index = screen_pixel_index(x, y);
     var pixel = ram[pixel_index];
     if((x % 2) < 1) {
       pixel &= 0xf0;
@@ -74,6 +77,9 @@ function rcn_vm_worker_function(rcn) {
     ram[pixel_index] = pixel;
   }
   pget = function(x, y) {
+    if(x < 0 || x >= 128 || y < 0 || y >= 128) {
+      return 0;
+    }
     var pixel = ram[screen_pixel_index(x, y)];
     if((x % 2) < 1) {
       return pixel & 0xf;
@@ -95,31 +101,33 @@ function rcn_vm_worker_function(rcn) {
     w = w || 1.0;
     h = h || 1.0;
 
-    var first_texel_index = ((n & 0xf) << 2) + ((n >> 4) << 9);
-    if((x & 1) == 0 && !flip_x && !flip_y) { // Fast path
-      var pixel_index = screen_pixel_index(x, y);
-      for(var r=0; r<h*8; r++) {
-        var row_texel_index = first_texel_index + (r << 6);
-        var row_size = w << 2;
-        ram.copyWithin(pixel_index + (r << 6), row_texel_index, row_texel_index + row_size);
-      }
-    } else { // Slow path
-      for(var i=0; i<w*8; i++) {
-        for(var j=0; j<h*8; j++) {
-          // Fetch sprite color
-          var tex_index = first_texel_index + sprite_pixel_index(i, j);
-          var color = ((i % 2) < 1)
-            ? (ram[tex_index] & 0xf)
-            : (ram[tex_index] >> 4);
+    // Clip
+    const iw = _Math.max(0, -x / 8);
+    const ih = _Math.max(0, -y / 8);
+    w = _Math.min(w, (128 - x) / 8);
+    h = _Math.min(h, (128 - y) / 8);
 
-          // Apply color to screen
-          var scr_x = x + i;
-          var scr_y = y + j;
-          var scr_index = screen_pixel_index(scr_x, scr_y);
-          ram[scr_index] = ((scr_x % 2) < 1)
-            ? ((ram[scr_index] & 0xf0) | color)
-            : ((ram[scr_index] & 0xf) | (color << 4));
-        }
+    // Early exit if nothing to draw
+    if(w <= iw || h <= ih) {
+      return;
+    }
+
+    var first_texel_index = ((n & 0xf) << 2) + ((n >> 4) << 9);
+    for(var i=iw*8; i<w*8; i++) {
+      for(var j=ih*8; j<h*8; j++) {
+        // Fetch sprite color
+        var tex_index = first_texel_index + sprite_pixel_index(i, j);
+        var color = ((i % 2) < 1)
+          ? (ram[tex_index] & 0xf)
+          : (ram[tex_index] >> 4);
+
+        // Apply color to screen
+        var scr_x = x + i;
+        var scr_y = y + j;
+        var scr_index = screen_pixel_index(scr_x, scr_y);
+        ram[scr_index] = ((scr_x % 2) < 1)
+          ? ((ram[scr_index] & 0xf0) | color)
+          : ((ram[scr_index] & 0xf) | (color << 4));
       }
     }
   }
