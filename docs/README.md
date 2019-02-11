@@ -29,6 +29,8 @@ Map data is 128x64 tiles, where each tile is a byte-sized sprite index.
 
 #### 1.3. Palette
 
+Palette data is 8 RGB colors, each 3 bytes for the red, green and blue channels.
+
 #### 1.4. Sprite Flags
 
 Sprite flags are 256 8bits bitfields.
