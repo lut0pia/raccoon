@@ -1,10 +1,38 @@
-# Raccoon documentation
+# Table of contents
 
-## Table of contents
-1. [Memory](#1-memory)
-2. [Programming Interface](#2-programming-interface)
+1. [Introduction](#introduction)
+1. [Editors](#editors)
+    1. [Bin Browser](#bin-browser)
+    1. [Sprite Editor](#sprite-editor)
+1. [Memory](#memory)
+    1. [Spritesheet Memory](#spritesheet-memory)
+    1. [Map Memory](#map-memory)
+    1. [Palette Memory](#palette-memory)
+    1. [Sprite Flags Memory](#sprite-flags-memory)
+    1. [Gamepad State Memory](#gamepad-state-memory)
+    1. [Screen Memory](#screen-memory)
+1. [Functions](#functions)
+    1. [Rendering Functions](#rendering-functions)
+    1. [Math Functions](#math-functions)
+    1. [Input Functions](#input-functions)
+    1. [Memory Functions](#memory-functions)
+    1. [Function Shortcuts](#function-shortcuts)
 
-## 1. Memory
+# Introduction
+
+Raccoon is a browser-based fantasy console. It's an easy tool to make, share and play small games. Its capabilities are purposefully limited to allow you, the creator, not to be overwhelmed by the possibilities. Although the console is limited, the tools are carefully crafted to give you a smooth creating experience. Raccoon games are contained in bins.
+
+# Editors
+
+## Bin Browser
+
+The bin browser allows you to `Save` and `Load` bins, usually from the local storage (a persistent storage space in your browser). It can also be used to `Download` the current bin into a `.rcn.json` file that you can then upload through the file input. Share it with your friends!
+
+## Sprite Editor
+
+The sprite editor allows you to draw small images that you will then be able to draw into your game.
+
+# Memory
 
 Read-only memory (abbreviated ROM) is 20KiB long (`0x0000-0x5000`) and is contained in the bin. It is loaded in the random access memory (abbreviated RAM), which is 32KiB long (`0x0000-0x8000`) at startup. A program accesses only RAM during its execution.
 
@@ -12,40 +40,40 @@ N.B. Ranges in memory are expressed with their end excluded.
 
 | Memory range | Usage | Lifetime | Breakdown
 | --- | --- | --- | ---
-| `0x0000-0x2000` | [Spritesheet](#11-spritesheet) | ROM | 128x128x4bits
-| `0x2000-0x4000` | [Map](#12-map) | ROM | 128x64x8bits
-| `0x4000-0x4018` | [Palette](#13-palette) | ROM | 8x24bits
-| `0x4100-0x4200` | [Sprite flags](#14-sprite-flags) | ROM | 256x8bits
-| `0x5010-0x5014` | [Gamepad state](#15-gamepad-state) | RAM | 4x(4+4)bits
-| `0x6000-0x8000` | [Screen](#16-screen) | RAM | 128x128x4bits
+| `0x0000-0x2000` | [Spritesheet](#spritesheet-memory) | ROM | 128x128x4bits
+| `0x2000-0x4000` | [Map](#map-memory) | ROM | 128x64x8bits
+| `0x4000-0x4018` | [Palette](#palette-memory) | ROM | 8x24bits
+| `0x4100-0x4200` | [Sprite flags](#sprite-flags-memory) | ROM | 256x8bits
+| `0x5010-0x5014` | [Gamepad state](#gamepad-state-memory) | RAM | 4x(4+4)bits
+| `0x6000-0x8000` | [Screen](#screen-memory) | RAM | 128x128x4bits
 
-#### 1.1. Spritesheet
+## Spritesheet Memory
 
 Spritesheet data is 128x128 pixels, arranged in 256 8x8 sprites from left to right, top to bottom.
 
-#### 1.2. Map
+## Map Memory
 
 Map data is 128x64 tiles, where each tile is a byte-sized sprite index.
 
-#### 1.3. Palette
+## Palette Memory
 
 Palette data is 8 RGB colors, each 3 bytes for the red, green and blue channels.
 
-#### 1.4. Sprite Flags
+## Sprite Flags Memory
 
 Sprite flags are 256 8bits bitfields.
 
-#### 1.5. Gamepad State
+## Gamepad State Memory
 
 Gamepad state data is 4 8bit controllers. The 4 least significant bits correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons. On the keyboard those action buttons are X, C, V and B respectively, while on a modern gamepad they are the down, right, left and top face buttons respectively.
 
-#### 1.6. Screen
+## Screen Memory
 
 Screen data is 128x128 pixels.
 
-## 2. Programming Interface
+# Functions
 
-### 2.1. Rendering
+## Rendering Functions
 
 Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), which is the bottom-down pixel.
 
@@ -58,7 +86,7 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `mset(celx, cely, n)`: Set the sprite index at map coordinates (`celx`;`cely`) to `n`
 - `map(celx, cely, sx, sy, celw, celh)`: Draws a rectangle of the map starting at (`celx`;`cely`) with an extent of (`celw`;`celh`) at the pixel (`sx`;`sy`)
 
-### 2.2. Math
+## Math Functions
 
 - `flr(x)`: Returns closest lesser integer to `x`
 - `ceil(x)`: Returns closest greater integer to `x`
@@ -73,18 +101,18 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `cos(x)`: Returns the cosine of `x`
 - `atan2(y, x)`: Returns the counterclockwise angle (in radians) between the positive x-axis and the ray that starts from the origin and passes through (`x`;`y`)
 
-### 2.3. Input
+## Input Functions
 
 - `btn(i, p=0)`: Returns true if button `i` is pressed for player `p`
 
-### 2.4. Memory
+## Memory Functions
 
 - `memcpy(dst, src, len)`: Copies `len` bytes in RAM from `src` to `dst`
 - `memset(dst, val, len)`: Sets `len` bytes in RAM to value `val` at `dst`
 - `read(addr)`: Returns the value of the byte at address `addr` in RAM
 - `write(addr, val)`: Writes value `val` to the byte at address `addr` in RAM
 
-### 2.5. Shortcuts
+## Function Shortcuts
 
 Some common functions have one-letter shortcuts, useful for keeping code small.
 
