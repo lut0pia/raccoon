@@ -48,6 +48,7 @@ Screen data is 128x128 pixels.
 Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), which is the bottom-down pixel.
 
 - `cls(c=0)`: Clears the whole screen to the `c` color
+- `palset(c, r, g, b)`: Sets the `c` palette color to have the RGB values `r`, `g` and `b` (0-255)
 - `pset(x, y, c)`: Sets the pixel at coordinates (`x`;`y`) to the `c` color
 - `pget(x, y)`: Returns the color of the pixel at coordinates (`x`;`y`)
 - `spr(n, x, y, w=1.0, h=1.0)`: Draws the `n`th sprite at screen coordinates (`x`;`y`) `w` and `h` are the width and height of the drawing in sprite length (8 pixels per unit)
