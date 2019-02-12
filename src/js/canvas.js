@@ -66,14 +66,8 @@ rcn_canvas.prototype.flush = function() {
   this.node.width = this.node.clientWidth;
   this.node.height = this.node.clientHeight;
 
-  // We want to render pixel perfect, so we find a viewport size
-  // that is a multiple of the texture size and fits the actual size
-  var vp_mul = Math.floor(Math.min(this.node.width / this.width, this.node.height / this.height));
-  var vp_width = vp_mul * this.width;
-  var vp_height = vp_mul * this.height;
-  var vp_x = (this.node.width - vp_width) / 2;
-  var vp_y = (this.node.height - vp_height) / 2;
-  gl.viewport(vp_x, vp_y, vp_width, vp_height);
+  var vp = this.compute_viewport();
+  gl.viewport(vp.x, vp.y, vp.width, vp.height);
 
   // Set and upload texture
   gl.activeTexture(gl.TEXTURE0);
@@ -102,17 +96,28 @@ rcn_canvas.prototype.set_size = function(width, height) {
 }
 
 rcn_canvas.prototype.client_to_texture_coords = function(x, y) {
+  var vp = this.compute_viewport();
+  if(vp.x <= x && vp.y <= y && x < vp.x + vp.width  && y < vp.y + vp.height) {
+    return {
+      x: Math.floor((x - vp.x) / vp.mul),
+      y: Math.floor((y - vp.y) / vp.mul),
+    };
+  } else {
+    return null;
+  }
+}
+
+rcn_canvas.prototype.compute_viewport = function() {
+  // We want to render pixel perfect, so we find a viewport size
+  // that is a multiple of the texture size and fits the actual size
   var vp_mul = Math.floor(Math.min(this.node.width / this.width, this.node.height / this.height));
   var vp_width = vp_mul * this.width;
   var vp_height = vp_mul * this.height;
   var vp_x = (this.node.width - vp_width) / 2;
   var vp_y = (this.node.height - vp_height) / 2;
-  if(vp_x <= x && vp_y <= y && x < vp_x + vp_width  && y < vp_y + vp_height) {
-    return {
-      x: Math.floor((x - vp_x) / vp_mul),
-      y: Math.floor((y - vp_y) / vp_mul),
-    };
-  } else {
-    return null;
-  }
+  return {
+    mul: vp_mul,
+    x: vp_x, y: vp_y,
+    width: vp_width, height: vp_height,
+  };
 }
