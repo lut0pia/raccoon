@@ -3,6 +3,8 @@
 1. [Introduction](#introduction)
 1. [Editors](#editors)
     1. [Bin Browser](#bin-browser)
+    1. [Virtual Machine](#virtual-machine)
+    1. [Code Editor](#code-editor)
     1. [Sprite Editor](#sprite-editor)
 1. [Memory](#memory)
     1. [Spritesheet Memory](#spritesheet-memory)
@@ -20,17 +22,39 @@
 
 # Introduction
 
-Raccoon is a browser-based fantasy console. It's an easy tool to make, share and play small games. Its capabilities are purposefully limited to allow you, the creator, not to be overwhelmed by the possibilities. Although the console is limited, the tools are carefully crafted to give you a smooth creating experience. Raccoon games are contained in bins.
+Raccoon is a browser-based fantasy console. It's a tool to make, share and play small games. Its capabilities are purposefully limited to allow you, the creator, not to be overwhelmed by the possibilities. Although the console is limited, the tools are carefully crafted to give you a smooth creating experience. Raccoon games are contained in bins, they're a virtual equivalent to console cartridges. Programming is done in JavaScript.
 
 # Editors
+
+Raccoon tools exist in windows that can be moved and resized. Their layout is saved in your local storage.
 
 ## Bin Browser
 
 The bin browser allows you to `Save` and `Load` bins, usually from the local storage (a persistent storage space in your browser). It can also be used to `Download` the current bin into a `.rcn.json` file that you can then upload through the file input. Share it with your friends!
 
+## Virtual Machine
+
+The virtual machine is where your game actually comes to life.
+
+The `Reboot` button will wipe everything and load the current bin again, useful to check what happens with a fresh start of your game.
+
+The `Autoapply` checkbox indicates whether or not data changes made to the current bin should be replicated directly inside the virtual machine. You may want to disable it if your game code modifies sprite or map data in realtime.
+
+## Code Editor
+
+The code editor is a text editor with syntax highlighting.
+
+The `Apply` button will send the current code to the virtual machine, so you can see changes happen right away.
+
 ## Sprite Editor
 
 The sprite editor allows you to draw small images that you will then be able to draw into your game.
+
+The draw canvas displays the currently selected sprite. By left-clicking, it will set the texel color to the current color. By right-clicking, it will change the current color to be the color of the clicked texel (color picking).
+
+The sheet canvas displays the current spritesheet page. By left-clicking, you can select the sprite you want to edit.
+
+The `Apply` button is only useful if the virtual machine's `Autoapply` is deactivated, in which case it will apply the current sprite data to the virtual machine.
 
 # Memory
 
