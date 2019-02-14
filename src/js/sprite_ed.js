@@ -3,6 +3,7 @@
 function rcn_sprite_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this, 'sprite_ed', 'Sprite Editor');
+  this.documentation('sprite-editor');
 
   // Init sprite editing state
   this.current_color = 0;

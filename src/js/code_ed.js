@@ -3,6 +3,7 @@
 function rcn_code_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this, 'code_ed', 'Code Editor');
+  this.documentation('code-editor');
   var code_ed = this;
 
   this.textmirror = document.createElement('div');

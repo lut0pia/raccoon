@@ -3,6 +3,7 @@
 function rcn_bin_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this, 'bin_ed', 'Bin Browser');
+  this.documentation('bin-browser');
 
   var bin_ed = this;
 

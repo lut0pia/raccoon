@@ -3,6 +3,7 @@
 function rcn_vm_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this, 'vm_ed', 'Virtual Machine');
+  this.documentation('virtual-machine');
 
   this.vm = rcn_global_vm = new rcn_vm();
   this.add_child(this.vm.canvas.node);
