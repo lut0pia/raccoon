@@ -2,6 +2,20 @@
   width: 256px;
   height: 128px;
 }
+
+.window.sprite_ed div.palette {
+  float: right;
+
+}
+
+.window.sprite_ed canvas.draw {
+  width: calc(100% - 70px);
+}
+
+.window.sprite_ed canvas.spritesheet {
+  width: 100%;
+}
+
 .window.sprite_ed content input[type=color] {
   width: 20px;
   height: 20px;

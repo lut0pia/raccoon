@@ -14,6 +14,48 @@ function rcn_sprite_ed() {
 
   var sprite_ed = this;
 
+  // Create color inputs
+  this.palette_div = document.createElement('div');
+  this.palette_div.classList.add('palette');
+  this.color_inputs = [];
+  this.color_radios = [];
+  for(var i=0; i<8; i++) {
+    var color_wrapper = document.createElement('div');
+    var color_radio = document.createElement('input');
+    color_radio.type = 'radio';
+    color_radio.name = 'sprite_ed_color_radio';
+    color_radio.color_index = i;
+    color_radio.checked = (this.current_color == i);
+    color_radio.onchange = function() {
+      sprite_ed.current_color = this.color_index;
+    }
+    this.color_radios.push(color_radio);
+    color_wrapper.appendChild(color_radio);
+
+    var color_input_id = 'color_input_'+i;
+    var color_label = document.createElement('label');
+    color_label.innerText = i;
+    color_label.htmlFor = color_input_id;
+    color_wrapper.appendChild(color_label);
+
+    var color_input = document.createElement('input');
+    color_input.type = 'color';
+    color_input.id = color_input_id;
+    color_input.onchange = function() {
+      // Update bin's palette with UI palette
+      rcn_global_bin.patch_memory(sprite_ed.get_palette_bytes(), rcn.mem_palette_offset);
+      rcn_dispatch_ed_event('rcnbinchange', {
+        begin: rcn.mem_palette_offset,
+        end: rcn.mem_palette_offset+rcn.mem_palette_size,
+      });
+    }
+    this.color_inputs.push(color_input);
+    color_wrapper.appendChild(color_input);
+
+    this.palette_div.appendChild(color_wrapper);
+  }
+  this.add_child(this.palette_div);
+
   // Create draw canvas
   this.draw_canvas = new rcn_canvas();
   this.draw_canvas.node.classList.add('draw');
@@ -38,7 +80,6 @@ function rcn_sprite_ed() {
   // Create spritesheet canvas
   this.spritesheet_canvas = new rcn_canvas();
   this.spritesheet_canvas.node.classList.add('spritesheet');
-  this.spritesheet_canvas.set_size(128, 32);
   var sheet_mouse_callback = function(e) {
     if(e.buttons === 1) { // Left button: select sprite
       var canvas_coords = this.getBoundingClientRect();
@@ -78,45 +119,6 @@ function rcn_sprite_ed() {
     sprite_ed.update_draw_canvas();
   };
   this.add_child(this.sprite_size_range);
-
-  // Create color inputs
-  this.color_inputs = [];
-  this.color_radios = [];
-  for(var i=0; i<8; i++) {
-    var color_wrapper = document.createElement('div');
-    var color_radio = document.createElement('input');
-    color_radio.type = 'radio';
-    color_radio.name = 'sprite_ed_color_radio';
-    color_radio.color_index = i;
-    color_radio.checked = (this.current_color == i);
-    color_radio.onchange = function() {
-      sprite_ed.current_color = this.color_index;
-    }
-    this.color_radios.push(color_radio);
-    color_wrapper.appendChild(color_radio);
-
-    var color_input_id = 'color_input_'+i;
-    var color_label = document.createElement('label');
-    color_label.innerText = i;
-    color_label.htmlFor = color_input_id;
-    color_wrapper.appendChild(color_label);
-
-    var color_input = document.createElement('input');
-    color_input.type = 'color';
-    color_input.id = color_input_id;
-    color_input.onchange = function() {
-      // Update bin's palette with UI palette
-      rcn_global_bin.patch_memory(sprite_ed.get_palette_bytes(), rcn.mem_palette_offset);
-      rcn_dispatch_ed_event('rcnbinchange', {
-        begin: rcn.mem_palette_offset,
-        end: rcn.mem_palette_offset+rcn.mem_palette_size,
-      });
-    }
-    this.color_inputs.push(color_input);
-    color_wrapper.appendChild(color_input);
-
-    this.add_child(color_wrapper);
-  }
 
   // Create apply button
   this.apply_button = document.createElement('input');
@@ -226,6 +228,7 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
     pixels.set(rcn_global_bin.rom.slice(row_index, row_index + row_size), i * row_size);
   }
 
+  this.draw_canvas.set_aspect_ratio(1, 1);
   this.draw_canvas.set_size(spr_w, spr_h);
   this.draw_canvas.blit(0, 0, spr_w, spr_h, pixels);
   this.draw_canvas.flush();
@@ -233,6 +236,8 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
 
 rcn_sprite_ed.prototype.update_spritesheet_canvas = function() {
   var page_index = this.current_sprite_page << 11;
+  this.spritesheet_canvas.set_aspect_ratio(4, 1);
+  this.spritesheet_canvas.set_size(128, 32);
   this.spritesheet_canvas.blit(0, 0, 128, 32, rcn_global_bin.rom.slice(page_index));
   this.spritesheet_canvas.flush();
 }
