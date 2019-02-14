@@ -11,6 +11,12 @@
   cursor: move;
 }
 
+.window header icon {
+  float: right;
+  cursor: help;
+  padding: 0px 8px 0px 8px;
+}
+
 .window content {
   min-height: 128px;
   min-width: 128px;

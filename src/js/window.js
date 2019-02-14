@@ -52,6 +52,18 @@ rcn_window.prototype.load_from_storage = function() {
   }
 }
 
+rcn_window.prototype.documentation = function(key) {
+  var info_icon = document.createElement('icon');
+  info_icon.innerHTML = '&#x2139';
+  info_icon.onclick = function() {
+    rcn_dispatch_ed_event('rcndoclookup', {key:key});
+  }
+  info_icon.onmousedown = function(e) {
+    e.stopPropagation();
+  }
+  this.header.appendChild(info_icon);
+}
+
 rcn_window.prototype.addEventListener = function(type, listener, options) {
   this.section.addEventListener(type, listener, options);
 }
