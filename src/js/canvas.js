@@ -60,11 +60,18 @@ rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, pa
 }
 
 rcn_canvas.prototype.flush = function() {
+  if(!this.img) {
+    // We don't have anything to flush
+    return;
+  }
+
   const gl = this.gl;
 
   // Render at the client size
-  this.node.width = this.node.clientWidth;
-  this.node.height = this.node.clientHeight;
+  var client_width = this.node.clientWidth;
+  var client_height = this.node.clientHeight;
+  this.node.width = client_width;
+  this.node.height = client_height;
 
   var vp = this.compute_viewport();
   gl.viewport(vp.x, vp.y, vp.width, vp.height);
