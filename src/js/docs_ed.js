@@ -16,6 +16,5 @@ function rcn_docs_ed() {
 }
 
 rcn_docs_ed.prototype.lookup = function(key) {
-  key = rcn_doc_lookup[key] || key;
   this.iframe.src = location.origin + '/docs/#' + rcn_doc_lookup[key];
 }
