@@ -1,6 +1,8 @@
 // Generic draggable window
 
 function rcn_window(type, title) {
+  var window = this;
+
   this.type = type;
   this.title = title;
 
@@ -16,6 +18,15 @@ function rcn_window(type, title) {
   this.header.onmousedown = rcn_window_header_onmousedown;
   this.header.innerText = title;
   this.section.appendChild(this.header);
+
+  // Create close icon
+  this.add_header_icon({
+    codepoint: '274E',
+    type: 'close',
+    onclick: function() {
+      window.kill();
+    },
+  });
 
   // Create content
   this.content = document.createElement('content');
@@ -53,15 +64,24 @@ rcn_window.prototype.load_from_storage = function() {
 }
 
 rcn_window.prototype.documentation = function(key) {
-  var info_icon = document.createElement('icon');
-  info_icon.innerHTML = '&#x2139';
-  info_icon.onclick = function() {
-    rcn_dispatch_ed_event('rcndoclookup', {key:key});
-  }
-  info_icon.onmousedown = function(e) {
+  this.add_header_icon({
+    codepoint: '2139',
+    type: 'doc',
+    onclick: function() {
+      rcn_dispatch_ed_event('rcndoclookup', {key:key});
+    },
+  });
+}
+
+rcn_window.prototype.add_header_icon = function(arg) {
+  var icon = document.createElement('icon');
+  icon.innerHTML = '&#x'+arg.codepoint;
+  icon.classList.add(arg.type);
+  icon.onclick = arg.onclick;
+  icon.onmousedown = function(e) {
     e.stopPropagation();
   }
-  this.header.appendChild(info_icon);
+  this.header.appendChild(icon);
 }
 
 rcn_window.prototype.addEventListener = function(type, listener, options) {

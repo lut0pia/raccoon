@@ -13,7 +13,22 @@
 
 .window header icon {
   float: right;
-  cursor: help;
+  cursor: default;
+  opacity: 0.5;
+}
+
+.window header icon:hover {
+  opacity: 1;
+}
+
+.window header icon.close {
+  /* Move it up a bit because it's ugly otherwise */
+  position: relative;
+  bottom: 2px;
+}
+
+.window header icon.doc {
+  /* It's a single letter so it needs space around to be buttony */
   padding: 0px 8px 0px 8px;
 }
 
