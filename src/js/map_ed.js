@@ -24,6 +24,7 @@ function rcn_map_ed() {
           map_ed.set_tile(tex_coords.x >> 3, tex_coords.y >> 3);
         } else if(e.buttons == 2) { // Right button: tile pick
           map_ed.current_tile = map_ed.get_tile(tex_coords.x >> 3, tex_coords.y >> 3);
+          map_ed.update_spritesheet_canvas();
         }
       }
     }
@@ -43,11 +44,26 @@ function rcn_map_ed() {
       var tex_coords = map_ed.spritesheet_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
       if(tex_coords) {
         map_ed.current_tile = (map_ed.current_sprite_page << 6) + (tex_coords.x >> 3) + ((tex_coords.y >> 3) << 4);
+        map_ed.update_spritesheet_canvas();
       }
     }
   }
   this.spritesheet_canvas.node.addEventListener('mousedown', sheet_mouse_callback);
   this.spritesheet_canvas.node.addEventListener('mousemove', sheet_mouse_callback);
+  this.spritesheet_canvas.onpostflush = function() {
+    var vp = this.compute_viewport();
+    var cur_spr = map_ed.current_tile;
+    if((cur_spr >> 6) == map_ed.current_sprite_page) {
+      cur_spr = cur_spr & 0x3f;
+      var spr_x = cur_spr & 0xf;
+      var spr_y = cur_spr >> 4;
+      var x = vp.x + spr_x*vp.mul*8;
+      var y = vp.y + spr_y*vp.mul*8;
+      var width = vp.mul * 8;
+      var height = vp.mul * 8;
+      this.draw_quad(x, y, width, height, 1, 1, 1, 0.5);
+    }
+  }
   this.add_child(this.spritesheet_canvas.node);
 
   // Create apply button
