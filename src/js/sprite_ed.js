@@ -87,17 +87,29 @@ function rcn_sprite_ed() {
       if(tex_coords) {
         sprite_ed.current_sprite = (sprite_ed.current_sprite_page << 6) + (tex_coords.x >> 3) + ((tex_coords.y >> 3) << 4);
         sprite_ed.update_draw_canvas();
+        sprite_ed.update_spritesheet_canvas();
       }
     }
   }
   this.spritesheet_canvas.node.addEventListener('mousedown', sheet_mouse_callback);
   this.spritesheet_canvas.node.addEventListener('mousemove', sheet_mouse_callback);
   this.spritesheet_canvas.onpostflush = function() {
-    console.log(this);
+    var vp = this.compute_viewport();
+    var cur_spr = sprite_ed.current_sprite;
+    if((cur_spr >> 6) == sprite_ed.current_sprite_page) {
+      cur_spr = cur_spr & 0x3f;
+      var spr_x = cur_spr & 0xf;
+      var spr_y = cur_spr >> 4;
+      var x = vp.x + spr_x*vp.mul*8;
+      var y = vp.y + spr_y*vp.mul*8;
+      var width = sprite_ed.current_sprite_width * vp.mul;
+      var height = sprite_ed.current_sprite_height * vp.mul;
+      this.draw_quad(x, y, width, height, 1, 1, 1, 0.5);
+    }
   }
   this.add_child(this.spritesheet_canvas.node);
 
-  // Create sprite size range
+  // Create sprite page range
   this.sprite_page_range = document.createElement('input');
   this.sprite_page_range.type = 'range';
   this.sprite_page_range.value = 0
@@ -120,6 +132,7 @@ function rcn_sprite_ed() {
   this.sprite_size_range.oninput = function(e) {
     sprite_ed.current_sprite_width = sprite_ed.current_sprite_height = this.value;
     sprite_ed.update_draw_canvas();
+    sprite_ed.update_spritesheet_canvas();
   };
   this.add_child(this.sprite_size_range);
 
