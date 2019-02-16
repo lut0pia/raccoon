@@ -1,26 +1,12 @@
 // Raccoon canvas
 
-const rcn_canvas_vs_source = `
-  attribute vec4 vert;
-  varying highp vec2 uv;
-  void main(void) {
-    uv = vert.zw;
-    gl_Position = vec4(vert.xy, 0, 1);
-  }
-`;
-
-const rcn_canvas_fs_source = `
-  varying highp vec2 uv;
-  uniform sampler2D sampler;
-
-  void main(void) {
-    gl_FragColor = texture2D(sampler, uv);
-  }
-`;
-
 function rcn_canvas() {
   this.node = document.createElement('canvas');
-  const gl = this.gl = this.node.getContext('webgl');
+  const gl = this.gl = this.node.getContext('webgl', {
+    alpha: false,
+  });
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   this.texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
@@ -29,7 +15,33 @@ function rcn_canvas() {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-  this.program = rcn_gl_create_program(gl, rcn_canvas_vs_source, rcn_canvas_fs_source);
+  this.img_program = rcn_gl_create_program(gl, `
+    attribute vec4 vert;
+    varying highp vec2 uv;
+    void main(void) {
+      uv = vert.zw;
+      gl_Position = vec4(vert.xy, 0, 1);
+    }
+  `, `
+    varying highp vec2 uv;
+    uniform sampler2D sampler;
+
+    void main(void) {
+      gl_FragColor = texture2D(sampler, uv);
+    }
+  `);
+  this.color_program = rcn_gl_create_program(gl, `
+    attribute vec4 vert;
+    void main(void) {
+      gl_Position = vec4(vert.xy, 0, 1);
+    }
+  `, `
+    uniform highp vec4 color;
+
+    void main(void) {
+      gl_FragColor = color;
+    }
+  `);
   this.vbo = rcn_gl_create_array_buffer(gl, new Float32Array([
     -1, -1, 0, 1,
     -1, 3, 0, -1,
@@ -84,40 +96,56 @@ rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, pa
   }
 }
 
-rcn_canvas.prototype.flush = function() {
-  if(!this.img) {
-    // We don't have anything to flush
-    return;
-  }
-
+rcn_canvas.prototype.draw_quad = function(x, y, width, height, r, g, b, a) {
   const gl = this.gl;
 
-  // Clear all to black
-  gl.viewport(0, 0, this.node.width, this.node.height);
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.viewport(x, this.node.height - height - y, width, height);
 
-  // Render at the client size
-  var client_width = this.node.clientWidth;
-  var client_height = this.node.clientHeight;
-  this.node.width = client_width;
-  this.node.height = client_height;
-
-  var vp = this.compute_viewport();
-  gl.viewport(vp.x, vp.y, vp.width, vp.height);
-
-  // Set and upload texture
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, this.texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.width, this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.img);
-
-  gl.useProgram(this.program);
-  gl.uniform1i(gl.getUniformLocation(this.program, 'sampler'), 0);
+  gl.useProgram(this.color_program);
+  gl.uniform4f(gl.getUniformLocation(this.color_program, 'color'), r, g, b, a);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
-  gl.vertexAttribPointer(gl.getAttribLocation(this.program, 'vert'), 4, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(gl.getAttribLocation(this.program, 'vert'));
+  gl.vertexAttribPointer(gl.getAttribLocation(this.color_program, 'vert'), 4, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(gl.getAttribLocation(this.color_program, 'vert'));
 
   gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+rcn_canvas.prototype.flush = function() {
+  if(this.img) {
+    const gl = this.gl;
+
+    // Clear all to black
+    gl.viewport(0, 0, this.node.width, this.node.height);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Render at the client size
+    var client_width = this.node.clientWidth;
+    var client_height = this.node.clientHeight;
+    this.node.width = client_width;
+    this.node.height = client_height;
+
+    var vp = this.compute_viewport();
+    gl.viewport(vp.x, vp.y, vp.width, vp.height);
+
+    // Set and upload texture
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.width, this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.img);
+
+    gl.useProgram(this.img_program);
+    gl.uniform1i(gl.getUniformLocation(this.img_program, 'sampler'), 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+    gl.vertexAttribPointer(gl.getAttribLocation(this.img_program, 'vert'), 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(gl.getAttribLocation(this.img_program, 'vert'));
+
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+
+  if(this.onpostflush) {
+    this.onpostflush();
+  }
 }
 
 rcn_canvas.prototype.set_size = function(width, height) {

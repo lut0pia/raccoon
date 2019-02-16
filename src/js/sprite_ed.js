@@ -92,6 +92,9 @@ function rcn_sprite_ed() {
   }
   this.spritesheet_canvas.node.addEventListener('mousedown', sheet_mouse_callback);
   this.spritesheet_canvas.node.addEventListener('mousemove', sheet_mouse_callback);
+  this.spritesheet_canvas.onpostflush = function() {
+    console.log(this);
+  }
   this.add_child(this.spritesheet_canvas.node);
 
   // Create sprite size range
