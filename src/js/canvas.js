@@ -121,6 +121,11 @@ rcn_canvas.prototype.flush = function() {
 }
 
 rcn_canvas.prototype.set_size = function(width, height) {
+  if(this.width === width && this.height === height) {
+    // Nothing to do
+    return;
+  }
+
   this.width = width;
   this.height = height;
   this.img = new Uint8Array(width * height * 4);
