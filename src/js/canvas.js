@@ -92,6 +92,10 @@ rcn_canvas.prototype.flush = function() {
 
   const gl = this.gl;
 
+  // Clear all to black
+  gl.viewport(0, 0, this.node.width, this.node.height);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
   // Render at the client size
   var client_width = this.node.clientWidth;
   var client_height = this.node.clientHeight;
