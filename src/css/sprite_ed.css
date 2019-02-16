@@ -1,11 +1,5 @@
-.window.sprite_ed content {
-  width: 256px;
-  height: 128px;
-}
-
 .window.sprite_ed div.palette {
   float: right;
-
 }
 
 .window.sprite_ed canvas.draw {
