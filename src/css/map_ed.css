@@ -1,0 +1,7 @@
+.window.map_ed canvas.map {
+  width: 100%;
+}
+
+.window.map_ed canvas.spritesheet {
+  width: 100%;
+}

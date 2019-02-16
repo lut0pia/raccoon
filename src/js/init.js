@@ -75,7 +75,7 @@ function rcn_load_styles(styles) {
 
 document.title = 'raccoon';
 
-rcn_load_styles(['reset','bin_ed','code_ed','docs_ed','log_ed','sprite_ed','vm_ed','window']);
+rcn_load_styles(['reset','bin_ed','code_ed','docs_ed','log_ed','map_ed','sprite_ed','vm_ed','window']);
 rcn_load_scripts([
   // Raccoon core
   'bin','vm','vm_worker',

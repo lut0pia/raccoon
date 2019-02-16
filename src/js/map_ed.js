@@ -136,6 +136,7 @@ rcn_map_ed.prototype.update_map_canvas = function() {
     }
   }
 
+  this.map_canvas.set_aspect_ratio(1, 1);
   this.map_canvas.set_size(map_w << 3, map_h << 3);
   this.map_canvas.blit(0, 0, map_w << 3, map_h << 3, pixels);
   this.map_canvas.flush();
@@ -143,6 +144,7 @@ rcn_map_ed.prototype.update_map_canvas = function() {
 
 rcn_map_ed.prototype.update_spritesheet_canvas = function() {
   var page_index = this.current_sprite_page << 11;
+  this.spritesheet_canvas.set_aspect_ratio(4, 1);
   this.spritesheet_canvas.blit(0, 0, 128, 32, rcn_global_bin.rom.slice(page_index));
   this.spritesheet_canvas.flush();
 }
