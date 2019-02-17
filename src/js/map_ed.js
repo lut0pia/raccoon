@@ -108,13 +108,13 @@ function rcn_map_ed() {
 }
 
 rcn_map_ed.prototype.get_tile_index = function(map_x, map_y) {
-  var x = map_x + this.current_offset_x;
-  var y = map_y + this.current_offset_y;
-  return rcn.mem_map_offset + (y << 7) + x;
+  const x = map_x + this.current_offset_x;
+  const y = map_y + this.current_offset_y;
+  return rcn.mem_map_offset + (y << 7) + (x << 0);
 }
 
 rcn_map_ed.prototype.set_tile = function(map_x, map_y) {
-  var tile_index = this.get_tile_index(map_x, map_y);
+  const tile_index = this.get_tile_index(map_x, map_y);
   rcn_global_bin.rom[tile_index] = this.current_tile;
 
   rcn_dispatch_ed_event('rcnbinchange', {
@@ -124,7 +124,7 @@ rcn_map_ed.prototype.set_tile = function(map_x, map_y) {
 }
 
 rcn_map_ed.prototype.get_tile = function(map_x, map_y) {
-  var tile_index = this.get_tile_index(map_x, map_y);
+  const tile_index = this.get_tile_index(map_x, map_y);
   return rcn_global_bin.rom[tile_index];
 }
 
