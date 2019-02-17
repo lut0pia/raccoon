@@ -77,17 +77,18 @@ function rcn_map_ed() {
   });
 
   this.addEventListener('rcnbinchange', function(e) {
-    // Map canvas update
+    // Map data update
     const mem_map_begin = rcn.mem_map_offset;
     const mem_map_end = rcn.mem_map_offset + rcn.mem_map_size;
     if(e.detail.begin < mem_map_end && e.detail.end > mem_map_begin) {
       map_ed.update_map_canvas();
     }
 
-    // Draw canvas update
+    // Spritesheet data update
     const mem_spritesheet_begin = rcn.mem_spritesheet_offset;
     const mem_spritesheet_end = rcn.mem_spritesheet_offset + rcn.mem_spritesheet_size;
     if(e.detail.begin < mem_spritesheet_end && e.detail.end > mem_spritesheet_begin) {
+      map_ed.update_map_canvas();
       map_ed.update_spritesheet_canvas();
     }
   });
