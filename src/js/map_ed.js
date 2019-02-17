@@ -139,7 +139,7 @@ rcn_map_ed.prototype.update_map_canvas = function() {
       var pix_x = mx << 3;
       var pix_y = my << 3;
       var pix_index = (pix_y<<6)+(pix_x>>1);
-      var spr = this.get_tile(mx + this.current_offset_x, my + this.current_offset_y);
+      var spr = this.get_tile(mx, my);
       var spr_tex_index = ((spr & 0xf) << 2) + ((spr >> 4) << 9);
       var spr_row_size = 4;
 
