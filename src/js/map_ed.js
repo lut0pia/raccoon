@@ -66,6 +66,19 @@ function rcn_map_ed() {
   }
   this.add_child(this.spritesheet_canvas.node);
 
+  // Create sprite page range
+  this.sprite_page_range = document.createElement('input');
+  this.sprite_page_range.type = 'range';
+  this.sprite_page_range.value = 0
+  this.sprite_page_range.min = 0;
+  this.sprite_page_range.max = 3;
+  this.sprite_page_range.step = 1;
+  this.sprite_page_range.oninput = function(e) {
+    map_ed.current_sprite_page = this.value;
+    map_ed.update_spritesheet_canvas();
+  };
+  this.add_child(this.sprite_page_range);
+
   // Create apply button
   this.apply_button = rcn_ui_button({
     window: this,
