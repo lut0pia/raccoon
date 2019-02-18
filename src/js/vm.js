@@ -23,6 +23,10 @@ function rcn_vm() {
       this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], false);
     }
   });
+  this.canvas.node.addEventListener('blur', function() {
+    // Reset keyboard state
+    this.vm.gamepad_state[0] = 0;
+  });
 
   this.tick();
 }
