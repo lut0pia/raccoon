@@ -1,5 +1,11 @@
-.window.sprite_ed div.palette {
+.window.sprite_ed div.panel {
   float: right;
+}
+
+.window.sprite_ed .sprite_index {
+  border: inset 2px lightgray;
+  padding: 2px;
+  margin: auto;
 }
 
 .window.sprite_ed canvas.draw {

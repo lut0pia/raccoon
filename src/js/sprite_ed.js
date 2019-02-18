@@ -14,9 +14,18 @@ function rcn_sprite_ed() {
 
   var sprite_ed = this;
 
+  // Create panel
+  this.panel_div = document.createElement('div');
+  this.panel_div.classList.add('panel');
+  this.add_child(this.panel_div);
+
+  // Create sprite index text
+  this.sprite_index_text = document.createElement('div');
+  this.sprite_index_text.classList.add('sprite_index');
+  this.update_sprite_index_text();
+  this.panel_div.appendChild(this.sprite_index_text);
+
   // Create color inputs
-  this.palette_div = document.createElement('div');
-  this.palette_div.classList.add('palette');
   this.color_inputs = [];
   this.color_radios = [];
   for(var i=0; i<8; i++) {
@@ -52,9 +61,8 @@ function rcn_sprite_ed() {
     this.color_inputs.push(color_input);
     color_wrapper.appendChild(color_input);
 
-    this.palette_div.appendChild(color_wrapper);
+    this.panel_div.appendChild(color_wrapper);
   }
-  this.add_child(this.palette_div);
 
   // Create draw canvas
   this.draw_canvas = new rcn_canvas();
@@ -86,6 +94,7 @@ function rcn_sprite_ed() {
       var tex_coords = sprite_ed.spritesheet_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
       if(tex_coords) {
         sprite_ed.current_sprite = (sprite_ed.current_sprite_page << 6) + (tex_coords.x >> 3) + ((tex_coords.y >> 3) << 4);
+        sprite_ed.update_sprite_index_text();
         sprite_ed.update_draw_canvas();
         sprite_ed.update_spritesheet_canvas();
       }
@@ -230,6 +239,10 @@ rcn_sprite_ed.prototype.get_pixel = function(draw_x, draw_y) {
 rcn_sprite_ed.prototype.set_current_color = function(color) {
   this.current_color = color;
   this.color_radios[color].checked = true;
+}
+
+rcn_sprite_ed.prototype.update_sprite_index_text = function() {
+  this.sprite_index_text.innerText = this.current_sprite.toString().padStart(3, '0');
 }
 
 rcn_sprite_ed.prototype.update_draw_canvas = function() {
