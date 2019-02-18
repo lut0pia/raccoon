@@ -58,6 +58,7 @@ rcn_canvas.prototype.set_aspect_ratio = function(width, height) {
 }
 
 rcn_canvas.prototype.tick = function() {
+  this.removed_counter = this.removed_counter || 0;
   if(!document.body.contains(this.node) && ++this.removed_counter > 3) {
     // That canvas was removed from the visible DOM, bail
     return;
