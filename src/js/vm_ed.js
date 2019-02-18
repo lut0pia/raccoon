@@ -5,10 +5,18 @@ function rcn_vm_ed() {
   rcn_window.call(this, 'vm_ed', 'Virtual Machine');
   this.documentation('virtual-machine');
 
-  this.vm = rcn_global_vm = new rcn_vm();
-  this.add_child(this.vm.canvas.node);
-
   var vm_ed = this;
+
+  this.vm = rcn_global_vm = new rcn_vm();
+  this.vm.canvas.node.addEventListener('keydown', function(e) {
+    const key_code = e.keyCode || e.which;
+
+    if(key_code == 32) { // Space key
+      vm_ed.vm.paused = !vm_ed.vm.paused;
+      vm_ed.paused_checkbox.checked = vm_ed.vm.paused;
+    }
+  });
+  this.add_child(this.vm.canvas.node);
 
   // Create reboot button
   this.reboot_button = document.createElement('input');
@@ -18,6 +26,20 @@ function rcn_vm_ed() {
     vm_ed.reboot();
   }
   this.add_child(this.reboot_button);
+
+  // Create paused checkbox
+  var paused_checkbox_id = 'paused_checkbox'; // TODO: this will have to depend on window id
+  this.paused_checkbox = document.createElement('input');
+  this.paused_checkbox.id = paused_checkbox_id;
+  this.paused_checkbox.type = 'checkbox';
+  this.paused_checkbox.onchange = function(e) {
+    vm_ed.vm.paused = this.checked;
+  }
+  this.add_child(this.paused_checkbox);
+  this.paused_checkbox_label = document.createElement('label');
+  this.paused_checkbox_label.htmlFor = paused_checkbox_id;
+  this.paused_checkbox_label.innerText = 'Paused';
+  this.add_child(this.paused_checkbox_label);
 
   // Create autoapply checkbox
   var autoapply_checkbox_id = 'autoapply_checkbox'; // TODO: this will have to depend on window id
