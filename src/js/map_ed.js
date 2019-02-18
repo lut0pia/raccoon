@@ -103,7 +103,7 @@ function rcn_map_ed() {
     value:'Apply',
     onclick: function() {
       // Update VM map with bin map
-      rcn_global_vm.load_memory_from_bin(rcn.mem_map_offset, rcn.mem_map_size);
+      rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_map_offset, size: rcn.mem_map_size});
     },
   });
 

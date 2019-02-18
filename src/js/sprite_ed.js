@@ -144,9 +144,9 @@ function rcn_sprite_ed() {
 
   this.apply_button.onclick = function() {
     // Update VM spritesheet with bin spritesheet
-    rcn_global_vm.load_memory_from_bin(rcn.mem_spritesheet_offset, rcn.mem_spritesheet_size);
+    rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_spritesheet_offset, size: rcn.mem_spritesheet_size});
     // Update VM palette with bin palette
-    rcn_global_vm.load_memory_from_bin(rcn.mem_palette_offset, rcn.mem_palette_size);
+    rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_palette_offset, size: rcn.mem_palette_size});
   }
 
   this.addEventListener('rcnbinchange', function(e) {

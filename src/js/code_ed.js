@@ -78,7 +78,7 @@ function rcn_code_ed() {
 }
 
 rcn_code_ed.prototype.apply = function() {
-  rcn_global_vm.load_code(this.textarea.value);
+  rcn_dispatch_ed_event('rcnbinapply', {code: true});
 }
 
 rcn_code_ed.prototype.update_mirror = function() {

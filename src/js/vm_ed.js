@@ -7,7 +7,7 @@ function rcn_vm_ed() {
 
   var vm_ed = this;
 
-  this.vm = rcn_global_vm = new rcn_vm();
+  this.vm = new rcn_vm();
   this.vm.canvas.node.addEventListener('keydown', function(e) {
     const key_code = e.keyCode || e.which;
 
@@ -59,7 +59,15 @@ function rcn_vm_ed() {
       vm_ed.reboot();
     } else if(vm_ed.autoapply_checkbox.checked) {
       // If autoapply is on, we directly load changed rom into ram
-      rcn_global_vm.load_memory_from_bin(e.detail.begin, e.detail.end - e.detail.begin);
+      vm_ed.vm.load_memory_from_bin(e.detail.begin, e.detail.end - e.detail.begin);
+    }
+  });
+
+  this.addEventListener('rcnbinapply', function(e) {
+    if(e.detail.code) {
+      vm_ed.vm.load_code_from_bin();
+    } else {
+      vm_ed.vm.load_memory_from_bin(e.detail.offset, e.detail.size);
     }
   });
 }
