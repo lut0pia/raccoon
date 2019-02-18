@@ -23,13 +23,36 @@ function rcn_vm() {
       this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], false);
     }
   });
+
+  this.tick();
 }
 
-rcn_vm.prototype.new_worker = function() {
+rcn_vm.prototype.kill = function() {
   if(this.worker) {
     this.worker.onmessage = null;
     this.worker.terminate();
   }
+}
+
+rcn_vm.prototype.tick = function() {
+  this.removed_counter = this.removed_counter || 0;
+  if(!document.body.contains(this.canvas.node) && ++this.removed_counter > 3) {
+    // The canvas was removed from the visible DOM, bail
+    this.kill();
+    return;
+  }
+
+  if(this.worker && !this.paused) {
+    this.worker.postMessage({type:'memory', offset:rcn.mem_gamepad_offset, bytes:this.gamepad_state});
+    this.worker.postMessage({type:'update'});
+  }
+
+  var vm = this;
+  setTimeout(function() { vm.tick(); }, 1000/30);
+}
+
+rcn_vm.prototype.new_worker = function() {
+  this.kill();
   this.worker = new Worker(rcn_vm_worker_url);
   var vm = this;
   this.worker.onmessage = function(e) { vm.onmessage(e); }
@@ -52,11 +75,6 @@ rcn_vm.prototype.load_memory = function(bytes, offset) {
 
 rcn_vm.prototype.load_memory_from_bin = function(offset, size) {
   this.load_memory(rcn_global_bin.rom.slice(offset, offset + size), offset);
-}
-
-rcn_vm.prototype.update = function() {
-  this.worker.postMessage({type:'memory', offset:rcn.mem_gamepad_offset, bytes:this.gamepad_state});
-  this.worker.postMessage({type:'update'});
 }
 
 rcn_vm.prototype.set_gamepad_bit = function(player, offset, value) {

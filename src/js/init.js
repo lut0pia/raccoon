@@ -95,6 +95,4 @@ rcn_load_scripts([
   var bin = new rcn_bin();
   bin.from_env();
   bin_ed.change_bin(bin);
-
-  setInterval(function() { rcn_global_vm.update(); }, 1000/30);
 });
