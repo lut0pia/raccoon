@@ -3,6 +3,7 @@
 function rcn_map_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this, 'map_ed', 'Map Editor');
+  this.documentation('map-editor');
 
   // Init map editing state
   this.current_tile = 0;
