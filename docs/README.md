@@ -45,7 +45,7 @@ The `Autoapply` checkbox indicates whether or not data changes made to the curre
 
 The code editor is a text editor with syntax highlighting.
 
-The `Apply` button will send the current code to the virtual machine, so you can see changes happen right away.
+Pressing the `Apply` button or `CTRL+Enter` (while focusing the text input) will send the current code to the virtual machine, so you can see changes happen right away.
 
 ## Sprite Editor
 
