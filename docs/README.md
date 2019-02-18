@@ -6,6 +6,7 @@
     1. [Virtual Machine](#virtual-machine)
     1. [Code Editor](#code-editor)
     1. [Sprite Editor](#sprite-editor)
+    1. [Map Editor](#map-editor)
 1. [Memory](#memory)
     1. [Spritesheet Memory](#spritesheet-memory)
     1. [Map Memory](#map-memory)
@@ -55,6 +56,14 @@ The draw canvas displays the currently selected sprite. By left-clicking, it wil
 The sheet canvas displays the current spritesheet page. By left-clicking, you can select the sprite you want to edit.
 
 The `Apply` button is only useful if the virtual machine's `Autoapply` is deactivated, in which case it will apply the current sprite data to the virtual machine.
+
+## Map Editor
+
+The map editor allows you to edit a 128x64 tilemap for your game. We'll be using the word tile in this document, any 1x1 sprite is a tile, there is no separate memory for either tiles or sprites.
+
+The map canvas displays a view of the map. By left-clicking, it will set the tile under your cursor to the current tile. By right-clicking, it will change the current tile to be the tile under your cursor. By middle-clicking and moving your mouse, you will be able to drag your view of the map to edit different parts of the map.
+
+The `Apply` button is only useful if the virtual machine's `Autoapply` is deactivated, in which case it will apply the current map data to the virtual machine.
 
 # Memory
 
