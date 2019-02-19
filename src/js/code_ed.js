@@ -56,8 +56,8 @@ function rcn_code_ed() {
     code_ed.textmirror.scrollLeft = code_ed.textarea.scrollLeft;
   }
   this.textarea.oninput = function() {
-    code_ed.update_mirror();
     rcn_global_bin.code = this.value;
+    rcn_dispatch_ed_event('rcnbinchange', {code: true});
   };
   this.add_child(this.textarea);
 
