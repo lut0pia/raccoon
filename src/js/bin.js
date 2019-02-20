@@ -89,12 +89,34 @@ rcn_bin.prototype.to_json = function() {
   };
 }
 
-rcn_bin.prototype.from_env = function() {
-  // TODO: try to load from URL
-}
-
 rcn_bin.prototype.patch_memory = function(bytes, offset) {
   for(var i=0; i<bytes.byteLength; i++) {
     this.rom[offset+i] = bytes[i];
   }
+}
+
+function rcn_bin_from_env() {
+  if(rcn_get_parameters.gh) {
+    const pair = rcn_get_parameters.gh.split('/');
+    const owner = pair[0];
+    const repo = pair[1];
+    return rcn_github_get_master_tree(owner, repo).then(function(tree) {
+      for(var i in tree.tree) {
+        const node = tree.tree[i];
+        if(node.type == 'blob' && node.path.endsWith('.rcn.json')) {
+          return rcn_github_get_blob(owner, repo, node.sha).then(function(json) {
+            try {
+              var bin = new rcn_bin();
+              bin.from_json(JSON.parse(json));
+              return Promise.resolve(bin);
+            } catch(e) {
+              return Promise.reject(e);
+            }
+          });
+        }
+      }
+      return Promise.reject();
+    });
+  }
+  return Promise.reject();
 }

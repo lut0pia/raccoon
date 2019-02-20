@@ -75,24 +75,38 @@ function rcn_load_styles(styles) {
 
 document.title = 'raccoon';
 
-rcn_load_styles(['reset','bin_ed','code_ed','docs_ed','log_ed','map_ed','sprite_ed','vm_ed','window']);
-rcn_load_scripts([
-  // Raccoon core
-  'bin','vm','vm_worker',
-  // Utility
-  'canvas','gl','ui','window',
-  // Editors
-  'bin_ed','code_ed','docs_ed','map_ed','log_ed','sprite_ed','vm_ed',
+Promise.all([
+  rcn_load_styles(['reset','base']),
+  rcn_load_scripts([
+    // Raccoon core
+    'bin','vm','vm_worker',
+    // Utility
+    'canvas','github','gl','url','xhr',
+  ]),
 ]).then(function() {
-  var bin_ed = new rcn_bin_ed();
-  new rcn_vm_ed();
-  new rcn_code_ed();
-  new rcn_docs_ed();
-  new rcn_map_ed();
-  new rcn_log_ed();
-  new rcn_sprite_ed();
-
-  var bin = new rcn_bin();
-  bin.from_env();
-  bin_ed.change_bin(bin);
+  rcn_bin_from_env().then(function(bin) {
+    rcn_log('Loaded bin from environment');
+    var vm = new rcn_vm();
+    vm.load_bin(bin);
+    document.title = bin.name;
+    vm.canvas.node.classList.add('fullscreen');
+    document.body.appendChild(vm.canvas.node);
+    vm.canvas.node.focus();
+  }).catch(function() {
+    rcn_log('Starting in editor mode');
+    document.body.classList.add('editor');
+    Promise.all([
+      rcn_load_styles(['bin_ed','code_ed','docs_ed','log_ed','map_ed','sprite_ed','vm_ed','window']),
+      rcn_load_scripts(['bin_ed','code_ed','docs_ed','log_ed','map_ed','sprite_ed','ui','vm_ed','window']),
+    ]).then(function() {
+      new rcn_vm_ed();
+      new rcn_code_ed();
+      new rcn_docs_ed();
+      new rcn_map_ed();
+      new rcn_log_ed();
+      new rcn_sprite_ed();
+      var bin_ed = new rcn_bin_ed();
+      bin_ed.change_bin(new rcn_bin());
+    });
+  });
 });
