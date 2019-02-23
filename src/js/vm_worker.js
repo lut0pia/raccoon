@@ -138,10 +138,10 @@ function rcn_vm_worker_function(rcn) {
     }
   }
   var _mget = mget = function(celx, cely) {
-    return ram[rcn.mem_map_offset + (cely << 7) + celx];
+    return ram[rcn.mem_map_offset + (cely << 7) + (celx << 0)];
   }
   mset = function(celx, cely, n) {
-    ram[rcn.mem_map_offset + (cely << 7) + celx] = n;
+    ram[rcn.mem_map_offset + (cely << 7) + (celx << 0)] = n;
   }
   map = function(celx, cely, sx, sy, celw, celh, layer) {
     layer = layer || 0xff;
