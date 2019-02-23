@@ -43,10 +43,10 @@ function rcn_vm_worker_function(rcn) {
   ceil = _Math.ceil;
   abs = _Math.abs;
   sign = _Math.sign;
-  max = _Math.max;
-  min = _Math.min;
+  const _max = max = _Math.max;
+  const _min = min = _Math.min;
   mid = function(a, b, c) {
-    return _Math.max(_Math.min(a, b), _Math.min(_Math.max(a, b), c));
+    return _max(_min(a, b), _min(_max(a, b), c));
   }
   sqrt = _Math.sqrt;
   rnd = r = function(x) {
@@ -102,10 +102,10 @@ function rcn_vm_worker_function(rcn) {
     h = h || 1.0;
 
     // Clip
-    const iw = _Math.max(0, -x / 8);
-    const ih = _Math.max(0, -y / 8);
-    w = _Math.min(w, (128 - x) / 8);
-    h = _Math.min(h, (128 - y) / 8);
+    const iw = _max(0, -x / 8);
+    const ih = _max(0, -y / 8);
+    w = _min(w, (128 - x) / 8);
+    h = _min(h, (128 - y) / 8);
 
     // Early exit if nothing to draw
     if(w <= iw || h <= ih) {
