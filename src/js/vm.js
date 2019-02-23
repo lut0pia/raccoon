@@ -28,6 +28,7 @@ function rcn_vm() {
     this.vm.gamepad_state[0] = 0;
   });
 
+  this.new_worker();
   this.tick();
 }
 

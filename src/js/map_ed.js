@@ -123,6 +123,9 @@ function rcn_map_ed() {
       map_ed.update_spritesheet_canvas();
     }
   });
+
+  this.update_map_canvas();
+  this.update_spritesheet_canvas();
 }
 
 rcn_map_ed.prototype.get_tile_index = function(map_x, map_y) {

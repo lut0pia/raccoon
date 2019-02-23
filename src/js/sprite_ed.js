@@ -22,7 +22,6 @@ function rcn_sprite_ed() {
   // Create sprite index text
   this.sprite_index_text = document.createElement('div');
   this.sprite_index_text.classList.add('sprite_index');
-  this.update_sprite_index_text();
   this.panel_div.appendChild(this.sprite_index_text);
 
   // Create color inputs
@@ -176,6 +175,11 @@ function rcn_sprite_ed() {
       sprite_ed.update_spritesheet_canvas();
     }
   });
+
+  this.update_sprite_index_text();
+  this.update_color_inputs();
+  this.update_draw_canvas();
+  this.update_spritesheet_canvas();
 }
 
 rcn_sprite_ed.prototype.update_color_inputs = function() {
