@@ -85,14 +85,14 @@ rcn_code_ed.prototype.apply = function() {
 }
 
 rcn_code_ed.prototype.update_mirror = function() {
-  const keywords = ['const', 'for', 'function', 'in', 'let', 'new', 'this', 'var', 'while'];
+  const keywords = ['const', 'else', 'for', 'function', 'if', 'in', 'let', 'new', 'return', 'this', 'var', 'while'];
   const keyword_regexp = new RegExp('\\b('+keywords.join('|')+')\\b','g');
-  var code_html = this.textarea.value
+  var code_html = html_encode(this.textarea.value)
     .replace(/ /gi, '&nbsp;')
     .replace(/\n/gi, '<br>')
     .replace(keyword_regexp, '<span class="keyword">$1</span>')
     .replace(/\b(0x[\da-f]+)\b/gi, '<span class="number hex">$1</span>')
-    .replace(/\b(\d+)\b/gi, '<span class="number dec">$1</span>');
+    .replace(/\b(\d[\d.]*)\b/gi, '<span class="number dec">$1</span>');
 
   code_html += '<br>'; // There's an implicit newline at the end of the textarea
   this.textmirror.innerHTML = code_html;
