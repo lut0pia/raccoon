@@ -81,7 +81,7 @@ Promise.all([
     // Raccoon core
     'bin','vm','vm_worker',
     // Utility
-    'canvas','github','gl','url','xhr',
+    'canvas','github','gl','utility','xhr',
   ]),
 ]).then(function() {
   rcn_bin_from_env().then(function(bin) {
