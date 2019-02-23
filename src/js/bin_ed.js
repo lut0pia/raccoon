@@ -37,25 +37,16 @@ function rcn_bin_ed() {
   this.add_child(this.save_button);
 
   // Create download button
-  this.download_button = document.createElement('input');
-  this.download_button.type = 'button';
-  this.download_button.value = 'Download';
-  this.download_button.onclick = function() {
-    var bin_json = rcn_global_bin.to_json();
-    var bin_text = JSON.stringify(bin_json, null, 2);
-
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(bin_text));
-    element.setAttribute('download', rcn_global_bin.name+".rcn.json");
-
-    element.style.display = 'none';
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
+  this.download_json_button = document.createElement('input');
+  this.download_json_button.type = 'button';
+  this.download_json_button.value = 'Download as json';
+  this.download_json_button.onclick = function() {
+    rcn_download_file({
+      file_name: rcn_global_bin.name + '.rcn.json',
+      content: JSON.stringify(rcn_global_bin.to_json(), null, 2),
+    });
   }
-  this.add_child(this.download_button);
+  this.add_child(this.download_json_button);
 
   // Create file input
   this.file_input = document.createElement('input');
