@@ -66,15 +66,9 @@ function rcn_vm_worker_function(rcn) {
       return;
     }
     const pixel_index = screen_pixel_index(x, y);
-    var pixel = ram[pixel_index];
-    if((x % 2) < 1) {
-      pixel &= 0xf0;
-      pixel |= p;
-    } else {
-      pixel &= 0xf;
-      pixel |= p<<4;
-    }
-    ram[pixel_index] = pixel;
+    ram[pixel_index] = ((x % 2) < 1)
+          ? ((ram[pixel_index] & 0xf0) | color)
+          : ((ram[pixel_index] & 0x0f) | (color << 4));
   }
   pget = function(x, y) {
     if(x < 0 || x >= 128 || y < 0 || y >= 128) {
