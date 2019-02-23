@@ -166,7 +166,7 @@ function rcn_sprite_ed() {
       sprite_ed.update_spritesheet_canvas();
     }
 
-    // Draw canvas update
+    // Spritesheet update
     const mem_spritesheet_begin = rcn.mem_spritesheet_offset;
     const mem_spritesheet_end = rcn.mem_spritesheet_offset + rcn.mem_spritesheet_size;
     if(e.detail.begin < mem_spritesheet_end && e.detail.end > mem_spritesheet_begin) {
