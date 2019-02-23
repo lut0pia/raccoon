@@ -1,3 +1,8 @@
+.window.map_ed content {
+  width: 512px;
+  height: 666px;
+}
+
 .window.map_ed canvas.map {
   width: 100%;
 }
