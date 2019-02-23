@@ -20,3 +20,11 @@ function rcn_download_file(p) {
   e.click();
   document.body.removeChild(e);
 }
+
+function html_encode(text) {
+  return text
+  .replace(/&/g, '&amp;')
+  .replace(/"/g, '&quot;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;');
+}
