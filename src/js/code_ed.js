@@ -2,8 +2,7 @@
 
 function rcn_code_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
-  rcn_window.call(this, 'code_ed', 'Code Editor');
-  this.documentation('code-editor');
+  rcn_window.call(this);
   var code_ed = this;
 
   this.textmirror = document.createElement('div');
@@ -77,6 +76,10 @@ function rcn_code_ed() {
   });
 }
 
+rcn_code_ed.prototype.title = 'Code Editor';
+rcn_code_ed.prototype.docs_link = 'code-editor';
+rcn_code_ed.prototype.type = 'code_ed';
+
 rcn_code_ed.prototype.apply = function() {
   rcn_dispatch_ed_event('rcnbinapply', {code: true});
 }
@@ -107,3 +110,5 @@ function rcn_code_ed_textarea_insert_text(textarea, text) {
     textarea.selectionEnd = textarea.selectionStart;
   }
 }
+
+rcn_editors.push(rcn_code_ed);

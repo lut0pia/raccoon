@@ -2,7 +2,7 @@
 
 function rcn_log_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
-  rcn_window.call(this, 'log_ed', 'Log');
+  rcn_window.call(this);
 
   var log_ed = this;
 
@@ -45,8 +45,13 @@ rcn_log_ed.prototype.log = function(type, text) {
   }
 }
 
+rcn_log_ed.prototype.title = 'Log';
+rcn_log_ed.prototype.type = 'log_ed';
+
 rcn_log_ed.prototype.clear = function() {
   while (this.div.firstChild) {
     this.div.removeChild(this.div.firstChild);
   }
 }
+
+rcn_editors.push(rcn_log_ed);

@@ -2,8 +2,7 @@
 
 function rcn_sprite_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
-  rcn_window.call(this, 'sprite_ed', 'Sprite Editor');
-  this.documentation('sprite-editor');
+  rcn_window.call(this);
 
   // Init sprite editing state
   this.current_color = 0;
@@ -182,6 +181,10 @@ function rcn_sprite_ed() {
   this.update_spritesheet_canvas();
 }
 
+rcn_sprite_ed.prototype.title = 'Sprite Editor';
+rcn_sprite_ed.prototype.docs_link = 'sprite-editor';
+rcn_sprite_ed.prototype.type = 'sprite_ed';
+
 rcn_sprite_ed.prototype.update_color_inputs = function() {
   var palette_bytes = rcn_global_bin.rom.slice(rcn.mem_palette_offset, rcn.mem_palette_offset + rcn.mem_palette_size);
   for(var i=0; i<8; i++) {
@@ -274,3 +277,5 @@ rcn_sprite_ed.prototype.update_spritesheet_canvas = function() {
   this.spritesheet_canvas.blit(0, 0, 128, 32, rcn_global_bin.rom.slice(page_index));
   this.spritesheet_canvas.flush();
 }
+
+rcn_editors.push(rcn_sprite_ed);

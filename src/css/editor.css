@@ -1,0 +1,21 @@
+body {
+  background-color: white;
+}
+
+#toolbar {
+  position: absolute;
+  z-index: 100;
+  background-color: lightgrey;
+  border: 2px lightgrey outset;
+}
+
+#toolbar .editor_button {
+  padding: 4px;
+  margin: 2px;
+  background-color: rgb(236, 236, 236);
+  cursor: pointer;
+}
+
+#toolbar .editor_button:hover {
+  background-color: lightslategrey;
+}

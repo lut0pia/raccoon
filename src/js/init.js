@@ -76,7 +76,7 @@ function rcn_load_styles(styles) {
 document.title = 'raccoon';
 
 Promise.all([
-  rcn_load_styles(['reset','base']),
+  rcn_load_styles(['reset']),
   rcn_load_scripts([
     // Raccoon core
     'bin','vm','vm_worker',
@@ -86,6 +86,9 @@ Promise.all([
 ]).then(function() {
   rcn_bin_from_env().then(function(bin) {
     rcn_log('Loaded bin from environment');
+
+    rcn_load_styles(['game']);
+
     var vm = new rcn_vm();
     vm.load_bin(bin);
     document.title = bin.name;
@@ -94,19 +97,38 @@ Promise.all([
     vm.canvas.node.focus();
   }).catch(function() {
     rcn_log('Starting in editor mode');
+    rcn_editors = []; // This gets filled with the constructors of each type of editor
     document.body.classList.add('editor');
+
     Promise.all([
-      rcn_load_styles(['bin_ed','code_ed','docs_ed','log_ed','map_ed','sprite_ed','vm_ed','window']),
+      rcn_load_styles(['bin_ed','code_ed','docs_ed','editor','log_ed','map_ed','sprite_ed','vm_ed','window']),
       rcn_load_scripts(['bin_ed','code_ed','docs_ed','log_ed','map_ed','sprite_ed','ui','vm_ed','window']),
     ]).then(function() {
-      new rcn_vm_ed();
-      new rcn_code_ed();
-      new rcn_docs_ed();
-      new rcn_map_ed();
-      new rcn_log_ed();
-      new rcn_sprite_ed();
+      // Create toolbar
+      var toolbar_div = document.createElement('div');
+      toolbar_div.id = 'toolbar';
+      rcn_editors.forEach(function(ed) {
+        var editor_button = document.createElement('div');
+        editor_button.classList.add('editor_button');
+        editor_button.innerText = ed.prototype.title;
+        editor_button.onclick = function() {
+          new ed();
+        }
+        toolbar_div.appendChild(editor_button);
+      });
+      document.body.appendChild(toolbar_div);
+
       var bin_ed = new rcn_bin_ed();
       bin_ed.change_bin(new rcn_bin());
+
+      rcn_window_load_layout(rcn_storage.window_layout || {
+        // Default window layout
+        'default_docs_ed': {
+          ctor: 'rcn_docs_ed',
+          top: '0px', left: '256px',
+          width: (window.innerWidth-512)+'px', height: (window.innerHeight-64)+'px',
+        },
+      });
     });
   });
 });

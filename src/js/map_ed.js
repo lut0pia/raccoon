@@ -2,8 +2,7 @@
 
 function rcn_map_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
-  rcn_window.call(this, 'map_ed', 'Map Editor');
-  this.documentation('map-editor');
+  rcn_window.call(this);
 
   // Init map editing state
   this.current_tile = 0;
@@ -128,6 +127,10 @@ function rcn_map_ed() {
   this.update_spritesheet_canvas();
 }
 
+rcn_map_ed.prototype.title = 'Map Editor';
+rcn_map_ed.prototype.docs_link = 'map-editor';
+rcn_map_ed.prototype.type = 'map_ed';
+
 rcn_map_ed.prototype.get_tile_index = function(map_x, map_y) {
   const x = map_x + this.current_offset_x;
   const y = map_y + this.current_offset_y;
@@ -183,3 +186,5 @@ rcn_map_ed.prototype.update_spritesheet_canvas = function() {
   this.spritesheet_canvas.blit(0, 0, 128, 32, rcn_global_bin.rom.slice(page_index));
   this.spritesheet_canvas.flush();
 }
+
+rcn_editors.push(rcn_map_ed);

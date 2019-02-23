@@ -2,8 +2,7 @@
 
 function rcn_vm_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
-  rcn_window.call(this, 'vm_ed', 'Virtual Machine');
-  this.documentation('virtual-machine');
+  rcn_window.call(this);
 
   var vm_ed = this;
 
@@ -72,7 +71,13 @@ function rcn_vm_ed() {
   });
 }
 
+rcn_vm_ed.prototype.title = 'Virtual Machine';
+rcn_vm_ed.prototype.docs_link = 'virtual-machine';
+rcn_vm_ed.prototype.type = 'vm_ed';
+
 rcn_vm_ed.prototype.reboot = function() {
   this.vm.load_bin(rcn_global_bin);
   rcn_dispatch_ed_event('rcnreboot');
 }
+
+rcn_editors.push(rcn_vm_ed);

@@ -2,8 +2,7 @@
 
 function rcn_bin_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
-  rcn_window.call(this, 'bin_ed', 'Bin Browser');
-  this.documentation('bin-browser');
+  rcn_window.call(this);
 
   var bin_ed = this;
 
@@ -83,6 +82,11 @@ function rcn_bin_ed() {
   this.load_bins_from_storage();
   this.refresh_bins_ui();
 }
+
+rcn_bin_ed.prototype.title = 'Bin Browser';
+rcn_bin_ed.prototype.docs_link = 'bin-browser';
+rcn_bin_ed.prototype.type = 'bin_ed';
+rcn_bin_ed.prototype.unique = true;
 
 rcn_bin_ed.prototype.save_bin = function() {
   var bin_clone = rcn_global_bin.clone();
@@ -180,3 +184,5 @@ rcn_bin_ed.prototype.add_bin_ui = function(bin_index) {
   p.appendChild(delete_button);
   this.bin_node.appendChild(p);
 }
+
+rcn_editors.push(rcn_bin_ed);
