@@ -114,6 +114,14 @@ function rcn_map_ed() {
       map_ed.update_map_canvas();
     }
 
+    // Palette update
+    const mem_palette_begin = rcn.mem_palette_offset;
+    const mem_palette_end = rcn.mem_palette_offset + rcn.mem_palette_size;
+    if(e.detail.begin < mem_palette_end && e.detail.end > mem_palette_begin) {
+      map_ed.update_map_canvas();
+      map_ed.update_spritesheet_canvas();
+    }
+
     // Spritesheet data update
     const mem_spritesheet_begin = rcn.mem_spritesheet_offset;
     const mem_spritesheet_end = rcn.mem_spritesheet_offset + rcn.mem_spritesheet_size;
