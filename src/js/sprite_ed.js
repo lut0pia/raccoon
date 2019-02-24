@@ -62,6 +62,28 @@ function rcn_sprite_ed() {
     this.panel_div.appendChild(color_wrapper);
   }
 
+  // Create sprite flags inputs
+  this.flag_inputs = [];
+  for(var i=0; i<8; i++) {
+    var flag_wrapper = document.createElement('div');
+    var flag_checkbox = document.createElement('input');
+    flag_checkbox.id = this.id+'_flag_'+i;
+    flag_checkbox.type = 'checkbox';
+    flag_checkbox.flag_index = i;
+    flag_checkbox.onchange = function() {
+      sprite_ed.set_flag(this.flag_index, this.checked);
+    }
+    this.flag_inputs.push(flag_checkbox);
+    flag_wrapper.appendChild(flag_checkbox);
+
+    var flag_label = document.createElement('label');
+    flag_label.innerText = i;
+    flag_label.htmlFor = flag_checkbox.id;
+    flag_wrapper.appendChild(flag_label);
+
+    this.panel_div.appendChild(flag_wrapper);
+  }
+
   // Create draw canvas
   this.draw_canvas = new rcn_canvas();
   this.draw_canvas.node.classList.add('draw');
@@ -91,10 +113,7 @@ function rcn_sprite_ed() {
       var canvas_coords = this.getBoundingClientRect();
       var tex_coords = sprite_ed.spritesheet_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
       if(tex_coords) {
-        sprite_ed.current_sprite = (sprite_ed.current_sprite_page << 6) + (tex_coords.x >> 3) + ((tex_coords.y >> 3) << 4);
-        sprite_ed.update_sprite_index_text();
-        sprite_ed.update_draw_canvas();
-        sprite_ed.update_spritesheet_canvas();
+        sprite_ed.set_current_sprite((sprite_ed.current_sprite_page << 6) + (tex_coords.x >> 3) + ((tex_coords.y >> 3) << 4));
       }
     }
   }
@@ -173,10 +192,18 @@ function rcn_sprite_ed() {
       sprite_ed.update_draw_canvas();
       sprite_ed.update_spritesheet_canvas();
     }
+
+    // Sprite flags update
+    const mem_spriteflags_begin = rcn.mem_spriteflags_offset;
+    const mem_spriteflags_end = rcn.mem_spriteflags_offset + rcn.mem_spriteflags_size;
+    if(e.detail.begin < mem_spriteflags_end && e.detail.end > mem_spriteflags_begin) {
+      sprite_ed.update_flag_inputs();
+    }
   });
 
   this.update_sprite_index_text();
   this.update_color_inputs();
+  this.update_flag_inputs();
   this.update_draw_canvas();
   this.update_spritesheet_canvas();
 }
@@ -248,8 +275,33 @@ rcn_sprite_ed.prototype.set_current_color = function(color) {
   this.color_radios[color].checked = true;
 }
 
+rcn_sprite_ed.prototype.set_current_sprite = function(new_sprite) {
+  this.current_sprite = new_sprite;
+  this.update_sprite_index_text();
+  this.update_flag_inputs();
+  this.update_draw_canvas();
+  this.update_spritesheet_canvas();
+}
+
+rcn_sprite_ed.prototype.set_flag = function(i, value) {
+  const flag_index = rcn.mem_spriteflags_offset + this.current_sprite;
+  rcn_global_bin.rom[flag_index] &= ~(1 << i);
+  rcn_global_bin.rom[flag_index] |= (value ? (1 << i) : 0);
+  rcn_dispatch_ed_event('rcnbinchange', {
+    begin: flag_index,
+    end: flag_index+1,
+  });
+}
+
 rcn_sprite_ed.prototype.update_sprite_index_text = function() {
   this.sprite_index_text.innerText = this.current_sprite.toString().padStart(3, '0');
+}
+
+rcn_sprite_ed.prototype.update_flag_inputs = function() {
+  const flags = rcn_global_bin.rom[rcn.mem_spriteflags_offset + this.current_sprite];
+  for(var i=0; i < 8; i++) {
+    this.flag_inputs[i].checked = (flags & (1 << i)) != 0;
+  }
 }
 
 rcn_sprite_ed.prototype.update_draw_canvas = function() {
