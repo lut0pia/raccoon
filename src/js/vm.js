@@ -48,12 +48,16 @@ rcn_vm.prototype.tick = function() {
   }
 
   if(this.worker && !this.paused) {
-    this.worker.postMessage({type:'memory', offset:rcn.mem_gamepad_offset, bytes:this.gamepad_state});
-    this.worker.postMessage({type:'update'});
+    this.update();
   }
 
   var vm = this;
   setTimeout(function() { vm.tick(); }, 1000/30);
+}
+
+rcn_vm.prototype.update = function() {
+  this.worker.postMessage({type:'memory', offset:rcn.mem_gamepad_offset, bytes:this.gamepad_state});
+  this.worker.postMessage({type:'update'});
 }
 
 rcn_vm.prototype.new_worker = function() {
