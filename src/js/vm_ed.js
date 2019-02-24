@@ -76,6 +76,8 @@ function rcn_vm_ed() {
       vm_ed.vm.load_memory_from_bin(e.detail.offset, e.detail.size);
     }
   });
+
+  this.vm.load_bin(rcn_global_bin);
 }
 
 rcn_vm_ed.prototype.title = 'Virtual Machine';
