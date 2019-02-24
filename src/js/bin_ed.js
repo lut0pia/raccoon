@@ -7,13 +7,12 @@ function rcn_bin_ed() {
   var bin_ed = this;
 
   // Create new button
-  this.new_button = document.createElement('input');
-  this.new_button.type = 'button';
-  this.new_button.value = 'New';
-  this.new_button.onclick = function() {
-    bin_ed.change_bin(new rcn_bin());
-  };
-  this.add_child(this.new_button);
+  this.add_child(this.new_button = rcn_ui_button({
+    value: 'New',
+    onclick: function() {
+      bin_ed.change_bin(new rcn_bin());
+    },
+  }));
 
   // Create name input
   this.name_input = document.createElement('input');
@@ -28,25 +27,23 @@ function rcn_bin_ed() {
   this.add_child(this.name_input);
 
   // Create save button
-  this.save_button = document.createElement('input');
-  this.save_button.type = 'button';
-  this.save_button.value = 'Save';
-  this.save_button.onclick = function() {
-    bin_ed.save_bin();
-  }
-  this.add_child(this.save_button);
+  this.add_child(this.save_button = rcn_ui_button({
+    value: 'Save',
+    onclick: function() {
+      bin_ed.save_bin();
+    },
+  }));
 
   // Create download button
-  this.download_json_button = document.createElement('input');
-  this.download_json_button.type = 'button';
-  this.download_json_button.value = 'Download as json';
-  this.download_json_button.onclick = function() {
-    rcn_download_file({
-      file_name: rcn_global_bin.name + '.rcn.json',
-      content: JSON.stringify(rcn_global_bin.to_json(), null, 2),
-    });
-  }
-  this.add_child(this.download_json_button);
+  this.add_child(this.download_json_button = rcn_ui_button({
+    value: 'Download as json',
+    onclick: function() {
+      rcn_download_file({
+        file_name: rcn_global_bin.name + '.rcn.json',
+        content: JSON.stringify(rcn_global_bin.to_json(), null, 2),
+      });
+    },
+  }));
 
   // Create file input
   this.file_input = document.createElement('input');
@@ -157,22 +154,20 @@ rcn_bin_ed.prototype.add_bin_ui = function(bin_index) {
   var bin = this.bins[bin_index];
   var p = document.createElement('p');
   p.innerText = bin.name;
-  var load_button = document.createElement('input');
-  load_button.type = 'button';
-  load_button.value = 'Load';
-  load_button.onclick = function() {
-    bin_ed.change_bin(bin_ed.bins[bin_index].clone());
-  }
-  p.appendChild(load_button);
-  var delete_button = document.createElement('input');
-  delete_button.type = 'button';
-  delete_button.value = 'Delete';
-  delete_button.onclick = function() {
-    if(confirm('Are you sure you want to delete '+bin.name+'?')) {
-      bin_ed.delete_bin(bin_index);
-    }
-  }
-  p.appendChild(delete_button);
+  p.appendChild(rcn_ui_button({
+    value: 'Load',
+    onclick: function() {
+      bin_ed.change_bin(bin_ed.bins[bin_index].clone());
+    },
+  }));
+  p.appendChild(rcn_ui_button({
+    value: 'Delete',
+    onclick: function() {
+      if(confirm('Are you sure you want to delete '+bin.name+'?')) {
+        bin_ed.delete_bin(bin_index);
+      }
+    },
+  }));
   this.bin_node.appendChild(p);
 }
 

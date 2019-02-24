@@ -18,13 +18,12 @@ function rcn_vm_ed() {
   this.add_child(this.vm.canvas.node);
 
   // Create reboot button
-  this.reboot_button = document.createElement('input');
-  this.reboot_button.type = 'button';
-  this.reboot_button.value = 'Reboot';
-  this.reboot_button.onclick = function() {
-    vm_ed.reboot();
-  }
-  this.add_child(this.reboot_button);
+  this.add_child(this.reboot_button = rcn_ui_button({
+    value: 'Reboot',
+    onclick: function() {
+      vm_ed.reboot();
+    },
+  }));
 
   // Create paused checkbox
   var paused_checkbox_id = 'paused_checkbox'; // TODO: this will have to depend on window id

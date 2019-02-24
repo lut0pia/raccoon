@@ -163,17 +163,15 @@ function rcn_sprite_ed() {
   this.add_child(this.sprite_size_range);
 
   // Create apply button
-  this.apply_button = document.createElement('input');
-  this.apply_button.type = 'button';
-  this.apply_button.value = 'Apply';
-  this.add_child(this.apply_button);
-
-  this.apply_button.onclick = function() {
-    // Update VM spritesheet with bin spritesheet
-    rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_spritesheet_offset, size: rcn.mem_spritesheet_size});
-    // Update VM palette with bin palette
-    rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_palette_offset, size: rcn.mem_palette_size});
-  }
+  this.add_child(this.apply_button = rcn_ui_button({
+    value: 'Apply',
+    onclick: function() {
+      // Update VM spritesheet with bin spritesheet
+      rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_spritesheet_offset, size: rcn.mem_spritesheet_size});
+      // Update VM palette with bin palette
+      rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_palette_offset, size: rcn.mem_palette_size});
+    },
+  }));
 
   this.addEventListener('rcnbinchange', function(e) {
     // Palette update
