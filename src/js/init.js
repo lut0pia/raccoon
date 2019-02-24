@@ -101,6 +101,12 @@ Promise.all([
     vm.canvas.node.classList.add('fullscreen');
     document.body.appendChild(vm.canvas.node);
     vm.canvas.node.focus();
+
+    var edit_link = document.createElement('a');
+    edit_link.href = location.href + '&edit';
+    edit_link.innerText = 'Open in edit mode';
+    edit_link.target = '_blank';
+    document.body.appendChild(edit_link);
   } else {
     rcn_log('Starting in editor mode');
     rcn_editors = []; // This gets filled with the constructors of each type of editor
