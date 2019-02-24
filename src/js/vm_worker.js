@@ -156,6 +156,14 @@ function rcn_vm_worker_function(rcn) {
       }
     }
   }
+  const _fget = fget = function(n, f) {
+    const flags = ram[rcn.mem_spriteflags_offset + n];
+    return f ? ((flags & (1 << f)) != 0) : flags;
+  }
+  fset = function(n, f, v) {
+    const i = rcn.mem_spriteflags_offset + n;
+    ram[i] = f ? (ram[i] & ~(1 << f)) | (v ? (1 << f) : 0) : v;
+  }
   var _mget = mget = function(celx, cely) {
     return ram[rcn.mem_map_offset + (cely << 7) + (celx << 0)];
   }
