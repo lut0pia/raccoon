@@ -112,6 +112,7 @@ function rcn_bin_from_env() {
             try {
               var bin = new rcn_bin();
               bin.from_json(JSON.parse(json));
+              rcn_log('Loaded bin from environment');
               return Promise.resolve(bin);
             } catch(e) {
               return Promise.reject(e);
@@ -122,5 +123,5 @@ function rcn_bin_from_env() {
       return Promise.reject();
     });
   }
-  return Promise.reject();
+  return Promise.resolve(null);
 }

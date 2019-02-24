@@ -88,8 +88,10 @@ Promise.all([
     'canvas','github','gl','utility','xhr',
   ]),
 ]).then(function() {
-  rcn_bin_from_env().then(function(bin) {
-    rcn_log('Loaded bin from environment');
+  return rcn_bin_from_env();
+}).then(function(bin) {
+  if(bin && !rcn_get_parameters.edit) {
+    rcn_log('Starting in game mode');
 
     rcn_load_styles(['game']);
 
@@ -99,7 +101,7 @@ Promise.all([
     vm.canvas.node.classList.add('fullscreen');
     document.body.appendChild(vm.canvas.node);
     vm.canvas.node.focus();
-  }).catch(function() {
+  } else {
     rcn_log('Starting in editor mode');
     rcn_editors = []; // This gets filled with the constructors of each type of editor
     document.body.classList.add('editor');
@@ -122,8 +124,7 @@ Promise.all([
       });
       document.body.appendChild(toolbar_div);
 
-      var bin_ed = new rcn_bin_ed();
-      bin_ed.change_bin(new rcn_bin());
+      rcn_global_bin = bin ? bin : new rcn_bin();
 
       rcn_window_load_layout(rcn_storage.window_layout || {
         // Default window layout
@@ -134,5 +135,5 @@ Promise.all([
         },
       });
     });
-  });
+  }
 });
