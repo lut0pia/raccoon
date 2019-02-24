@@ -11,6 +11,8 @@ const rcn = {
   mem_map_size: 0x2000,
   mem_palette_offset: 0x4000,
   mem_palette_size: 0x0018, // 24B = 8x24bits
+  mem_spriteflags_offset: 0x4100,
+  mem_spriteflags_size: 0x0100, // 256B = 256x8bits
   mem_palmod_offset: 0x5000,
   mem_palmod_size: 0x0010, // 16B = 16x(7+1)bits (4b color + 1b transp)
   mem_gamepad_offset: 0x5010,
