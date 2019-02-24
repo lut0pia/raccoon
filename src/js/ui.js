@@ -7,8 +7,5 @@ function rcn_ui_button(o) {
   if(o.onclick) {
     button.onclick = o.onclick;
   }
-  if(o.window) {
-    o.window.add_child(button);
-  }
   return button;
 }

@@ -60,13 +60,12 @@ function rcn_code_ed() {
   };
   this.add_child(this.textarea);
 
-  this.apply_button = rcn_ui_button({
-    window: this,
+  this.add_child(this.apply_button = rcn_ui_button({
     value:'Apply',
     onclick: function() {
       code_ed.apply();
     },
-  });
+  }));
 
   this.addEventListener('rcnbinchange', function(e) {
     if(e.detail.code) {

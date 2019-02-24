@@ -97,14 +97,13 @@ function rcn_map_ed() {
   this.add_child(this.sprite_page_range);
 
   // Create apply button
-  this.apply_button = rcn_ui_button({
-    window: this,
+  this.add_child(this.apply_button = rcn_ui_button({
     value:'Apply',
     onclick: function() {
       // Update VM map with bin map
       rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_map_offset, size: rcn.mem_map_size});
     },
-  });
+  }));
 
   this.addEventListener('rcnbinchange', function(e) {
     // Map data update
