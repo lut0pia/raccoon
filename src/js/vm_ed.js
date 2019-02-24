@@ -25,6 +25,14 @@ function rcn_vm_ed() {
     },
   }));
 
+  // Create step button
+  this.add_child(this.reboot_button = rcn_ui_button({
+    value: 'Step',
+    onclick: function() {
+      vm_ed.vm.update();
+    },
+  }));
+
   // Create paused checkbox
   var paused_checkbox_id = 'paused_checkbox'; // TODO: this will have to depend on window id
   this.paused_checkbox = document.createElement('input');
