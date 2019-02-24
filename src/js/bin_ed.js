@@ -22,7 +22,7 @@ function rcn_bin_ed() {
     rcn_global_bin.name = this.value;
   }
   this.addEventListener('rcnbinchange', function() { // Update name input on bin change
-    bin_ed.name_input.value = rcn_global_bin.name;
+    bin_ed.update_bin_name();
   });
   this.add_child(this.name_input);
 
@@ -68,6 +68,7 @@ function rcn_bin_ed() {
   this.add_child(this.file_input);
 
   this.load_bins_from_storage();
+  this.update_bin_name();
   this.refresh_bins_ui();
 }
 
@@ -169,6 +170,10 @@ rcn_bin_ed.prototype.add_bin_ui = function(bin_index) {
     },
   }));
   this.bin_node.appendChild(p);
+}
+
+rcn_bin_ed.prototype.update_bin_name = function() {
+  this.name_input.value = rcn_global_bin.name;
 }
 
 rcn_editors.push(rcn_bin_ed);
