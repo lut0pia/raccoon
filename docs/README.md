@@ -77,6 +77,7 @@ N.B. Ranges in memory are expressed with their end excluded.
 | `0x2000-0x4000` | [Map](#map-memory) | ROM | 128x64x8bits
 | `0x4000-0x4018` | [Palette](#palette-memory) | ROM | 8x24bits
 | `0x4100-0x4200` | [Sprite flags](#sprite-flags-memory) | ROM | 256x8bits
+| `0x5000-0x5010` | [Palette mod](#palette-mod-memory) | RAM | 16x(4+3+1)bits
 | `0x5010-0x5014` | [Gamepad state](#gamepad-state-memory) | RAM | 4x(4+4)bits
 | `0x6000-0x8000` | [Screen](#screen-memory) | RAM | 128x128x4bits
 
@@ -96,6 +97,10 @@ Palette data is 8 RGB colors, each 3 bytes for the red, green and blue channels.
 
 Sprite flags are 256 8bits bitfields.
 
+## Palette Mod Memory
+
+Palette mod are 16 bytes used for palette state for each 16 colors. The first 4 bits are used as a permutation, the last bit is used for transparency, the 3 bits inbetween are reserved for now.
+
 ## Gamepad State Memory
 
 Gamepad state data is 4 8bit controllers. The 4 least significant bits correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons. On the keyboard those action buttons are X, C, V and B respectively, while on a modern gamepad they are the down, right, left and top face buttons respectively.
@@ -114,6 +119,8 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `palset(c, r, g, b)`: Sets the `c` palette color to have the RGB values `r`, `g` and `b` (0-255)
 - `pset(x, y, c)`: Sets the pixel at coordinates (`x`;`y`) to the `c` color
 - `pget(x, y)`: Returns the color of the pixel at coordinates (`x`;`y`)
+- `palm(c0, c1)`: Sets the palette permutation for color `c0` to `c1`
+- `palt(c, t)`: Sets the color `c` as transparent if `t`
 - `spr(n, x, y, w=1.0, h=1.0)`: Draws the `n`th sprite at screen coordinates (`x`;`y`) `w` and `h` are the width and height of the drawing in sprite length (8 pixels per unit)
 - `mget(celx, cely)`: Returns the sprite index at map coordinates (`celx`;`cely`)
 - `mset(celx, cely, n)`: Set the sprite index at map coordinates (`celx`;`cely`) to `n`

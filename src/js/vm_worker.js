@@ -5,6 +5,7 @@ function rcn_vm_worker_function(rcn) {
   const rcn_ram_size = rcn.ram_size;
   const rcn_mem_palette_offset = rcn.mem_palette_offset;
   const rcn_mem_palette_size = rcn.mem_palette_size;
+  const rcn_mem_palmod_offset = rcn.mem_palmod_offset;
   const rcn_mem_gamepad_offset = rcn.mem_gamepad_offset;
   const rcn_mem_screen_offset = rcn.mem_screen_offset;
   const rcn_mem_screen_size = rcn.mem_screen_size;
@@ -25,6 +26,11 @@ function rcn_vm_worker_function(rcn) {
   delete XMLHttpRequest;
 
   var ram = new _Uint8Array(rcn_ram_size);
+
+  // Initialize permutation
+  for(var i=0; i < 16; i++) {
+    ram[rcn_mem_palmod_offset+i] = i;
+  }
 
   // Local helper functions
   var send_exception = function(e) {
@@ -61,14 +67,15 @@ function rcn_vm_worker_function(rcn) {
   atan2 = _Math.atan2;
 
   // Raccoon rendering API
-  pset = p = function(x, y, p) {
+  pset = p = function(x, y, c) {
     if(x < 0 || x >= 128 || y < 0 || y >= 128) {
       return;
     }
+    c = _palmget(c);
     const pixel_index = screen_pixel_index(x, y);
     ram[pixel_index] = ((x % 2) < 1)
-          ? ((ram[pixel_index] & 0xf0) | color)
-          : ((ram[pixel_index] & 0x0f) | (color << 4));
+          ? ((ram[pixel_index] & 0xf0) | c)
+          : ((ram[pixel_index] & 0x0f) | (c << 4));
   }
   pget = function(x, y) {
     if(x < 0 || x >= 128 || y < 0 || y >= 128) {
@@ -85,6 +92,18 @@ function rcn_vm_worker_function(rcn) {
     ram[rcn_mem_palette_offset+i*3+0] = r;
     ram[rcn_mem_palette_offset+i*3+1] = g;
     ram[rcn_mem_palette_offset+i*3+2] = b;
+  }
+  const _palmget = function(c) {
+    return ram[rcn_mem_palmod_offset+c] & 0xf;
+  }
+  palm = function(src, dst) {
+    ram[rcn_mem_palmod_offset+src] = (ram[rcn_mem_palmod_offset+src] & 0xf0) | dst;
+  }
+  const _paltget = function(c) {
+    return (ram[rcn_mem_palmod_offset+c] >> 7) != 0;
+  }
+  palt = function(c, t) {
+    ram[rcn_mem_palmod_offset+c] = (ram[rcn_mem_palmod_offset+c] & 0x0f) | (t ? 0x80 : 0x00);
   }
   cls = c = function(c) {
     c = c || 0; // Default color is 0
@@ -117,9 +136,15 @@ function rcn_vm_worker_function(rcn) {
         const ti = flip_x ? (wp - i - 1) : i;
         const tj = flip_y ? (hp - j - 1) : j;
         const tex_index = first_texel_index + sprite_pixel_index(ti, tj);
-        const color = ((ti % 2) < 1)
+        var color = ((ti % 2) < 1)
           ? (ram[tex_index] & 0xf)
           : (ram[tex_index] >> 4);
+
+        if(_paltget(color)) {
+          continue;
+        }
+
+        color = _palmget(color);
 
         // Apply color to screen
         const scr_x = x + i;

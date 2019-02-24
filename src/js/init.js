@@ -3,7 +3,7 @@
 var rcn_log = (location.protocol == 'file:') ? console.log : function() {};
 
 const rcn = {
-  rom_size: 0x6000, // = 24KiB
+  rom_size: 0x5000, // = 20KiB
   ram_size: 0x8000, // = 32KiB
   mem_spritesheet_offset: 0x0000,
   mem_spritesheet_size: 0x2000,
@@ -11,6 +11,8 @@ const rcn = {
   mem_map_size: 0x2000,
   mem_palette_offset: 0x4000,
   mem_palette_size: 0x0018, // 24B = 8x24bits
+  mem_palmod_offset: 0x5000,
+  mem_palmod_size: 0x0010, // 16B = 16x(7+1)bits (4b color + 1b transp)
   mem_gamepad_offset: 0x5010,
   mem_gamepad_size: 0x0004, // 4B = 4x(4+4)bits (4b directions + 4b buttons)
   mem_screen_offset: 0x6000,
