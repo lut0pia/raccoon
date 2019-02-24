@@ -73,6 +73,8 @@ function rcn_code_ed() {
       code_ed.update_mirror();
     }
   });
+
+  this.update_textarea();
 }
 
 rcn_code_ed.prototype.title = 'Code Editor';
@@ -81,6 +83,11 @@ rcn_code_ed.prototype.type = 'code_ed';
 
 rcn_code_ed.prototype.apply = function() {
   rcn_dispatch_ed_event('rcnbinapply', {code: true});
+}
+
+rcn_code_ed.prototype.update_textarea = function() {
+  this.textarea.value = rcn_global_bin.code;
+  this.update_mirror();
 }
 
 rcn_code_ed.prototype.update_mirror = function() {
