@@ -15,11 +15,13 @@ function rcn_vm() {
   this.canvas.node.vm = this;
   this.canvas.node.addEventListener('keydown', function(e) {
     if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
+      e.preventDefault();
       this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], true);
     }
   });
   this.canvas.node.addEventListener('keyup', function(e) {
     if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
+      e.preventDefault();
       this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], false);
     }
   });
