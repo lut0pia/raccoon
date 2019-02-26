@@ -82,7 +82,9 @@ function rcn_load_styles(styles) {
 function rcn_start_game_mode(params) {
   rcn_log('Starting in game mode');
 
-  rcn_load_styles(['game']);
+  if(!params.export) {
+    rcn_load_styles(['game']);
+  }
 
   var vm = new rcn_vm();
   vm.load_bin(params.bin);
