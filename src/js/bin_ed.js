@@ -45,6 +45,19 @@ function rcn_bin_ed() {
     },
   }));
 
+  // Create download as html button
+  this.add_child(this.download_html_button = rcn_ui_button({
+    value: 'Download as html',
+    onclick: function() {
+      rcn_global_bin.to_html().then(function(html) {
+        rcn_download_file({
+          file_name: rcn_global_bin.name + '.rcn.html',
+          content: html,
+        });
+      });
+    },
+  }));
+
   // Create file input
   this.file_input = document.createElement('input');
   this.file_input.type = 'file';
