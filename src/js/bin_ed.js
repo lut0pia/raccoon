@@ -34,7 +34,7 @@ function rcn_bin_ed() {
     },
   }));
 
-  // Create download button
+  // Create download as json button
   this.add_child(this.download_json_button = rcn_ui_button({
     value: 'Download as json',
     onclick: function() {
