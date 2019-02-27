@@ -127,6 +127,9 @@ function rcn_window_save_layout() {
   }
   return layout;
 }
+
+var rcn_has_loaded_window_layout_once = false;
+
 function rcn_window_load_layout(layout) {
   // Clear all windows
   while(rcn_window_container.firstChild) {
@@ -143,13 +146,20 @@ function rcn_window_load_layout(layout) {
     editor.content.style.width = save.width;
     editor.content.style.height = save.height;
   }
+
+  if(!rcn_has_loaded_window_layout_once) {
+    // It's necessary to delay registering this callback until
+    // we've actually loaded a window layout, otherwise we may
+    // accidentally save an empty layout
+    window.addEventListener('beforeunload', function() {
+      rcn_storage.window_layout = rcn_window_save_layout();
+    });
+    rcn_has_loaded_window_layout_once = true;
+  }
 }
 
 document.addEventListener('mousemove', rcn_window_onmousemove);
 document.addEventListener('mouseup', rcn_window_onmouseup);
-window.addEventListener('beforeunload', function() {
-  rcn_storage.window_layout = rcn_window_save_layout();
-});
 
 const rcn_window_container = document.createElement('main');
 document.body.appendChild(rcn_window_container);
