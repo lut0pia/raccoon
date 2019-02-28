@@ -9,6 +9,9 @@ function rcn_window() {
   this.section.classList.add(this.type);
   this.section.rcn_window = this;
   this.section.onmousedown = rcn_window_onmousedown;
+  this.section.style.left = '256px';
+  this.section.style.top = '256px';
+  this.section.style.zIndex = 100;
   rcn_window_container.appendChild(this.section);
 
   // Create header
