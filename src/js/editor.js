@@ -17,7 +17,20 @@ function rcn_start_editor_mode(params) {
   });
   document.body.appendChild(toolbar_div);
 
-  rcn_global_bin = params.bin ? params.bin : new rcn_bin();
+  if(params.bin) {
+    rcn_global_bin = params.bin;
+  } else {
+    rcn_global_bin = new rcn_bin();
+    if(rcn_storage.working_bin) {
+      // Load bin from last session
+      rcn_global_bin.from_json(rcn_storage.working_bin);
+    }
+  }
+
+  window.addEventListener('beforeunload', function() {
+    // Save bin for next session
+    rcn_storage.working_bin = rcn_global_bin.to_json();
+  });
 
   rcn_window_load_layout(rcn_storage.window_layout || {
     // Default window layout
