@@ -136,9 +136,13 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
   var bin_ed = this;
   this.bin_node = document.createElement('div');
   rcn_storage.bins.forEach(function(stored_bin) {
-    var p = document.createElement('p');
-    p.innerText = stored_bin.name;
-    p.appendChild(rcn_ui_button({
+    var bin_node = document.createElement('article');
+
+    var bin_name = document.createElement('span');
+    bin_name.innerText = stored_bin.name;
+    bin_node.appendChild(bin_name);
+
+    bin_node.appendChild(rcn_ui_button({
       value: 'Load',
       onclick: function() {
         var bin = new rcn_bin();
@@ -146,7 +150,7 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
         bin_ed.change_bin(bin);
       },
     }));
-    p.appendChild(rcn_ui_button({
+    bin_node.appendChild(rcn_ui_button({
       value: 'Delete',
       onclick: function() {
         if(confirm('Are you sure you want to delete '+stored_bin.name+'?')) {
@@ -154,7 +158,16 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
         }
       },
     }));
-    bin_ed.bin_node.appendChild(p);
+
+    if(stored_bin.host && stored_bin.link) {
+      // This is a hosted bin
+      var bin_host = document.createElement('span');
+      bin_host.classList.add('host');
+      bin_host.innerText += '('+stored_bin.host+'/'+stored_bin.link+')';
+      bin_node.appendChild(bin_host);
+    }
+
+    bin_ed.bin_node.appendChild(bin_node);
   });
   this.add_child(this.bin_node);
 }

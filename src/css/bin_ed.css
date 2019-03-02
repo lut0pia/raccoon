@@ -1,8 +1,13 @@
-.window.bin_ed p input {
+.window.bin_ed article {
+  padding: 4px;
+  border-bottom: 1px grey solid;
+}
+
+.window.bin_ed article input {
   float: right;
 }
 
-.window.bin_ed p {
-  padding: 4px;
-  border-bottom: 1px grey solid;
+.window.bin_ed article .host {
+  margin-left: 4px;
+  color: grey;
 }
