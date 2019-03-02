@@ -25,11 +25,17 @@ function rcn_xhr(p) {
     };
 
     const url = p instanceof Object ? p.url : p;
+    xhr.open(post_data ? 'POST' : 'GET', url, true);
+
+    const username = p instanceof Object && p.username;
+    const password = p instanceof Object && p.password;
+    if(username && password) {
+      xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username+':'+password));
+    }
+
     if(post_data) {
-      xhr.open('POST', url, true);
       xhr.send(form_data);
     } else {
-      xhr.open('GET', url, true);
       xhr.send();
     }
   });
