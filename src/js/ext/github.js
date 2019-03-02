@@ -65,6 +65,8 @@ rcn_hosts['github'] = {
             try {
               var bin = new rcn_bin();
               bin.from_json(JSON.parse(json));
+              bin.host = 'github';
+              bin.link = link;
               return Promise.resolve(bin);
             } catch(e) {
               return Promise.reject(e);
