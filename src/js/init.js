@@ -23,6 +23,9 @@ const rcn = {
   mem_screen_size: 0x2000,
 };
 
+rcn_editors = []; // This gets filled with the constructors of each type of editor
+rcn_hosts = {};
+
 // Raccoon storage
 try {
   rcn_storage = JSON.parse(localStorage.rcn);
@@ -103,7 +106,6 @@ function rcn_start_game_mode(params) {
 
 function rcn_bootstrap_editor_mode(params) {
   rcn_log('Bootstrapping editor mode');
-  rcn_editors = []; // This gets filled with the constructors of each type of editor
   document.body.classList.add('editor');
 
   Promise.all([
@@ -125,7 +127,6 @@ if(typeof rcn_static_bin_json !== 'undefined') {
     });
   });
 } else { // Normal path
-  rcn_hosts = {};
   Promise.all([
     rcn_load_styles(['reset']),
     rcn_load_scripts([
