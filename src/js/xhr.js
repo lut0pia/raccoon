@@ -2,16 +2,7 @@
 
 function rcn_xhr(p) {
   return new Promise(function(resolve, reject) {
-    var form_data = new FormData();
-    const post_data = p instanceof Object && p.post;
-    if(post_data) {
-      for(var key in post_data) {
-        switch(typeof(post_data[key])) {
-          case 'string': case 'number': case 'boolean': form_data.append(key, post_data[key]); break;
-          case 'object': form_data.append(key, post_data[key], post_data[key].name); break; // File
-        }
-      }
-    }
+    const post_data = p instanceof Object && JSON.stringify(p.post);
 
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -34,9 +25,9 @@ function rcn_xhr(p) {
     }
 
     if(post_data) {
-      xhr.send(form_data);
-    } else {
-      xhr.send();
+      xhr.setRequestHeader('Content-Type', 'application/json');
     }
+
+    xhr.send(post_data);
   });
 }
