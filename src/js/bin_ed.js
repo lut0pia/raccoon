@@ -37,7 +37,7 @@ function rcn_bin_ed() {
     onclick: function() {
       rcn_download_file({
         file_name: rcn_global_bin.name + '.rcn.json',
-        content: JSON.stringify(rcn_global_bin.to_json(), null, 2),
+        content: rcn_global_bin.to_json_text(),
       });
     },
   }));
