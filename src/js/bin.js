@@ -91,6 +91,10 @@ rcn_bin.prototype.to_json = function() {
   };
 }
 
+rcn_bin.prototype.to_json_text = function() {
+  return JSON.stringify(this.to_json(), null, 2);
+}
+
 rcn_bin.prototype.to_html = function() {
   const bin_json = this.to_json();
   return Promise.all([
