@@ -50,6 +50,9 @@ rcn_bin.prototype.from_json = function(bin) {
         hex_to_rom(this.rom, rcn.mem_spriteflags_offset, rcn.mem_spriteflags_size, bin.rom.spf);
       }
     }
+
+    this.host = bin.host;
+    this.link = bin.link;
   } else {
     rcn_log('Unable to read bin with version: '+bin.version);
   }
@@ -88,6 +91,8 @@ rcn_bin.prototype.to_json = function() {
       pal: rom_to_hex(this.rom, rcn.mem_palette_offset, rcn.mem_palette_size),
       spf: rom_to_hex(this.rom, rcn.mem_spriteflags_offset, rcn.mem_spriteflags_size),
     },
+    host: this.host,
+    link: this.link,
   };
 }
 
