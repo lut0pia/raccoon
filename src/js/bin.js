@@ -9,9 +9,7 @@ function rcn_bin() {
 
 rcn_bin.prototype.clone = function() {
   var bin_clone = new rcn_bin();
-  bin_clone.name = this.name;
-  bin_clone.code = this.code;
-  bin_clone.rom = this.rom.slice();
+  bin_clone.from_json(this.to_json());
   return bin_clone;
 }
 
