@@ -3,7 +3,7 @@
 function rcn_xhr(p) {
   return new Promise(function(resolve, reject) {
     var form_data = new FormData();
-    var post_data = p instanceof Object && p.data;
+    const post_data = p instanceof Object && p.post;
     if(post_data) {
       for(var key in post_data) {
         switch(typeof(post_data[key])) {
@@ -24,7 +24,7 @@ function rcn_xhr(p) {
       }
     };
 
-    var url = p instanceof Object ? p.url : p;
+    const url = p instanceof Object ? p.url : p;
     if(post_data) {
       xhr.open('POST', url, true);
       xhr.send(form_data);
