@@ -1,4 +1,4 @@
-// Raccoon GitHub helpers
+// Raccoon GitHub integration
 
 function rcn_github_oauth_request() {
   rcn_storage.github_state = 'github_' + Math.random().toString().substr(2);
@@ -49,4 +49,30 @@ function rcn_github_get_master_tree(owner, repo) {
   }).then(function(commit) {
     return rcn_github_get_tree(owner, repo, commit.tree.sha);
   });
+}
+
+rcn_hosts['github'] = {
+  get_param: 'gh',
+  load_bin_from_link: function(link) {
+    const pair = link.split('/');
+    const owner = pair[0];
+    const repo = pair[1];
+    return rcn_github_get_master_tree(owner, repo).then(function(tree) {
+      for(var i in tree.tree) {
+        const node = tree.tree[i];
+        if(node.type == 'blob' && node.path.endsWith('.rcn.json')) {
+          return rcn_github_get_blob(owner, repo, node.sha).then(function(json) {
+            try {
+              var bin = new rcn_bin();
+              bin.from_json(JSON.parse(json));
+              return Promise.resolve(bin);
+            } catch(e) {
+              return Promise.reject(e);
+            }
+          });
+        }
+      }
+      return Promise.reject();
+    });
+  },
 }

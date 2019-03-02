@@ -149,28 +149,12 @@ rcn_bin.prototype.patch_memory = function(bytes, offset) {
 }
 
 function rcn_bin_from_env() {
-  if(rcn_get_parameters.gh) {
-    const pair = rcn_get_parameters.gh.split('/');
-    const owner = pair[0];
-    const repo = pair[1];
-    return rcn_github_get_master_tree(owner, repo).then(function(tree) {
-      for(var i in tree.tree) {
-        const node = tree.tree[i];
-        if(node.type == 'blob' && node.path.endsWith('.rcn.json')) {
-          return rcn_github_get_blob(owner, repo, node.sha).then(function(json) {
-            try {
-              var bin = new rcn_bin();
-              bin.from_json(JSON.parse(json));
-              rcn_log('Loaded bin from environment');
-              return Promise.resolve(bin);
-            } catch(e) {
-              return Promise.reject(e);
-            }
-          });
-        }
-      }
-      return Promise.reject();
-    });
+  for(var i in rcn_hosts) {
+    const host = rcn_hosts[i];
+    const link = rcn_get_parameters[host.get_param];
+    if(link) {
+      return host.load_bin_from_link(link);
+    }
   }
   return Promise.resolve(null);
 }

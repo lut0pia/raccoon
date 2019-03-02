@@ -125,17 +125,23 @@ if(typeof rcn_static_bin_json !== 'undefined') {
     });
   });
 } else { // Normal path
+  rcn_hosts = {};
   Promise.all([
     rcn_load_styles(['reset']),
     rcn_load_scripts([
       // Raccoon core
       'bin','vm','vm_worker',
       // Utility
-      'canvas','github','gl','utility','xhr',
+      'canvas','gl','utility','xhr',
+      // Extensions
+      'ext/github',
     ]),
   ]).then(function() {
     return rcn_bin_from_env();
   }).then(function(bin) {
+    if(bin) {
+      rcn_log('Loaded bin from environment');
+    }
     if(bin && !rcn_get_parameters.edit) {
       rcn_start_game_mode({
         bin: bin,
