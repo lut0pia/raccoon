@@ -3,6 +3,8 @@
 function rcn_start_editor_mode(params) {
   rcn_log('Starting editor mode');
 
+  document.body.classList.add('editor');
+
   // Create toolbar
   var toolbar_div = document.createElement('div');
   toolbar_div.id = 'toolbar';

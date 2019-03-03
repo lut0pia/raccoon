@@ -106,8 +106,6 @@ function rcn_start_game_mode(params) {
 
 function rcn_bootstrap_editor_mode(params) {
   rcn_log('Bootstrapping editor mode');
-  document.body.classList.add('editor');
-
   Promise.all([
     rcn_load_styles(['bin_ed','code_ed','docs_ed','editor','log_ed','map_ed','sprite_ed','vm_ed','window']),
     rcn_load_scripts(['bin_ed','code_ed','docs_ed','editor','log_ed','map_ed','sprite_ed','ui','vm_ed','window']),
