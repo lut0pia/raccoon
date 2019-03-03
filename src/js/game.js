@@ -36,6 +36,7 @@ function rcn_create_touch_controls(vm) {
   var control_axes = document.createElement('div');
   control_axes.classList.add('axes');
   const axes_touch_event = function(e) {
+    e.preventDefault();
     const div_coords = this.getBoundingClientRect();
     var axes_bits = [false, false, false, false];
     if(e.type != 'touchend') {
@@ -70,6 +71,7 @@ function rcn_create_touch_controls(vm) {
   var controls_buttons = document.createElement('div');
   controls_buttons.classList.add('buttons');
   const buttons_touch_event = function(e) {
+    e.preventDefault();
     const div_coords = this.getBoundingClientRect();
     var buttons_bits = [false, false, false, false];
     if(e.type != 'touchend') {
