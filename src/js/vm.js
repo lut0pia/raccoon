@@ -31,7 +31,11 @@ function rcn_vm() {
   });
 
   this.new_worker();
-  this.tick();
+
+  var vm = this;
+  this.tick_interval = setInterval(function() {
+    vm.tick();
+  }, 1000/30);
 }
 
 rcn_vm.prototype.kill = function() {
@@ -45,6 +49,7 @@ rcn_vm.prototype.tick = function() {
   this.removed_counter = this.removed_counter || 0;
   if(!document.body.contains(this.canvas.node) && ++this.removed_counter > 3) {
     // The canvas was removed from the visible DOM, bail
+    clearInterval(this.tick_interval);
     this.kill();
     return;
   }
@@ -52,9 +57,6 @@ rcn_vm.prototype.tick = function() {
   if(this.worker && !this.paused) {
     this.update();
   }
-
-  var vm = this;
-  setTimeout(function() { vm.tick(); }, 1000/30);
 }
 
 rcn_vm.prototype.update = function() {
