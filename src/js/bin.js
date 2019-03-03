@@ -14,42 +14,28 @@ rcn_bin.prototype.clone = function() {
 }
 
 rcn_bin.prototype.from_json = function(bin) {
-  if(bin.version <= 2) {
+  if(bin.version == 2) {
     this.name = bin.name;
 
-    if(typeof bin.code == 'string') { // Old one string version
-      this.code = bin.code;
-    } else { // Array of lines version
-      var code = '';
-      bin.code.forEach(function(line) {
-        code += line + '\n';
-      });
-      this.code = code;
-    }
+    var code = '';
+    bin.code.forEach(function(line) {
+      code += line + '\n';
+    });
+    this.code = code;
 
-    var hex_to_rom = function(rom, offset, size, hex_lines) {
-      for(var i=0; i<size; i++) {
-        rom[offset+i] = parseInt(hex_lines[Math.floor(i/64)].substr((i%64)*2, 2), 16);
+    const hex_to_rom = function(rom, offset, hex_lines) {
+      if(hex_lines) {
+        hex_lines.forEach(function(hex_line) {
+          for(var j = 0; j < hex_line.length; j += 2) {
+            rom[offset++] = parseInt(hex_line.substr(j, 2), 16);
+          }
+        });
       }
     }
-    if(typeof bin.rom == 'string') { // Old one string version
-      for(var i=0; i<rcn.rom_size; i++) {
-        this.rom[i] = parseInt(bin.rom.substr(i*2, 2), 16);
-      }
-    } else {
-      if(bin.rom.spr) {
-        hex_to_rom(this.rom, rcn.mem_spritesheet_offset, rcn.mem_spritesheet_size, bin.rom.spr);
-      }
-      if(bin.rom.map) {
-        hex_to_rom(this.rom, rcn.mem_map_offset, rcn.mem_map_size, bin.rom.map);
-      }
-      if(bin.rom.pal) {
-        hex_to_rom(this.rom, rcn.mem_palette_offset, rcn.mem_palette_size, bin.rom.pal);
-      }
-      if(bin.rom.spf) {
-        hex_to_rom(this.rom, rcn.mem_spriteflags_offset, rcn.mem_spriteflags_size, bin.rom.spf);
-      }
-    }
+    hex_to_rom(this.rom, rcn.mem_spritesheet_offset, bin.rom.spr);
+    hex_to_rom(this.rom, rcn.mem_map_offset, bin.rom.map);
+    hex_to_rom(this.rom, rcn.mem_palette_offset, bin.rom.pal);
+    hex_to_rom(this.rom, rcn.mem_spriteflags_offset, bin.rom.spf);
 
     this.host = bin.host;
     this.link = bin.link;
@@ -59,13 +45,14 @@ rcn_bin.prototype.from_json = function(bin) {
 }
 
 rcn_bin.prototype.to_json = function() {
-  var rom_to_hex = function(rom, offset, size) {
+  const rom_to_hex = function(rom, offset, size) {
+    const line_size = 32;
     var hex_lines = [];
     var hex = '';
     for(var i=0; i<size; i++) {
       hex += ('00'+rom[offset+i].toString(16)).slice(-2);
 
-      if(i % 64 == 63 || i == size-1) {
+      if(i % line_size == (line_size - 1) || i == size-1) {
         hex_lines.push(hex);
         hex = '';
       }
