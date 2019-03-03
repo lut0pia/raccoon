@@ -19,3 +19,23 @@ body {
 #toolbar .editor_button:hover {
   background-color: lightslategrey;
 }
+
+/*
+  The overlay appears when it has the active class
+  Its function is to block access to underlying editors
+*/
+
+#overlay {
+  display: none;
+}
+
+#overlay.active {
+  display: block;
+  position: fixed;
+  z-index: 200;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}

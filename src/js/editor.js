@@ -42,6 +42,23 @@ function rcn_start_editor_mode(params) {
   });
 }
 
+const rcn_overlay = document.createElement('div');
+rcn_overlay.id = 'overlay';
+rcn_overlay.stack = 0;
+document.body.appendChild(rcn_overlay);
+
+function rcn_overlay_push() {
+  if(++rcn_overlay.stack > 0) {
+    rcn_overlay.classList.add('active');
+  }
+}
+
+function rcn_overlay_pop() {
+  if(--rcn_overlay.stack <= 0) {
+    rcn_overlay.classList.remove('active');
+  }
+}
+
 const rcn_window_container = document.createElement('main');
 document.body.appendChild(rcn_window_container);
 
