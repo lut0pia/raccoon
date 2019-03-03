@@ -2,7 +2,8 @@
 
 function rcn_xhr(p) {
   return new Promise(function(resolve, reject) {
-    const post_data = p instanceof Object && JSON.stringify(p.post);
+    p = p instanceof Object && p || {url: p};
+    const post_data = p.post && JSON.stringify(p.post);
 
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -15,11 +16,11 @@ function rcn_xhr(p) {
       }
     };
 
-    const url = p instanceof Object ? p.url : p;
+    const url = p.url;
     xhr.open(post_data ? 'POST' : 'GET', url, true);
 
-    const username = p instanceof Object && p.username;
-    const password = p instanceof Object && p.password;
+    const username = p.username;
+    const password = p.password;
     if(username && password) {
       xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username+':'+password));
     }
