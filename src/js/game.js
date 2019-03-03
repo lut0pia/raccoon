@@ -7,6 +7,10 @@ function rcn_start_game_mode(params) {
   document.body.classList.toggle('touch', rcn_is_touch_device);
   document.body.classList.toggle('export', !!params.export);
 
+  var viewport_meta = rcn_add_head_node('meta');
+  viewport_meta.setAttribute('name', 'viewport');
+  viewport_meta.setAttribute('content', 'user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi');
+
   var vm = new rcn_vm();
   vm.load_bin(params.bin);
   document.title = params.bin.name;
