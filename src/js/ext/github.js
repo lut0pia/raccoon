@@ -1,19 +1,40 @@
 // Raccoon GitHub integration
 
-function rcn_github_oauth_request() {
-  rcn_storage.github_state = 'github_' + Math.random().toString().substr(2);
-  location.replace('https://github.com/login/oauth/authorize?client_id=b5fd66cdee41f04ff6d3&scope=public_repo&state='+github_state)
+function rcn_github_ed() {
+  this.__proto__.__proto__ = rcn_window.prototype;
+  rcn_window.call(this);
+
+  // Create token input
+  this.name_input = document.createElement('input');
+  this.name_input.type = 'text';
+  this.name_input.placeholder = 'Access token';
+  this.name_input.value = rcn_storage.github_token || '';
+  this.name_input.onchange = function() {
+    rcn_storage.github_token = this.value;
+  }
+  this.add_child(this.name_input);
 }
 
-function rcn_github_request(request) {
-  return new Promise(function(resolve, reject) {
-    rcn_xhr('https://api.github.com'+request).then(function(response_text) {
-      try {
-        resolve(JSON.parse(response_text));
-      } catch(e) {
-        reject(e);
-      }
-    });
+rcn_github_ed.prototype.title = 'GitHub';
+rcn_github_ed.prototype.type = 'github_ed';
+rcn_github_ed.prototype.unique = true;
+
+rcn_editors.push(rcn_github_ed);
+
+function rcn_github_request(request, post) {
+  if(rcn_storage.github_token) {
+    request += (request.search('\\?') >= 0) ? '&' : '?';
+    request += 'access_token='+rcn_storage.github_token;
+  }
+  return rcn_xhr({
+    url: 'https://api.github.com'+request,
+    post: post,
+  }).then(function(response_text) {
+    try {
+      return Promise.resolve(JSON.parse(response_text));
+    } catch(e) {
+      return Promise.reject(e);
+    }
   });
 }
 
@@ -29,25 +50,54 @@ function rcn_github_get_tree(owner, repo, sha) {
   return rcn_github_request('/repos/'+owner+'/'+repo+'/git/trees/'+sha);
 }
 
-function rcn_github_get_blob(owner, repo, sha) {
-  return new Promise(function(resolve, reject) {
-    rcn_github_request('/repos/'+owner+'/'+repo+'/git/blobs/'+sha).then(function(blob) {
-      if(blob.encoding == 'utf-8') {
-        resolve(blob.content);
-      } else if(blob.encoding == 'base64') {
-        resolve(atob(blob.content));
-      } else {
-        reject();
-      }
-    });
+function rcn_github_create_blob(owner, repo, content) {
+  return rcn_github_request('/repos/'+owner+'/'+repo+'/git/blobs', {
+    content: content,
+    encoding: 'utf-8',
   });
 }
 
-function rcn_github_get_master_tree(owner, repo) {
-  return rcn_github_get_ref(owner, repo, 'heads/master').then(function(ref) {
-    return rcn_github_get_commit(owner, repo, ref.object.sha);
-  }).then(function(commit) {
-    return rcn_github_get_tree(owner, repo, commit.tree.sha);
+function rcn_github_create_tree(owner, repo, base_tree, tree) {
+  return rcn_github_request('/repos/'+owner+'/'+repo+'/git/trees', {
+    base_tree: base_tree,
+    tree: tree,
+  });
+}
+
+function rcn_github_create_commit(owner, repo, parents, message, tree) {
+  return rcn_github_request('/repos/'+owner+'/'+repo+'/git/commits', {
+    message: message,
+    tree: tree,
+    parents: parents,
+  });
+}
+
+function rcn_github_merge(owner, repo, base, head) {
+  return rcn_github_request('/repos/'+owner+'/'+repo+'/merges', {
+    base: base,
+    head: head,
+  });
+}
+
+function rcn_github_get_tree_bin_node(tree) {
+  for(var i in tree.tree) {
+    const node = tree.tree[i];
+    if(node.type == 'blob' && node.path.endsWith('.rcn.json')) {
+      return node;
+    }
+  }
+  return null;
+}
+
+function rcn_github_get_blob(owner, repo, sha) {
+  return rcn_github_request('/repos/'+owner+'/'+repo+'/git/blobs/'+sha).then(function(blob) {
+    if(blob.encoding == 'utf-8') {
+      return Promise.resolve(blob.content);
+    } else if(blob.encoding == 'base64') {
+      return Promise.resolve(atob(blob.content));
+    } else {
+      return Promise.reject('Unknown blob encoding: '+ blob.encoding);
+    }
   });
 }
 
@@ -57,24 +107,64 @@ rcn_hosts['github'] = {
     const pair = link.split('/');
     const owner = pair[0];
     const repo = pair[1];
-    return rcn_github_get_master_tree(owner, repo).then(function(tree) {
-      for(var i in tree.tree) {
-        const node = tree.tree[i];
-        if(node.type == 'blob' && node.path.endsWith('.rcn.json')) {
-          return rcn_github_get_blob(owner, repo, node.sha).then(function(json) {
-            try {
-              var bin = new rcn_bin();
-              bin.from_json(JSON.parse(json));
-              bin.host = 'github';
-              bin.link = link;
-              return Promise.resolve(bin);
-            } catch(e) {
-              return Promise.reject(e);
-            }
-          });
-        }
+    var commit_sha;
+    return rcn_github_get_ref(owner, repo, 'heads/master').then(function(ref) {
+      commit_sha = ref.object.sha;
+      return rcn_github_get_commit(owner, repo, ref.object.sha)
+    }).then(function(commit) {
+      return rcn_github_get_tree(owner, repo, commit.tree.sha);
+    }).then(function(tree) {
+      const node = rcn_github_get_tree_bin_node(tree);
+      return rcn_github_get_blob(owner, repo, node.sha);
+    }).then(function(json) {
+      try {
+        var bin = new rcn_bin();
+        bin.from_json(JSON.parse(json));
+        bin.host = 'github';
+        bin.link = owner+'/'+repo+'/'+commit_sha;
+        return Promise.resolve(bin);
+      } catch(e) {
+        return Promise.reject(e);
       }
-      return Promise.reject();
+    });
+  },
+  sync_bin_with_link: function(bin) {
+    const pair = bin.link.split('/');
+    const owner = pair[0];
+    const repo = pair[1];
+    const commit_sha = pair[2];
+    const bin_json_text = bin.to_json_text();
+    var merge_commit_sha;
+    return rcn_github_get_commit(owner, repo, commit_sha).then(function(commit) {
+      return rcn_github_get_tree(owner, repo, commit.tree.sha);
+    }).then(function(tree) {
+      const node = rcn_github_get_tree_bin_node(tree);
+      return rcn_github_create_tree(owner, repo, tree.sha, [{
+        path: node.path,
+        mode: '100644', // Regular file
+        type: 'blob',
+        content: bin_json_text,
+      }]);
+    }).then(function(tree) {
+      var commit_message = prompt('Commit message:', 'Autocommit from raccoon');
+      return rcn_github_create_commit(owner, repo, [commit_sha], commit_message, tree.sha);
+    }).then(function(new_commit) {
+      return rcn_github_merge(owner, repo, 'master', new_commit.sha);
+    }).then(function(merge) {
+      merge_commit_sha = merge.sha;
+      return rcn_github_get_tree(owner, repo, merge.commit.tree.sha);
+    }).then(function(tree) {
+      var node = rcn_github_get_tree_bin_node(tree);
+      return rcn_github_get_blob(owner, repo, node.sha);
+    }).then(function(json) {
+      try {
+        bin.from_json(JSON.parse(json));
+        bin.host = 'github';
+        bin.link = owner+'/'+repo+'/'+merge_commit_sha;
+        return Promise.resolve(bin);
+      } catch(e) {
+        return Promise.reject(e);
+      }
     });
   },
 }
