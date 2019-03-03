@@ -1,0 +1,15 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"
+  viewBox="0 0 100 100" preserveAspectRatio="xMinyMin meet">
+  <defs>
+    <g id="arrow">
+      <circle r="20" fill="#88888888"/>
+      <polygon points="-10,8, 0,-10, 10,8" fill="#ffffff44"/>
+    </g>
+  </defs>
+
+  <g transform="translate(50 20)"><use xlink:href="#arrow"/></g>
+  <g transform="translate(80 50) rotate(90)"><use xlink:href="#arrow"/></g>
+  <g transform="translate(50 80) rotate(180)"><use xlink:href="#arrow"/></g>
+  <g transform="translate(20 50) rotate(270)"><use xlink:href="#arrow"/></g>
+</svg>

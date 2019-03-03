@@ -82,26 +82,16 @@ function rcn_load_styles(styles) {
   return Promise.all(style_promises);
 }
 
-function rcn_start_game_mode(params) {
-  rcn_log('Starting in game mode');
-
-  if(!params.export) {
-    rcn_load_styles(['game']);
-  }
-
-  var vm = new rcn_vm();
-  vm.load_bin(params.bin);
-  document.title = params.bin.name;
-  document.body.appendChild(vm.canvas.node);
-  vm.canvas.node.focus();
-
-  if(!params.export) {
-    var edit_link = document.createElement('a');
-    edit_link.href = location.href + '&edit';
-    edit_link.innerText = 'Open in edit mode';
-    edit_link.target = '_blank';
-    document.body.appendChild(edit_link);
-  }
+function rcn_bootstrap_game_mode(params) {
+  rcn_log('Bootstrapping game mode');
+  (params.export
+    ? Promise.resolve()
+    : Promise.all([
+      rcn_load_styles(['game']),
+      rcn_load_scripts(['game']),
+    ])).then(function() {
+    rcn_start_game_mode(params)
+  });
 }
 
 function rcn_bootstrap_editor_mode(params) {
@@ -142,7 +132,7 @@ if(typeof rcn_static_bin_json !== 'undefined') {
       rcn_log('Loaded bin from environment');
     }
     if(bin && !rcn_get_parameters.edit) {
-      rcn_start_game_mode({
+      rcn_bootstrap_game_mode({
         bin: bin,
       });
     } else {
