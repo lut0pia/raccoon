@@ -31,6 +31,14 @@ function rcn_bin_ed() {
     },
   }));
 
+  // Create sync button
+  this.add_child(this.sync_button = rcn_ui_button({
+    value: 'Sync',
+    onclick: function() {
+      bin_ed.sync_bin();
+    },
+  }));
+
   // Create download as json button
   this.add_child(this.download_json_button = rcn_ui_button({
     value: 'Download as json',
@@ -116,6 +124,30 @@ rcn_bin_ed.prototype.change_bin = function(new_bin) {
     end: rcn.rom_size,
     code: true,
     load: true,
+  });
+}
+
+rcn_bin_ed.prototype.sync_bin = function() {
+  var host = null;
+  for(var host_id in rcn_hosts) {
+    if(rcn_global_bin.host == host_id) {
+      host = rcn_hosts[host_id];
+    }
+  }
+  if(!host) {
+    alert('No valid host for bin '+rcn_global_bin.name);
+    return;
+  }
+
+  rcn_overlay_push();
+
+  var bin_ed = this;
+  host.sync_bin_with_link(rcn_global_bin).then(function() {
+    bin_ed.change_bin(rcn_global_bin); // Simple way to force complete bin reload
+  }).catch(function(reason) {
+    alert('Failed to sync bin '+rcn_global_bin.name+': '+reason);
+  }).finally(function() {
+    rcn_overlay_pop();
   });
 }
 
