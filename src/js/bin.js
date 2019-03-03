@@ -97,7 +97,10 @@ rcn_bin.prototype.to_json = function() {
 }
 
 rcn_bin.prototype.to_json_text = function() {
-  return JSON.stringify(this.to_json(), null, 2);
+  var json = this.to_json();
+  delete json.host; // Host information should not be saved outside raccoon
+  delete json.link;
+  return JSON.stringify(json, null, 2);
 }
 
 rcn_bin.prototype.to_html = function() {
