@@ -64,26 +64,22 @@ canvas {
   }
 }
 
-/* Vertical touch controls */
+/* Horizontal touch controls */
 
 @media only screen and (orientation: landscape) {
-  .touch .controls {
-    width: 100%;
-    height: 50%;
+  .touch .controls div {
     position: fixed;
     bottom: 0px;
-  }
-
-  .touch .controls div {
     width: 30%;
-    height: 100%;
+    height: 50%;
+    z-index: 100;
   }
 
   .touch .axes {
-    float: left;
+    left: 0px;
   }
 
   .touch .buttons {
-    float: right;
+    right: 0px;
   }
 }
