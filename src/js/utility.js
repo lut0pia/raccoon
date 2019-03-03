@@ -28,3 +28,7 @@ function html_encode(text) {
   .replace(/</g, '&lt;')
   .replace(/>/g, '&gt;');
 }
+
+const rcn_is_touch_device =
+  'ontouchstart' in window ||
+  navigator.maxTouchPoints;
