@@ -185,6 +185,11 @@ function rcn_vm_worker_function(rcn) {
     p = p || 0; // First player by default
     return (ram[rcn_mem_gamepad_offset+p] & (1 << i)) != 0;
   }
+  btnp = function(i, p) {
+    p = p || 0; // First player by default
+    return (ram[rcn_mem_gamepad_offset+p] & (1 << i)) != 0 &&
+      (ram[rcn_mem_gamepad_offset+p+4] & (1 << i)) == 0;
+  }
 
   // Raccoon memory API
   memcpy = function(dst, src, len) {

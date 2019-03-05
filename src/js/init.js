@@ -18,7 +18,7 @@ const rcn = {
   mem_palmod_offset: 0x5000,
   mem_palmod_size: 0x0010, // 16B = 16x(7+1)bits (4b color + 1b transp)
   mem_gamepad_offset: 0x5010,
-  mem_gamepad_size: 0x0004, // 4B = 4x(4+4)bits (4b directions + 4b buttons)
+  mem_gamepad_size: 0x0008, // 4B = 2x4x(4+4)bits (4b directions + 4b buttons)
   mem_screen_offset: 0x6000,
   mem_screen_size: 0x2000,
 };

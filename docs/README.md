@@ -103,7 +103,7 @@ Palette mod are 16 bytes used for palette state for each 16 colors. The first 4 
 
 ## Gamepad State Memory
 
-Gamepad state data is 4 8bit controllers. The 4 least significant bits correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons. On the keyboard those action buttons are X, C, V and B respectively, while on a modern gamepad they are the down, right, left and top face buttons respectively.
+Gamepad state data is 4 8bit controllers twice, the first 4 bytes are for the current frame's state while the other 4 bytes are the previous frame's state. The 4 least significant bits of each byte correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons. On the keyboard those action buttons are X, C, V and B respectively, while on a modern gamepad they are the down, right, left and top face buttons respectively.
 
 ## Screen Memory
 
@@ -144,6 +144,7 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 ## Input Functions
 
 - `btn(i, p=0)`: Returns true if button `i` is pressed for player `p`
+- `btnp(i, p=0)`: Returns true if button `i` is pressed but wasn't pressed in previous frame for player `p`
 
 ## Memory Functions
 

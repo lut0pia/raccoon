@@ -60,8 +60,10 @@ rcn_vm.prototype.tick = function() {
 }
 
 rcn_vm.prototype.update = function() {
-  this.worker.postMessage({type:'memory', offset:rcn.mem_gamepad_offset, bytes:this.gamepad_state});
-  this.worker.postMessage({type:'update'});
+  this.worker.postMessage({type:'memory', offset: rcn.mem_gamepad_offset, bytes: this.gamepad_state});
+  this.worker.postMessage({type: 'update'});
+
+  this.gamepad_state.copyWithin(4, 0, 4); // Keep copy of previous frame gamepad state
 }
 
 rcn_vm.prototype.new_worker = function() {
