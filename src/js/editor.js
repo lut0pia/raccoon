@@ -65,6 +65,7 @@ const rcn_window_container = document.createElement('main');
 document.body.appendChild(rcn_window_container);
 
 function rcn_dispatch_ed_event(type, detail) {
+  detail = detail || {};
   var event = new CustomEvent(type, {detail: detail});
   for(var i=0; i<rcn_window_container.childElementCount; i++) {
     rcn_window_container.children[i].dispatchEvent(event);
