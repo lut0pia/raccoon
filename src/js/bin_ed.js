@@ -88,13 +88,13 @@ function rcn_bin_ed() {
   this.add_child(this.file_input);
 
   this.addEventListener('rcnbinchange', function() { // Update name input on bin change
-    bin_ed.update_bin_name();
+    bin_ed.update_name_input();
   });
   this.addEventListener('rcnbinschange', function() {
     bin_ed.refresh_bins_ui();
   });
 
-  this.update_bin_name();
+  this.update_name_input();
   this.refresh_bins_ui();
 }
 
@@ -206,7 +206,7 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
   this.add_child(this.bin_node);
 }
 
-rcn_bin_ed.prototype.update_bin_name = function() {
+rcn_bin_ed.prototype.update_name_input = function() {
   this.name_input.value = rcn_global_bin.name;
 }
 
