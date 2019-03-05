@@ -6,14 +6,6 @@ function rcn_bin_ed() {
 
   var bin_ed = this;
 
-  // Create new button
-  this.add_child(this.new_button = rcn_ui_button({
-    value: 'New',
-    onclick: function() {
-      bin_ed.change_bin(new rcn_bin());
-    },
-  }));
-
   // Create name input
   this.name_input = document.createElement('input');
   this.name_input.type = 'text';
@@ -22,6 +14,16 @@ function rcn_bin_ed() {
     rcn_global_bin.name = this.value;
   }
   this.add_child(this.name_input);
+
+  this.add_child(document.createElement('br'));
+
+  // Create new button
+  this.add_child(this.new_button = rcn_ui_button({
+    value: 'New',
+    onclick: function() {
+      bin_ed.change_bin(new rcn_bin());
+    },
+  }));
 
   // Create save button
   this.add_child(this.save_button = rcn_ui_button({
