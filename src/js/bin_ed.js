@@ -141,6 +141,11 @@ rcn_bin_ed.prototype.sync_bin = function() {
     return;
   }
 
+  if(!rcn_global_bin.link) {
+    alert('No valid link for bin '+rcn_global_bin.name);
+    return;
+  }
+
   rcn_overlay_push();
 
   var bin_ed = this;
