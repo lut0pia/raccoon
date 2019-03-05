@@ -15,6 +15,34 @@ function rcn_bin_ed() {
   }
   this.add_child(this.name_input);
 
+  // Create host select
+  this.host_select = document.createElement('select');
+  this.host_select.onchange = function() {
+    rcn_global_bin.host = this.value == 'undefined' ? undefined : this.value;
+    rcn_dispatch_ed_event('rcnbinchange');
+  }
+  var none_option = document.createElement('option');
+  none_option.innerText = 'None';
+  none_option.value = 'undefined';
+  this.host_select.appendChild(none_option);
+  for(var host_id in rcn_hosts) {
+    var option = document.createElement('option');
+    option.innerText = host_id;
+    option.value = host_id;
+    this.host_select.appendChild(option);
+  }
+  this.add_child(this.host_select);
+
+  // Create link input
+  this.link_input = document.createElement('input');
+  this.link_input.type = 'text';
+  this.link_input.placeholder = 'Link';
+  this.link_input.onchange = function() {
+    rcn_global_bin.link = this.value == '' ? undefined : this.value;
+    rcn_dispatch_ed_event('rcnbinchange');
+  }
+  this.add_child(this.link_input);
+
   this.add_child(document.createElement('br'));
 
   // Create new button
@@ -89,12 +117,16 @@ function rcn_bin_ed() {
 
   this.addEventListener('rcnbinchange', function() { // Update name input on bin change
     bin_ed.update_name_input();
+    bin_ed.update_host_select();
+    bin_ed.update_link_input();
   });
   this.addEventListener('rcnbinschange', function() {
     bin_ed.refresh_bins_ui();
   });
 
   this.update_name_input();
+  this.update_host_select();
+  this.update_link_input();
   this.refresh_bins_ui();
 }
 
@@ -213,6 +245,14 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
 
 rcn_bin_ed.prototype.update_name_input = function() {
   this.name_input.value = rcn_global_bin.name;
+}
+
+rcn_bin_ed.prototype.update_host_select = function() {
+  this.host_select.value = rcn_global_bin.host || 'undefined';
+}
+
+rcn_bin_ed.prototype.update_link_input = function() {
+  this.link_input.value = rcn_global_bin.link || '';
 }
 
 rcn_editors.push(rcn_bin_ed);
