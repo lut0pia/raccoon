@@ -33,10 +33,6 @@ function rcn_vm_worker_function(rcn) {
   }
 
   // Local helper functions
-  var send_exception = function(e) {
-    // e.lineNumber is off by 2 for some reason
-    _postMessage({type:'exception', message:e.message, line:e.lineNumber-2, column:e.columnNumber});
-  }
   var sprite_pixel_index = function(x, y) {
     return (y<<6)+(x>>1);
   }
@@ -212,23 +208,14 @@ function rcn_vm_worker_function(rcn) {
         // Allow function thing() {} syntax to work as expected
         // by replacing it with thing = function() {}
         code = code.replace(/function ([a-z]+)(\s*)(\([^\)]*\))/gim, '$1 = function$2$3');
-        try {
-          (new _Function(code))();
-        } catch(e) {
-          send_exception(e);
-        }
+        (new _Function(code))();
         break;
       case 'memory':
         ram.set(e.data.bytes, e.data.offset);
         break;
       case 'update':
         if(typeof update !== 'undefined') {
-          try {
-            update(); // This is user-defined
-          }
-          catch(e) {
-            send_exception(e);
-          }
+          update(); // This is user-defined
         }
         _postMessage({
           type:'blit', x:0, y:0, w:128, h:128,
@@ -238,6 +225,9 @@ function rcn_vm_worker_function(rcn) {
         break;
     }
   }
+  self.addEventListener('error', function(e) {
+    _postMessage({type: 'error', message: e.message, line: e.lineno - 2, column: e.colno});
+  });
 }
 
 const rcn_vm_worker_url = URL.createObjectURL(new Blob(

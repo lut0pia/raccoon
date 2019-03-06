@@ -110,7 +110,7 @@ rcn_vm.prototype.onmessage = function(e) {
       this.canvas.blit(e.data.x, e.data.y, e.data.w, e.data.h, e.data.pixels, e.data.palette);
       this.canvas.flush();
       break;
-    case 'exception':
+    case 'error':
       rcn_dispatch_ed_event('rcnerror', e.data);
       break;
     default:
