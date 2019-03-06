@@ -21,15 +21,14 @@ rcn_github_ed.prototype.unique = true;
 
 rcn_editors.push(rcn_github_ed);
 
-function rcn_github_request(request, post) {
+function rcn_github_request(p) {
+  p = p instanceof Object ? p : {url: p};
   if(rcn_storage.github_token) {
-    request += (request.search('\\?') >= 0) ? '&' : '?';
-    request += 'access_token='+rcn_storage.github_token;
+    p.url += (p.url.search('\\?') >= 0) ? '&' : '?';
+    p.url += 'access_token='+rcn_storage.github_token;
   }
-  return rcn_xhr({
-    url: 'https://api.github.com'+request,
-    post: post,
-  }).then(function(response_text) {
+  p.url = 'https://api.github.com'+p.url;
+  return rcn_xhr(p).then(function(response_text) {
     try {
       return Promise.resolve(JSON.parse(response_text));
     } catch(e) {
@@ -51,31 +50,43 @@ function rcn_github_get_tree(owner, repo, sha) {
 }
 
 function rcn_github_create_blob(owner, repo, content) {
-  return rcn_github_request('/repos/'+owner+'/'+repo+'/git/blobs', {
-    content: content,
-    encoding: 'utf-8',
+  return rcn_github_request({
+    url: '/repos/'+owner+'/'+repo+'/git/blobs',
+    post: {
+      content: content,
+      encoding: 'utf-8',
+    },
   });
 }
 
 function rcn_github_create_tree(owner, repo, base_tree, tree) {
-  return rcn_github_request('/repos/'+owner+'/'+repo+'/git/trees', {
-    base_tree: base_tree,
-    tree: tree,
+  return rcn_github_request({
+    url: '/repos/'+owner+'/'+repo+'/git/trees',
+    post: {
+      base_tree: base_tree,
+      tree: tree,
+    },
   });
 }
 
 function rcn_github_create_commit(owner, repo, parents, message, tree) {
-  return rcn_github_request('/repos/'+owner+'/'+repo+'/git/commits', {
-    message: message,
-    tree: tree,
-    parents: parents,
+  return rcn_github_request({
+    url: '/repos/'+owner+'/'+repo+'/git/commits',
+    post: {
+      message: message,
+      tree: tree,
+      parents: parents,
+    },
   });
 }
 
 function rcn_github_merge(owner, repo, base, head) {
-  return rcn_github_request('/repos/'+owner+'/'+repo+'/merges', {
-    base: base,
-    head: head,
+  return rcn_github_request({
+    url: '/repos/'+owner+'/'+repo+'/merges',
+    post: {
+      base: base,
+      head: head,
+    },
   });
 }
 
