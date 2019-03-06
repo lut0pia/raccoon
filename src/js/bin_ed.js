@@ -137,6 +137,9 @@ rcn_bin_ed.prototype.unique = true;
 
 rcn_bin_ed.prototype.save_bin = function() {
   rcn_log('Saving bin: '+rcn_global_bin.name);
+  if(!rcn_storage.bins) {
+    rcn_storage.bins = [];
+  }
   const save_index = rcn_storage.bins.findIndex(function(bin) {
     return bin.name == rcn_global_bin.name;
   });
@@ -206,7 +209,7 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
 
   var bin_ed = this;
   this.bin_node = document.createElement('div');
-  rcn_storage.bins.forEach(function(stored_bin) {
+  (rcn_storage.bins || []).forEach(function(stored_bin) {
     var bin_node = document.createElement('article');
 
     var bin_name = document.createElement('span');
