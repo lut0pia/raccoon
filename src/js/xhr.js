@@ -16,8 +16,12 @@ function rcn_xhr(p) {
       }
     };
 
-    const url = p.url;
-    xhr.open(post_data ? 'POST' : 'GET', url, true);
+    var method = post_data ? 'POST' : 'GET';
+    if(p.method) {
+      method = p.method;
+    }
+
+    xhr.open(method, p.url, true);
 
     const username = p.username;
     const password = p.password;
