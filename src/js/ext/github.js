@@ -80,6 +80,16 @@ function rcn_github_create_commit(owner, repo, parents, message, tree) {
   });
 }
 
+function rcn_github_update_ref(owner, repo, ref, commit_sha, force) {
+  return rcn_github_request({
+    url: '/repos/'+owner+'/'+repo+'/git/refs/'+ref,
+    post: {
+      sha: commit_sha,
+      force: !!force,
+    },
+  });
+}
+
 function rcn_github_merge(owner, repo, base, head) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/merges',
