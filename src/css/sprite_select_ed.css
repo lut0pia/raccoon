@@ -1,0 +1,14 @@
+.window.sprite_select_ed content {
+  width: 512px;
+  height: 256px;
+}
+
+.window.sprite_select_ed .sprite_index {
+  border: inset 2px lightgray;
+  padding: 2px;
+  margin: auto;
+}
+
+.window.sprite_select_ed canvas.spritesheet {
+  width: 100%;
+}
