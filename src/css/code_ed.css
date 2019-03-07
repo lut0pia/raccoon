@@ -27,7 +27,7 @@
 
 .window.code_ed .textmirror {
   width: calc(100% - 20px);
-  height: calc(100% - 86px);
+  height: calc(100% - 75px);
   position: absolute;
   margin: 3px;
   z-index: -1;
