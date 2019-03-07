@@ -155,7 +155,8 @@ rcn_hosts['github'] = {
     const repo = pair[1];
     const commit_sha = pair[2];
     const bin_json_text = bin.to_json_text();
-    var merge_commit_sha;
+    var new_commit_sha;
+    var new_tree_sha;
     return rcn_github_get_commit(owner, repo, commit_sha).then(function(commit) {
       return rcn_github_get_tree(owner, repo, commit.tree.sha);
     }).then(function(tree) {
@@ -167,21 +168,32 @@ rcn_hosts['github'] = {
         content: bin_json_text,
       }]);
     }).then(function(tree) {
-      var commit_message = prompt('Commit message:', 'Autocommit from raccoon');
+      const commit_message = prompt('Commit message:', 'Autocommit from raccoon');
       return rcn_github_create_commit(owner, repo, [commit_sha], commit_message, tree.sha);
     }).then(function(new_commit) {
-      return rcn_github_merge(owner, repo, 'master', new_commit.sha);
-    }).then(function(merge) {
-      merge_commit_sha = merge.sha;
-      return rcn_github_get_tree(owner, repo, merge.commit.tree.sha);
+      new_commit_sha = new_commit.sha;
+      new_tree_sha = new_commit.tree.sha;
+      return rcn_github_update_ref(owner, repo, 'heads/master', new_commit_sha);
+    }).catch(function(e) {
+      if(e == 422) { // Update ref failed, try merging
+        return rcn_github_merge(owner, repo, 'master', new_commit_sha).then(function(merge) {
+          new_commit_sha = merge.sha;
+          new_tree_sha = merge.commit.tree.sha;
+          return Promise.resolve();
+        });
+      } else { // Something else happened, pass it on
+        throw e;
+      }
+    }).then(function() {
+      return rcn_github_get_tree(owner, repo, new_tree_sha);
     }).then(function(tree) {
-      var node = rcn_github_get_tree_bin_node(tree);
+      const node = rcn_github_get_tree_bin_node(tree);
       return rcn_github_get_blob(owner, repo, node.sha);
     }).then(function(json) {
       try {
         bin.from_json(JSON.parse(json));
         bin.host = 'github';
-        bin.link = owner+'/'+repo+'/'+merge_commit_sha;
+        bin.link = owner+'/'+repo+'/'+new_commit_sha;
         return Promise.resolve(bin);
       } catch(e) {
         return Promise.reject(e);
