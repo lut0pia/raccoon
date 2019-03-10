@@ -63,7 +63,7 @@ function rcn_vm_worker_function(rcn) {
   atan2 = _Math.atan2;
 
   // Raccoon rendering API
-  pset = p = function(x, y, c) {
+  const _pset = pset = p = function(x, y, c) {
     if(x < 0 || x >= 128 || y < 0 || y >= 128) {
       return;
     }
