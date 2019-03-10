@@ -92,7 +92,6 @@ function rcn_create_touch_controls(vm) {
     for(var i = 0; i < 4; i++) {
       vm.set_gamepad_bit(0, i+4, !!buttons_bits[i]);
     }
-    console.log(buttons_bits);
   }
   controls_buttons.addEventListener('touchstart', buttons_touch_event);
   controls_buttons.addEventListener('touchmove', buttons_touch_event);
