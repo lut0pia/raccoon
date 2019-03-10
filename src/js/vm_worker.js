@@ -52,11 +52,7 @@ function rcn_vm_worker_function(rcn) {
   }
   sqrt = _Math.sqrt;
   rnd = r = function(x) {
-    if(x) {
-      return _Math.floor(_Math.random()*x);
-    } else {
-      return _Math.random();
-    }
+    return x ? _Math.floor(_Math.random()*x) : _Math.random();
   }
   sin = _Math.sin;
   cos = _Math.cos;
