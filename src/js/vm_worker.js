@@ -199,6 +199,48 @@ function rcn_vm_worker_function(rcn) {
       }
     }
   }
+  line = function(x0, y0, x1, y1, c) {
+    x0 = _flr(x0) + 0.5;
+    x1 = _flr(x1) + 0.5;
+    y0 = _flr(y0) + 0.5;
+    y1 = _flr(y1) + 0.5;
+
+    const dx = _flr(x1 - x0);
+    const dy = _flr(y1 - y0);
+    if(dx == 0 && dy == 0) {
+      _pset(x0, y0, c);
+    } else if(_abs(dx) >= _abs(dy)) {
+      if(x1 < x0) {
+        let tmp = x1;
+        x1 = x0;
+        x0 = tmp;
+        tmp = y1
+        y1 = y0
+        y0 = tmp
+      }
+      const de = dy / dx;
+      let y = y0;
+      for(let x = x0; x <= x1; x++) {
+        _pset(x, y, c);
+        y += de;
+      }
+    } else {
+      if(y1 < y0) {
+        let tmp = x1;
+        x1 = x0;
+        x0 = tmp;
+        tmp = y1
+        y1 = y0
+        y0 = tmp
+      }
+      const de = dx / dy;
+      let x = x0;
+      for(let y = y0; y <= y1; y++) {
+        _pset(x, y, c);
+        x += de;
+      }
+    }
+  }
 
   // Raccoon input API
   btn = b = function(i, p) {

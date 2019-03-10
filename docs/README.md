@@ -128,6 +128,7 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `mset(celx, cely, n)`: Set the sprite index at map coordinates (`celx`;`cely`) to `n`
 - `map(celx, cely, sx, sy, celw, celh)`: Draws a rectangle of the map starting at (`celx`;`cely`) with an extent of (`celw`;`celh`) at the pixel (`sx`;`sy`)
 - `print(x, y, text, c)`: Prints the `text` in color `c` starting at screen coordinates (`x`;`y`)
+- `line(x0, y0, x1, y1, c)`: Draws straight line in color `c` between screen coordinates (`x0`;`y0`) and (`x1`;`y1`)
 
 ## Math Functions
 
