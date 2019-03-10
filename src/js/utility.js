@@ -21,6 +21,14 @@ function rcn_download_file(p) {
   document.body.removeChild(e);
 }
 
+function rcn_fullscreen(e) {
+  (e.requestFullscreen ||
+  e.mozRequestFullScreen || // Firefox
+  e.webkitRequestFullscreen || // Chrome, Safari and Opera
+  e.msRequestFullscreen || // IE/Edge
+  function(){}).call(e);
+}
+
 function html_encode(text) {
   return text
   .replace(/&/g, '&amp;')
