@@ -41,10 +41,10 @@ function rcn_vm_worker_function(rcn) {
   }
 
   // Raccoon math API
-  flr = _Math.floor;
-  ceil = _Math.ceil;
-  abs = _Math.abs;
-  sign = _Math.sign;
+  const _flr = flr = _Math.floor;
+  const _ceil = ceil = _Math.ceil;
+  const _abs = abs = _Math.abs;
+  const _sign = sign = _Math.sign;
   const _max = max = _Math.max;
   const _min = min = _Math.min;
   mid = function(a, b, c) {
