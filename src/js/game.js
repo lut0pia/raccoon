@@ -19,6 +19,9 @@ function rcn_start_game_mode(params) {
 
   if(rcn_is_touch_device) {
     rcn_create_touch_controls(vm);
+    document.body.addEventListener('click', function() {
+      rcn_fullscreen(this);
+    });
   }
 
   var edit_link = document.createElement('a');
