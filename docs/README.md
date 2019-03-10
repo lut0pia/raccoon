@@ -122,6 +122,8 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `palm(c0, c1)`: Sets the palette permutation for color `c0` to `c1`
 - `palt(c, t)`: Sets the color `c` as transparent if `t`
 - `spr(n, x, y, w=1.0, h=1.0)`: Draws the `n`th sprite at screen coordinates (`x`;`y`) `w` and `h` are the width and height of the drawing in sprite length (8 pixels per unit)
+- `fget(n, f?)`: Returns whether the flag `f` is set to true for the sprite `n`; if `f` is undefined, returns the flags for the sprite `n` as a bitfield
+- `fset(n, f?, v)`: Sets the flag `f` to `v` (boolean) for the sprite `n`; if `f` is undefined, uses `v` as a bitfield to set the flags for the sprite `n`
 - `mget(celx, cely)`: Returns the sprite index at map coordinates (`celx`;`cely`)
 - `mset(celx, cely, n)`: Set the sprite index at map coordinates (`celx`;`cely`) to `n`
 - `map(celx, cely, sx, sy, celw, celh)`: Draws a rectangle of the map starting at (`celx`;`cely`) with an extent of (`celw`;`celh`) at the pixel (`sx`;`sy`)
