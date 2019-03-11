@@ -19,7 +19,7 @@ function rcn_start_game_mode(params) {
 
   if(rcn_is_touch_device) {
     rcn_create_touch_controls(vm);
-    document.body.addEventListener('click', function() {
+    document.body.addEventListener('touchstart', function() {
       rcn_fullscreen(this);
     });
   }
