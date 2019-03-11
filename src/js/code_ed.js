@@ -74,6 +74,13 @@ function rcn_code_ed() {
     }
   });
 
+  this.addEventListener('rcnerror', function(e) {
+    code_ed.set_error(e.detail);
+  });
+  this.addEventListener('rcnreboot', function() {
+    code_ed.set_error(null);
+  });
+
   this.update_textarea();
 }
 
@@ -82,6 +89,8 @@ rcn_code_ed.prototype.docs_link = 'code-editor';
 rcn_code_ed.prototype.type = 'code_ed';
 
 rcn_code_ed.prototype.apply = function() {
+  this.set_error(null); // Reset error because it may have been fixed
+
   rcn_dispatch_ed_event('rcnbinapply', {code: true});
 }
 
@@ -100,8 +109,33 @@ rcn_code_ed.prototype.update_mirror = function() {
     .replace(/\b(0x[\da-f]+)\b/gi, '<span class="number hex">$1</span>')
     .replace(/\b(\d[\d.]*)\b/gi, '<span class="number dec">$1</span>');
 
+  // If the're an error, highlight the line
+  if(this.error) {
+    let lines = code_html.split('<br>')
+    let line_index = Math.min(lines.length, this.error.line) - 1;
+    lines[line_index] = '<span class="error" title="'+this.error.message+'">'+lines[line_index]+'</span>';
+    code_html = lines.join('<br>');
+  }
+
   code_html += '<br>'; // There's an implicit newline at the end of the textarea
+
   this.textmirror.innerHTML = code_html;
+}
+
+rcn_code_ed.prototype.set_error = function(e) {
+  this.error = e;
+  this.update_mirror();
+
+  if(this.error) {
+    // Scroll the textarea to the error
+    let target = (this.error.line - 1) * 15;
+    target -= this.textarea.clientHeight >> 1;
+
+    this.textarea.scrollBy({
+      top: target - this.textarea.scrollTop,
+      behavior: 'smooth',
+    })
+  }
 }
 
 function rcn_code_ed_textarea_insert_text(textarea, text) {

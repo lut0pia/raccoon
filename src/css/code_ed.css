@@ -51,3 +51,22 @@
 .window.code_ed .textmirror .number.hex {
   color: #9c9c1e;
 }
+
+/* Error highlighting */
+.window.code_ed .textmirror .error {
+  background-color: rgba(255, 0, 0, 0.295);
+  display: block;
+  margin: 0px;
+  width: 1000%; /* That's a hack alright */
+}
+
+.window.code_ed .textmirror .error::after {
+  content: attr(title);
+  margin-left: 16px;
+  color: rgb(63, 63, 63);
+}
+
+.window.code_ed .textmirror .error + br {
+  /* Since the error line is made a block, line break after is redundant */
+  display: none;
+}
