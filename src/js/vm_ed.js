@@ -60,6 +60,9 @@ function rcn_vm_ed() {
   this.add_child(this.autoapply_checkbox_label);
 
   this.addEventListener('rcnbinchange', function(e) {
+    if(!vm_ed.vm.worker) { // VM crashed earlier
+      return;
+    }
     if(e.detail.load) {
       // We just loaded a new bin, therefore we reboot
       vm_ed.reboot();
@@ -70,10 +73,14 @@ function rcn_vm_ed() {
   });
 
   this.addEventListener('rcnbinapply', function(e) {
-    if(e.detail.code) {
-      vm_ed.vm.load_code_from_bin();
+    if(!vm_ed.vm.worker) { // VM crashed earlier
+      vm_ed.reboot();
     } else {
-      vm_ed.vm.load_memory_from_bin(e.detail.offset, e.detail.size);
+      if(e.detail.code) {
+        vm_ed.vm.load_code_from_bin();
+      } else {
+        vm_ed.vm.load_memory_from_bin(e.detail.offset, e.detail.size);
+      }
     }
   });
 

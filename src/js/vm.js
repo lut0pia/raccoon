@@ -112,6 +112,7 @@ rcn_vm.prototype.onmessage = function(e) {
       this.canvas.flush();
       break;
     case 'error':
+      this.kill();
       rcn_dispatch_ed_event('rcnerror', e.data);
       break;
     default:
