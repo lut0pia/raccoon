@@ -56,7 +56,7 @@ function rcn_code_ed() {
   }
   this.textarea.oninput = function() {
     rcn_global_bin.code = this.value;
-    rcn_dispatch_ed_event('rcnbinchange', {code: true});
+    rcn_dispatch_ed_event('rcn_bin_change', {code: true});
   };
   this.add_child(this.textarea);
 
@@ -67,17 +67,17 @@ function rcn_code_ed() {
     },
   }));
 
-  this.addEventListener('rcnbinchange', function(e) {
+  this.addEventListener('rcn_bin_change', function(e) {
     if(e.detail.code) {
       code_ed.textarea.value = rcn_global_bin.code;
       code_ed.update_mirror();
     }
   });
 
-  this.addEventListener('rcnerror', function(e) {
+  this.addEventListener('rcn_error', function(e) {
     code_ed.set_error(e.detail);
   });
-  this.addEventListener('rcnreboot', function() {
+  this.addEventListener('rcn_reboot', function() {
     code_ed.set_error(null);
   });
 
@@ -91,7 +91,7 @@ rcn_code_ed.prototype.type = 'code_ed';
 rcn_code_ed.prototype.apply = function() {
   this.set_error(null); // Reset error because it may have been fixed
 
-  rcn_dispatch_ed_event('rcnbinapply', {code: true});
+  rcn_dispatch_ed_event('rcn_bin_apply', {code: true});
 }
 
 rcn_code_ed.prototype.update_textarea = function() {

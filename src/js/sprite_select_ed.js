@@ -73,7 +73,7 @@ function rcn_sprite_select_ed() {
   };
   this.add_child(this.sprite_size_range);
 
-  this.addEventListener('rcnbinchange', function(e) {
+  this.addEventListener('rcn_bin_change', function(e) {
     // Spritesheet update
     const mem_spritesheet_begin = rcn.mem_spritesheet_offset;
     const mem_spritesheet_end = rcn.mem_spritesheet_offset + rcn.mem_spritesheet_size;

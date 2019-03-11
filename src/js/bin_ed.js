@@ -19,7 +19,7 @@ function rcn_bin_ed() {
   this.host_select = document.createElement('select');
   this.host_select.onchange = function() {
     rcn_global_bin.host = this.value == 'undefined' ? undefined : this.value;
-    rcn_dispatch_ed_event('rcnbinchange');
+    rcn_dispatch_ed_event('rcn_bin_change');
   }
   var none_option = document.createElement('option');
   none_option.innerText = 'None';
@@ -39,7 +39,7 @@ function rcn_bin_ed() {
   this.link_input.placeholder = 'Link';
   this.link_input.onchange = function() {
     rcn_global_bin.link = this.value == '' ? undefined : this.value;
-    rcn_dispatch_ed_event('rcnbinchange');
+    rcn_dispatch_ed_event('rcn_bin_change');
   }
   this.add_child(this.link_input);
 
@@ -123,12 +123,12 @@ function rcn_bin_ed() {
   }
   this.add_child(this.file_input);
 
-  this.addEventListener('rcnbinchange', function() { // Update name input on bin change
+  this.addEventListener('rcn_bin_change', function() { // Update name input on bin change
     bin_ed.update_name_input();
     bin_ed.update_host_select();
     bin_ed.update_link_input();
   });
-  this.addEventListener('rcnbinschange', function() {
+  this.addEventListener('rcn_bins_change', function() {
     bin_ed.refresh_bins_ui();
   });
 
@@ -159,12 +159,12 @@ rcn_bin_ed.prototype.save_bin = function() {
     rcn_log('Overwriting old bin: '+rcn_global_bin.name);
     rcn_storage.bins[save_index] = rcn_global_bin.to_json();
   }
-  rcn_dispatch_ed_event('rcnbinschange');
+  rcn_dispatch_ed_event('rcn_bins_change');
 }
 
 rcn_bin_ed.prototype.change_bin = function(new_bin) {
   rcn_global_bin = new_bin;
-  rcn_dispatch_ed_event('rcnbinchange',{
+  rcn_dispatch_ed_event('rcn_bin_change',{
     begin: 0,
     end: rcn.rom_size,
     code: true,
@@ -227,7 +227,7 @@ rcn_bin_ed.prototype.delete_bin = function(bin_name) {
     return bin.name == bin_name;
   });
   rcn_storage.bins.splice(bin_index, 1);
-  rcn_dispatch_ed_event('rcnbinschange');
+  rcn_dispatch_ed_event('rcn_bins_change');
 }
 
 rcn_bin_ed.prototype.refresh_bins_ui = function() {

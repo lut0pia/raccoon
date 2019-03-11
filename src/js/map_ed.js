@@ -55,11 +55,11 @@ function rcn_map_ed() {
     value:'Apply',
     onclick: function() {
       // Update VM map with bin map
-      rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_map_offset, size: rcn.mem_map_size});
+      rcn_dispatch_ed_event('rcn_bin_apply', {offset: rcn.mem_map_offset, size: rcn.mem_map_size});
     },
   }));
 
-  this.addEventListener('rcnbinchange', function(e) {
+  this.addEventListener('rcn_bin_change', function(e) {
     // Map data update
     const mem_map_begin = rcn.mem_map_offset;
     const mem_map_end = rcn.mem_map_offset + rcn.mem_map_size;
@@ -99,7 +99,7 @@ rcn_map_ed.prototype.set_tile = function(map_x, map_y) {
   const tile_index = this.get_tile_index(map_x, map_y);
   rcn_global_bin.rom[tile_index] = rcn_current_sprite;
 
-  rcn_dispatch_ed_event('rcnbinchange', {
+  rcn_dispatch_ed_event('rcn_bin_change', {
     begin: tile_index,
     end: tile_index+1,
   });

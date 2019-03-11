@@ -41,7 +41,7 @@ function rcn_sprite_ed() {
     color_input.onchange = function() {
       // Update bin's palette with UI palette
       rcn_global_bin.patch_memory(sprite_ed.get_palette_bytes(), rcn.mem_palette_offset);
-      rcn_dispatch_ed_event('rcnbinchange', {
+      rcn_dispatch_ed_event('rcn_bin_change', {
         begin: rcn.mem_palette_offset,
         end: rcn.mem_palette_offset+rcn.mem_palette_size,
       });
@@ -100,13 +100,13 @@ function rcn_sprite_ed() {
     value: 'Apply',
     onclick: function() {
       // Update VM spritesheet with bin spritesheet
-      rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_spritesheet_offset, size: rcn.mem_spritesheet_size});
+      rcn_dispatch_ed_event('rcn_bin_apply', {offset: rcn.mem_spritesheet_offset, size: rcn.mem_spritesheet_size});
       // Update VM palette with bin palette
-      rcn_dispatch_ed_event('rcnbinapply', {offset: rcn.mem_palette_offset, size: rcn.mem_palette_size});
+      rcn_dispatch_ed_event('rcn_bin_apply', {offset: rcn.mem_palette_offset, size: rcn.mem_palette_size});
     },
   }));
 
-  this.addEventListener('rcnbinchange', function(e) {
+  this.addEventListener('rcn_bin_change', function(e) {
     // Palette update
     const mem_palette_begin = rcn.mem_palette_offset;
     const mem_palette_end = rcn.mem_palette_offset + rcn.mem_palette_size;
@@ -186,7 +186,7 @@ rcn_sprite_ed.prototype.set_pixel = function(draw_x, draw_y) {
   }
   rcn_global_bin.rom[texel_index] = texel;
 
-  rcn_dispatch_ed_event('rcnbinchange', {
+  rcn_dispatch_ed_event('rcn_bin_change', {
     begin: texel_index,
     end: texel_index+1,
   });
@@ -211,7 +211,7 @@ rcn_sprite_ed.prototype.set_flag = function(i, value) {
   const flag_index = rcn.mem_spriteflags_offset + rcn_current_sprite;
   rcn_global_bin.rom[flag_index] &= ~(1 << i);
   rcn_global_bin.rom[flag_index] |= (value ? (1 << i) : 0);
-  rcn_dispatch_ed_event('rcnbinchange', {
+  rcn_dispatch_ed_event('rcn_bin_change', {
     begin: flag_index,
     end: flag_index+1,
   });

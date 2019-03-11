@@ -59,7 +59,7 @@ function rcn_vm_ed() {
   this.autoapply_checkbox_label.innerText = 'Autoapply';
   this.add_child(this.autoapply_checkbox_label);
 
-  this.addEventListener('rcnbinchange', function(e) {
+  this.addEventListener('rcn_bin_change', function(e) {
     if(e.detail.load) {
       // We just loaded a new bin, therefore we reboot
       vm_ed.reboot();
@@ -71,7 +71,7 @@ function rcn_vm_ed() {
     }
   });
 
-  this.addEventListener('rcnbinapply', function(e) {
+  this.addEventListener('rcn_bin_apply', function(e) {
     if(!vm_ed.vm.worker) { // VM crashed earlier
       vm_ed.reboot();
     } else {
@@ -92,7 +92,7 @@ rcn_vm_ed.prototype.type = 'vm_ed';
 
 rcn_vm_ed.prototype.reboot = function() {
   this.vm.load_bin(rcn_global_bin);
-  rcn_dispatch_ed_event('rcnreboot');
+  rcn_dispatch_ed_event('rcn_reboot');
 }
 
 rcn_editors.push(rcn_vm_ed);
