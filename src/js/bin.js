@@ -150,7 +150,7 @@ function rcn_bin_from_env() {
     const host = rcn_hosts[i];
     const link = rcn_get_parameters[host.get_param];
     if(link) {
-      return host.load_bin_from_link(link);
+      return host.pull_bin_from_link(new rcn_bin(), link);
     }
   }
   return Promise.resolve(null);

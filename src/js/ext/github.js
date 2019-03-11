@@ -124,7 +124,7 @@ function rcn_github_get_blob(owner, repo, sha) {
 
 rcn_hosts['github'] = {
   get_param: 'gh',
-  load_bin_from_link: function(link) {
+  pull_bin_from_link: function(bin, link) {
     const pair = link.split('/');
     const owner = pair[0];
     const repo = pair[1];
@@ -139,7 +139,6 @@ rcn_hosts['github'] = {
       return rcn_github_get_blob(owner, repo, node.sha);
     }).then(function(json) {
       try {
-        var bin = new rcn_bin();
         bin.from_json(JSON.parse(json));
         bin.host = 'github';
         bin.link = owner+'/'+repo+'/'+commit_sha;
