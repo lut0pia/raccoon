@@ -5,6 +5,11 @@ function rcn_start_editor_mode(params) {
 
   document.body.classList.add('editor');
 
+  // Sort editors alphabetically
+  rcn_editors.sort(function(a, b) {
+    return a.prototype.title > b.prototype.title;
+  });
+
   // Create toolbar
   var toolbar_div = document.createElement('div');
   toolbar_div.id = 'toolbar';
