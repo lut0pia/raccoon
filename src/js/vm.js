@@ -42,6 +42,7 @@ rcn_vm.prototype.kill = function() {
   if(this.worker) {
     this.worker.onmessage = null;
     this.worker.terminate();
+    this.worker = null;
   }
 }
 
