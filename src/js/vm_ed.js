@@ -60,15 +60,14 @@ function rcn_vm_ed() {
   this.add_child(this.autoapply_checkbox_label);
 
   this.addEventListener('rcnbinchange', function(e) {
-    if(!vm_ed.vm.worker) { // VM crashed earlier
-      return;
-    }
     if(e.detail.load) {
       // We just loaded a new bin, therefore we reboot
       vm_ed.reboot();
     } else if(vm_ed.autoapply_checkbox.checked && e.detail.begin < e.detail.end) {
-      // If autoapply is on, we directly load changed rom into ram
-      vm_ed.vm.load_memory_from_bin(e.detail.begin, e.detail.end - e.detail.begin);
+      if(vm_ed.vm.worker) { // Unless VM crashed earlier
+        // If autoapply is on, we directly load changed rom into ram
+        vm_ed.vm.load_memory_from_bin(e.detail.begin, e.detail.end - e.detail.begin);
+      }
     }
   });
 
