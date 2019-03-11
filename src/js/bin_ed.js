@@ -69,6 +69,14 @@ function rcn_bin_ed() {
     },
   }));
 
+  // Create pull button
+  this.add_child(this.pull_button = rcn_ui_button({
+    value: 'Pull',
+    onclick: function() {
+      bin_ed.pull_bin();
+    },
+  }));
+
   // Create download as json button
   this.add_child(this.download_json_button = rcn_ui_button({
     value: 'Download as json',
@@ -164,30 +172,51 @@ rcn_bin_ed.prototype.change_bin = function(new_bin) {
   });
 }
 
-rcn_bin_ed.prototype.sync_bin = function() {
-  var host = null;
-  for(var host_id in rcn_hosts) {
-    if(rcn_global_bin.host == host_id) {
+rcn_bin_ed.prototype.check_host_for_bin = function(bin) {
+  let host = null;
+  for(let host_id in rcn_hosts) {
+    if(bin.host == host_id) {
       host = rcn_hosts[host_id];
     }
   }
+
   if(!host) {
-    alert('No valid host for bin '+rcn_global_bin.name);
-    return;
+    alert('No valid host for bin '+bin.name);
+  } else if(!bin.link) {
+    alert('No valid link for bin '+bin.name);
+    host = null;
   }
 
-  if(!rcn_global_bin.link) {
-    alert('No valid link for bin '+rcn_global_bin.name);
-    return;
-  }
+  return host;
+}
+
+rcn_bin_ed.prototype.sync_bin = function() {
+  let host = this.check_host_for_bin(rcn_global_bin);
+  if(!host) return;
 
   rcn_overlay_push();
 
-  var bin_ed = this;
+  let bin_ed = this;
   host.sync_bin_with_link(rcn_global_bin).then(function() {
     bin_ed.change_bin(rcn_global_bin); // Simple way to force complete bin reload
   }).catch(function(reason) {
     alert('Failed to sync bin '+rcn_global_bin.name+': '+reason);
+  }).finally(function() {
+    rcn_overlay_pop();
+  });
+}
+
+rcn_bin_ed.prototype.pull_bin = function() {
+  let host = this.check_host_for_bin(rcn_global_bin);
+  if(!host) return;
+
+  rcn_overlay_push();
+
+  let bin_ed = this;
+  host.pull_bin_from_link(rcn_global_bin, rcn_global_bin.link).then(function() {
+    bin_ed.change_bin(rcn_global_bin); // Simple way to force complete bin reload
+  }).catch(function(reason) {
+    alert('Failed to pull bin '+rcn_global_bin.name+': '+reason);
   }).finally(function() {
     rcn_overlay_pop();
   });
