@@ -4,15 +4,69 @@ function rcn_github_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
-  // Create token input
+  let github_ed = this;
+
+  // Create name input
   this.name_input = document.createElement('input');
   this.name_input.type = 'text';
-  this.name_input.placeholder = 'Access token';
-  this.name_input.value = rcn_storage.github_token || '';
-  this.name_input.onchange = function() {
+  this.name_input.placeholder = 'Username';
+  this.add_child(this.name_input);
+
+  // Create password input
+  this.password_input = document.createElement('input');
+  this.password_input.type = 'password';
+  this.password_input.placeholder = 'Password';
+  this.add_child(this.password_input);
+
+  // Create token input
+  this.token_input = document.createElement('input');
+  this.token_input.type = 'text';
+  this.token_input.placeholder = 'Access token';
+  this.token_input.onchange = function() {
     rcn_storage.github_token = this.value;
   }
-  this.add_child(this.name_input);
+  this.add_child(this.token_input);
+
+  this.add_child(this.login_button = rcn_ui_button({
+    value: 'Log In',
+    onclick: function() {
+      github_ed.login();
+    },
+  }));
+
+  this.update_token_input();
+}
+
+rcn_github_ed.prototype.update_token_input = function() {
+  this.token_input.value = rcn_storage.github_token || '';
+}
+
+rcn_github_ed.prototype.login = function() {
+  // Erase previous token to avoid authentification conflict
+  delete rcn_storage.github_token;
+  this.update_token_input();
+
+  let github_ed = this;
+  const username = this.name_input.value;
+  const password = this.password_input.value;
+  return rcn_github_request({
+    url: '/authorizations',
+    username: username,
+    password: password,
+    post: {
+      scopes: ['public_repo'],
+      note: 'raccoon_' + (new Date(Date.now())).toISOString(),
+      note_url: location.origin,
+    },
+  }).then(function(auth) {
+    github_ed.name_input.value = '';
+    github_ed.password_input.value = '';
+    github_ed.token_input.value = auth.token;
+    rcn_storage.github_token = auth.token;
+    alert('Log in success!')
+  }).catch(function() {
+    alert('Log in failed');
+  });
 }
 
 rcn_github_ed.prototype.title = 'GitHub';
