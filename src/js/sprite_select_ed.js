@@ -22,6 +22,7 @@ function rcn_sprite_select_ed() {
 
   // Create spritesheet canvas
   this.spritesheet_canvas = new rcn_canvas();
+  this.spritesheet_canvas.padding_x = this.spritesheet_canvas.padding_y = 2;
   this.spritesheet_canvas.node.classList.add('spritesheet');
   const sheet_mouse_callback = function(e) {
     if(e.buttons !== 1) return; // Only care about left button
@@ -47,7 +48,10 @@ function rcn_sprite_select_ed() {
     const y = vp.y + spr_y * vp.mul * 8;
     const width = rcn_current_sprite_width * vp.mul;
     const height = rcn_current_sprite_height * vp.mul;
-    this.draw_quad(x, y, width, height, 1, 1, 1, 0.5);
+    this.draw_quad(x - 2, y - 2, 2, height + 4, 1, 1, 1, 1);
+    this.draw_quad(x + width, y - 2, 2, height + 4, 1, 1, 1, 1);
+    this.draw_quad(x, y - 2, width, 2, 1, 1, 1, 1);
+    this.draw_quad(x, y + height, width, 2, 1, 1, 1, 1);
   }
   this.spritesheet_wrapper.appendChild(this.spritesheet_canvas.node);
 
