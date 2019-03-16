@@ -9,6 +9,11 @@
   margin: auto;
 }
 
+.window.sprite_select_ed .wrapper {
+  height: calc(100% - 26px);
+  overflow-y: auto;
+}
+
 .window.sprite_select_ed canvas.spritesheet {
   width: 100%;
 }
