@@ -6,9 +6,7 @@ function rcn_canvas() {
   this.padding_x = 0;
   this.padding_y = 0;
 
-  const gl = this.gl = this.node.getContext('webgl', {
-    alpha: false,
-  });
+  const gl = this.gl = this.node.getContext('webgl');
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
