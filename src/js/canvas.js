@@ -2,6 +2,10 @@
 
 function rcn_canvas() {
   this.node = document.createElement('canvas');
+
+  this.padding_x = 0;
+  this.padding_y = 0;
+
   const gl = this.gl = this.node.getContext('webgl', {
     alpha: false,
   });
@@ -180,11 +184,13 @@ rcn_canvas.prototype.client_to_texture_coords = function(x, y) {
 rcn_canvas.prototype.compute_viewport = function() {
   // We want to render pixel perfect, so we find a viewport size
   // that is a multiple of the texture size and fits the actual size
-  var vp_mul = Math.floor(Math.min(this.node.width / this.width, this.node.height / this.height));
-  var vp_width = vp_mul * this.width;
-  var vp_height = vp_mul * this.height;
-  var vp_x = (this.node.width - vp_width) / 2;
-  var vp_y = (this.node.height - vp_height) / 2;
+  const inner_width = this.node.width - this.padding_x;
+  const inner_height = this.node.height - this.padding_y;
+  const vp_mul = Math.floor(Math.min(inner_width / this.width, inner_height / this.height));
+  const vp_width = vp_mul * this.width;
+  const vp_height = vp_mul * this.height;
+  const vp_x = (this.node.width - vp_width) / 2;
+  const vp_y = (this.node.height - vp_height) / 2;
   return {
     mul: vp_mul,
     x: vp_x, y: vp_y,
