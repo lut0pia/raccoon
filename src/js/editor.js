@@ -47,6 +47,83 @@ function rcn_start_editor_mode(params) {
       width: (window.innerWidth-512)+'px', height: (window.innerHeight-64)+'px',
     },
   });
+
+  // Event history (undo/redo)
+  let event_stack = [];
+  let event_index = 0;
+  let event_mirror = rcn_global_bin.rom.slice();
+  document.body.addEventListener('keydown', function(e) {
+    if(!(e.ctrlKey || e.metaKey)) return;
+    if(e.target != document.body) return;
+
+    let offset;
+    let patch;
+
+    if(e.key == 'z' && event_index > 0) { // Undo
+      offset = event_stack[--event_index].offset;
+      patch = event_stack[event_index].before;
+    } else if(e.key == 'y' && event_index < event_stack.length) { // Redo
+      offset = event_stack[event_index].offset;
+      patch = event_stack[event_index++].after;
+    } else {
+      return;
+    }
+
+    rcn_global_bin.rom.set(patch, offset);
+    event_mirror.set(patch, offset);
+
+    rcn_dispatch_ed_event('rcn_bin_change', {
+      begin: offset,
+      end: offset + patch.length,
+      undo_redo: true,
+    });
+  });
+  document.body.addEventListener('rcn_bin_change', function(e) {
+    if(e.detail.undo_redo) return; // This event was trigger by an undo/redo
+    if(e.detail.load) { // Complete bin load, clear undo stack
+      event_stack = [];
+      event_index = 0;
+      event_mirror = rcn_global_bin.rom.slice();
+      return;
+    }
+
+    const mem_begin = e.detail.begin;
+    const mem_end = e.detail.end;
+
+    if(mem_begin == mem_end) return; // This event does not concern bin rom
+
+    const now = Date.now();
+    let event = {
+      offset: mem_begin,
+      after: rcn_global_bin.rom.slice(mem_begin, mem_end),
+      before: event_mirror.slice(mem_begin, mem_end),
+      first_time: now,
+      last_time: now,
+    };
+
+    if(event.after.join() === event.before.join()) return; // Nothing changed
+
+    event_stack.splice(event_index);
+    let prev_event = event_index > 0 && event_stack[event_index - 1];
+
+    if(prev_event && prev_event.last_time > now - 1000) {
+      // Extend previous event
+      let new_begin = Math.min(prev_event.offset, mem_begin);
+      let new_end = Math.max(prev_event.offset + prev_event.before.length, mem_end)
+      event.offset = new_begin;
+      event.first_time = prev_event.first_time;
+      event.after = rcn_global_bin.rom.slice(new_begin, new_end);
+      event.before = event_mirror.slice(new_begin, new_end);
+      event.before.set(prev_event.before, prev_event.offset - new_begin);
+      event_stack[event_index - 1] = event;
+    } else {
+      // Create new event
+      event_stack.push(event);
+      event_index++;
+    }
+
+    event_mirror.set(event.after, event.offset);
+  });
 }
 
 const rcn_overlay = document.createElement('div');
