@@ -1,7 +1,7 @@
 .window {
   position: absolute;
   background-color: lightgrey;
-  border: 2px lightgrey outset;
+  border: 1px #b4b4b4 solid;
 }
 
 .window header {
