@@ -61,6 +61,19 @@ rcn_vm.prototype.tick = function() {
 }
 
 rcn_vm.prototype.update = function() {
+  const gamepads = navigator.getGamepads();
+  for(let i in gamepads) {
+    let gamepad = gamepads[i];
+    this.set_gamepad_bit(gamepad.index, 0, gamepad.axes[0] < -0.33);
+    this.set_gamepad_bit(gamepad.index, 1, gamepad.axes[0] > +0.33);
+    this.set_gamepad_bit(gamepad.index, 2, gamepad.axes[1] < -0.33);
+    this.set_gamepad_bit(gamepad.index, 3, gamepad.axes[1] > +0.33);
+    this.set_gamepad_bit(gamepad.index, 4, gamepad.buttons[0].pressed);
+    this.set_gamepad_bit(gamepad.index, 5, gamepad.buttons[1].pressed);
+    this.set_gamepad_bit(gamepad.index, 6, gamepad.buttons[2].pressed);
+    this.set_gamepad_bit(gamepad.index, 7, gamepad.buttons[3].pressed);
+  }
+
   this.worker.postMessage({type:'memory', offset: rcn.mem_gamepad_offset, bytes: this.gamepad_state});
   this.worker.postMessage({type: 'update'});
 
