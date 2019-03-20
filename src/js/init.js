@@ -97,8 +97,26 @@ function rcn_bootstrap_game_mode(params) {
 function rcn_bootstrap_editor_mode(params) {
   rcn_log('Bootstrapping editor mode');
   Promise.all([
-    rcn_load_styles(['bin_ed','code_ed','docs_ed','editor','map_ed','sprite_ed','sprite_select_ed','vm_ed','window']),
-    rcn_load_scripts(['bin_ed','code_ed','docs_ed','editor','map_ed','sprite_ed','sprite_select_ed','ui','vm_ed','window']),
+    rcn_load_styles([
+      'editor', 'window',
+      'ed/bin_ed',
+      'ed/code_ed',
+      'ed/docs_ed',
+      'ed/map_ed',
+      'ed/sprite_ed',
+      'ed/sprite_select_ed',
+      'ed/vm_ed',
+    ]),
+    rcn_load_scripts([
+      'editor', 'ui', 'window',
+      'ed/bin_ed',
+      'ed/code_ed',
+      'ed/docs_ed',
+      'ed/map_ed',
+      'ed/sprite_ed',
+      'ed/sprite_select_ed',
+      'ed/vm_ed',
+    ]),
   ]).then(function() {
     rcn_start_editor_mode(params);
   });
