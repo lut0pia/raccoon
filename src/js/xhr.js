@@ -1,6 +1,6 @@
 // Raccoon XMLHttpRequest helper
 
-function rcn_xhr(p) {
+async function rcn_xhr(p) {
   return new Promise(function(resolve, reject) {
     p = p instanceof Object && p || {url: p};
     const post_data = p.post && JSON.stringify(p.post);
