@@ -62,8 +62,9 @@ rcn_vm.prototype.tick = function() {
 
 rcn_vm.prototype.update = function() {
   const gamepads = navigator.getGamepads();
-  for(let i in gamepads) {
+  for(let i = 0; i < gamepads.length; i++) {
     let gamepad = gamepads[i];
+    if(!gamepad) continue;
     this.set_gamepad_bit(gamepad.index, 0, gamepad.axes[0] < -0.33);
     this.set_gamepad_bit(gamepad.index, 1, gamepad.axes[0] > +0.33);
     this.set_gamepad_bit(gamepad.index, 2, gamepad.axes[1] < -0.33);
