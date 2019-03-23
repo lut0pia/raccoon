@@ -8,9 +8,9 @@ const rcn = {
   rom_size: 0x5000, // = 20KiB
   ram_size: 0x8000, // = 32KiB
   mem_spritesheet_offset: 0x0000,
-  mem_spritesheet_size: 0x2000,
-  mem_map_offset: 0x2000,
-  mem_map_size: 0x2000,
+  mem_spritesheet_size: 0x1800, // 6KiB = 128x96x4bits
+  mem_map_offset: 0x1800,
+  mem_map_size: 0x2000, // 8KiB = 128x64x8bits
   mem_palette_offset: 0x4000,
   mem_palette_size: 0x0018, // 24B = 8x24bits
   mem_spriteflags_offset: 0x4100,
