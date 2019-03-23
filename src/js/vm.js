@@ -47,8 +47,7 @@ rcn_vm.prototype.kill = function() {
 }
 
 rcn_vm.prototype.tick = function() {
-  this.removed_counter = this.removed_counter || 0;
-  if(!document.body.contains(this.canvas.node) && ++this.removed_counter > 3) {
+  if(!document.body.contains(this.canvas.node)) {
     // The canvas was removed from the visible DOM, bail
     clearInterval(this.tick_interval);
     this.kill();
