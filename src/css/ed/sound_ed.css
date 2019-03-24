@@ -1,0 +1,15 @@
+.window.sound_ed table {
+  width: 100%;
+}
+
+.window.sound_ed tr {
+  font-family: monospace;
+}
+.window.sound_ed td {
+  min-width: 10px;
+  border: 1px grey solid;
+}
+
+.window.sound_ed td.active {
+  background-color: lightblue;
+}
