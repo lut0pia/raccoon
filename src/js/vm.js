@@ -30,7 +30,7 @@ function rcn_vm() {
     this.vm.gamepad_state[0] = 0;
   });
 
-  this.new_worker();
+  this.reset();
 
   var vm = this;
   this.tick_interval = setInterval(function() {
@@ -43,6 +43,10 @@ rcn_vm.prototype.kill = function() {
     this.worker.onmessage = null;
     this.worker.terminate();
     this.worker = null;
+  }
+  if(this.audio) {
+    this.audio.kill();
+    this.audio = null;
   }
 }
 
@@ -80,15 +84,16 @@ rcn_vm.prototype.update = function() {
   this.gamepad_state.copyWithin(4, 0, 4); // Keep copy of previous frame gamepad state
 }
 
-rcn_vm.prototype.new_worker = function() {
+rcn_vm.prototype.reset = function() {
   this.kill();
   this.worker = new Worker(rcn_vm_worker_url);
   var vm = this;
   this.worker.onmessage = function(e) { vm.onmessage(e); }
+  this.audio = new rcn_audio();
 }
 
 rcn_vm.prototype.load_bin = function(bin) {
-  this.new_worker();
+  this.reset();
   this.load_memory(bin.rom);
   this.load_code(bin.code);
 }
@@ -122,6 +127,7 @@ rcn_vm.prototype.onmessage = function(e) {
   switch(e.data.type) {
     case 'blit':
       this.canvas.blit(e.data.x, e.data.y, e.data.w, e.data.h, e.data.pixels, e.data.palette);
+      this.audio.update(e.data.sound);
       this.canvas.flush();
       break;
     case 'error':

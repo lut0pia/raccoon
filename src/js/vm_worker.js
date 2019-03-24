@@ -5,8 +5,11 @@ function rcn_vm_worker_function(rcn) {
   const rcn_ram_size = rcn.ram_size;
   const rcn_mem_palette_offset = rcn.mem_palette_offset;
   const rcn_mem_palette_size = rcn.mem_palette_size;
+  const rcn_mem_sound_offset = rcn.mem_sound_offset;
   const rcn_mem_palmod_offset = rcn.mem_palmod_offset;
   const rcn_mem_gamepad_offset = rcn.mem_gamepad_offset;
+  const rcn_mem_soundreg_offset = rcn.mem_soundreg_offset;
+  const rcn_mem_soundreg_size = rcn.mem_soundreg_size;
   const rcn_mem_screen_offset = rcn.mem_screen_offset;
   const rcn_mem_screen_size = rcn.mem_screen_size;
 
@@ -242,6 +245,54 @@ function rcn_vm_worker_function(rcn) {
     }
   }
 
+  // Raccoon sound API
+  let sfx_chans = new Array(4);
+  const sfx_update = function() {
+    for(let i = 0; i < 4; i++) {
+      const state = sfx_chans[i];
+      if(state === undefined) continue;
+
+      const sreg_offset = rcn_mem_soundreg_offset + i * 3;
+      const snd_offset = rcn_mem_sound_offset + state.n * 66;
+      const speed = ram[snd_offset + 0];
+
+      if(state.time > speed) {
+        state.time = 0;
+        state.i += 1;
+      }
+
+      if(state.i >= state.length) {
+        ram[sreg_offset + 2] = 0; // Volume and effect
+        delete sfx_chans[i];
+        continue;
+      }
+      if(state.time == 0) {
+        const note_offset = snd_offset + 2 + (state.offset + state.i) * 2;
+        const note_1 = ram[note_offset + 0];
+        const note_2 = ram[note_offset + 1];
+
+        ram[sreg_offset + 0] = ram[snd_offset + 1]; // Instrument (shouldn't have to do this every frame)
+        ram[sreg_offset + 1] = note_1 & 0x3f; // Pitch
+        ram[sreg_offset + 2] = note_2; // Volume and effect
+      }
+      state.time++;
+    }
+  }
+  sfx = function(n, channel = -1, offset = 0, length = 32) {
+    if(channel < 0) {
+      channel = _max(sfx_chans.findIndex(function(state) {
+        return state === undefined;
+      }), 0);
+    }
+    sfx_chans[channel] = {
+      n: n,
+      offset: offset,
+      length: length,
+      i: 0,
+      time: 0,
+    };
+  }
+
   // Raccoon input API
   btn = b = function(i, p) {
     p = p || 0; // First player by default
@@ -283,10 +334,12 @@ function rcn_vm_worker_function(rcn) {
         if(typeof update !== 'undefined') {
           update(); // This is user-defined
         }
+        sfx_update();
         _postMessage({
           type:'blit', x:0, y:0, w:128, h:128,
           pixels:ram.slice(rcn_mem_screen_offset, rcn_mem_screen_offset + rcn_mem_screen_size),
           palette:ram.slice(rcn_mem_palette_offset, rcn_mem_palette_offset + rcn_mem_palette_size),
+          sound:ram.slice(rcn_mem_soundreg_offset, rcn_mem_soundreg_offset + rcn_mem_soundreg_size),
         });
         break;
     }

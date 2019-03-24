@@ -36,6 +36,7 @@ rcn_bin.prototype.from_json = function(bin) {
     hex_to_rom(this.rom, rcn.mem_map_offset, bin.rom.map);
     hex_to_rom(this.rom, rcn.mem_palette_offset, bin.rom.pal);
     hex_to_rom(this.rom, rcn.mem_spriteflags_offset, bin.rom.spf);
+    hex_to_rom(this.rom, rcn.mem_sound_offset, bin.rom.snd);
 
     this.host = bin.host;
     this.link = bin.link;
@@ -77,6 +78,7 @@ rcn_bin.prototype.to_json = function() {
       map: rom_to_hex(this.rom, rcn.mem_map_offset, rcn.mem_map_size),
       pal: rom_to_hex(this.rom, rcn.mem_palette_offset, rcn.mem_palette_size),
       spf: rom_to_hex(this.rom, rcn.mem_spriteflags_offset, rcn.mem_spriteflags_size),
+      snd: rom_to_hex(this.rom, rcn.mem_sound_offset, rcn.mem_sound_size),
     },
     host: this.host,
     link: this.link,
