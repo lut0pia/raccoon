@@ -278,7 +278,7 @@ function rcn_vm_worker_function(rcn) {
       state.time++;
     }
   }
-  sfx = function(n, channel = -1, offset = 0, length = 32) {
+  const _sfx = sfx = function(n, channel = -1, offset = 0, length = 32) {
     if(channel < 0) {
       channel = _max(sfx_chans.findIndex(function(state) {
         return state === undefined;
