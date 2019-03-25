@@ -256,7 +256,7 @@ function rcn_vm_worker_function(rcn) {
       const snd_offset = rcn_mem_sound_offset + state.n * 66;
       const speed = ram[snd_offset + 0];
 
-      if(state.time > speed) {
+      if(state.time >= speed) {
         state.time = 0;
         state.i += 1;
       }
@@ -291,6 +291,46 @@ function rcn_vm_worker_function(rcn) {
       i: 0,
       time: 0,
     };
+  }
+  let mus_state = undefined;
+  const mus_update = function() {
+    if(mus_state === undefined) return;
+
+
+    if(mus_state.next && mus_state.time >= mus_state.next) {
+      const mus_index = rcn.mem_music_offset + mus_state.n * 4;
+      let next_n = 0;
+      next_n += (ram[mus_index + 1] >> 6) << 4;
+      next_n += (ram[mus_index + 2] >> 6) << 2;
+      next_n += (ram[mus_index + 3] >> 6) << 0;
+      mus_state.n = next_n;
+      mus_state.time = 0;
+    }
+
+    if(mus_state.time == 0) {
+      const mus_index = rcn.mem_music_offset + mus_state.n * 4;
+      const track_count = (ram[mus_index] >> 6) + 1;
+      mus_state.next = 0;
+      for(let i = 0; i < track_count; i++) {
+        const sound_n = ram[mus_index + i] & 0x3f;
+        _sfx(sound_n);
+        const sound_offset = rcn_mem_sound_offset + sound_n * 66;
+        const speed = ram[sound_offset + 0];
+        mus_state.next = _max(mus_state.next, speed * 32);
+      }
+    }
+
+    mus_state.time += 1;
+  }
+  mus = function(n) {
+    if(n < 0) {
+      delete mus_state;
+    } else {
+      mus_state = {
+        n: n,
+        time: 0,
+      };
+    }
   }
 
   // Raccoon input API
@@ -334,6 +374,7 @@ function rcn_vm_worker_function(rcn) {
         if(typeof update !== 'undefined') {
           update(); // This is user-defined
         }
+        mus_update();
         sfx_update();
         _postMessage({
           type:'blit', x:0, y:0, w:128, h:128,
