@@ -15,7 +15,7 @@ function rcn_audio() {
     this.channel_gain[i] = gain;
   }
 
-  this.set_master_gain(0.5);
+  this.set_master_gain(0.33);
 }
 
 rcn_audio.prototype.kill = function() {
