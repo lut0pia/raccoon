@@ -123,6 +123,7 @@ function rcn_bootstrap_editor_mode(params) {
       'ed/code_ed',
       'ed/docs_ed',
       'ed/map_ed',
+      'ed/music_ed',
       'ed/sound_ed',
       'ed/sprite_ed',
       'ed/sprite_select_ed',
