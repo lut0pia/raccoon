@@ -91,21 +91,20 @@ function rcn_load_styles(styles) {
   return Promise.all(style_promises);
 }
 
-function rcn_bootstrap_game_mode(params) {
+async function rcn_bootstrap_game_mode(params) {
   rcn_log('Bootstrapping game mode');
-  (params.export
-    ? Promise.resolve()
-    : Promise.all([
+  if(!params.export) {
+    await Promise.all([
       rcn_load_styles(['game']),
       rcn_load_scripts(['game']),
-    ])).then(function() {
-    rcn_start_game_mode(params)
-  });
+    ]);
+  }
+  rcn_start_game_mode(params);
 }
 
-function rcn_bootstrap_editor_mode(params) {
+async function rcn_bootstrap_editor_mode(params) {
   rcn_log('Bootstrapping editor mode');
-  Promise.all([
+  await Promise.all([
     rcn_load_styles([
       'editor', 'window',
       'ed/bin_ed',
@@ -129,23 +128,22 @@ function rcn_bootstrap_editor_mode(params) {
       'ed/sprite_select_ed',
       'ed/vm_ed',
     ]),
-  ]).then(function() {
-    rcn_start_editor_mode(params);
-  });
+  ]);
+  rcn_start_editor_mode(params);
 }
 
-if(typeof rcn_static_bin_json !== 'undefined') {
-  // We're in an export html
-  window.addEventListener('load', function() {
-    var static_bin = new rcn_bin();
+window.addEventListener('load', async function() {
+  if(typeof rcn_static_bin_json !== 'undefined') {
+    // We're in an export html
+    let static_bin = new rcn_bin();
     static_bin.from_json(rcn_static_bin_json);
-    rcn_start_game_mode({
+    return rcn_start_game_mode({
       bin: static_bin,
       export: true,
     });
-  });
-} else { // Normal path
-  Promise.all([
+  }
+
+  await Promise.all([
     rcn_load_styles(['reset']),
     rcn_load_scripts([
       // Raccoon core
@@ -155,20 +153,19 @@ if(typeof rcn_static_bin_json !== 'undefined') {
       // Extensions
       'ext/github',
     ]),
-  ]).then(function() {
-    return rcn_bin_from_env();
-  }).then(function(bin) {
-    if(bin) {
-      rcn_log('Loaded bin from environment');
-    }
-    if(bin && !rcn_get_parameters.edit) {
-      rcn_bootstrap_game_mode({
-        bin: bin,
-      });
-    } else {
-      rcn_bootstrap_editor_mode({
-        bin: bin,
-      });
-    }
-  });
-}
+  ]);
+
+  let bin = await rcn_bin_from_env();
+  if(bin) {
+    rcn_log('Loaded bin from environment');
+  }
+  if(bin && !rcn_get_parameters.edit) {
+    rcn_bootstrap_game_mode({
+      bin: bin,
+    });
+  } else {
+    rcn_bootstrap_editor_mode({
+      bin: bin,
+    });
+  }
+});
