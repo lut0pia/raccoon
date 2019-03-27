@@ -91,12 +91,10 @@ function rcn_bin_ed() {
   // Create download as html button
   this.add_child(this.download_html_button = rcn_ui_button({
     value: 'Download as html',
-    onclick: function() {
-      rcn_global_bin.to_html().then(function(html) {
-        rcn_download_file({
-          file_name: rcn_global_bin.name + '.rcn.html',
-          content: html,
-        });
+    onclick: async function() {
+      rcn_download_file({
+        file_name: rcn_global_bin.name + '.rcn.html',
+        content: await rcn_global_bin.to_html(),
       });
     },
   }));
@@ -190,36 +188,34 @@ rcn_bin_ed.prototype.check_host_for_bin = function(bin) {
   return host;
 }
 
-rcn_bin_ed.prototype.sync_bin = function() {
+rcn_bin_ed.prototype.sync_bin = async function() {
   let host = this.check_host_for_bin(rcn_global_bin);
   if(!host) return;
 
   rcn_overlay_push();
-
-  let bin_ed = this;
-  host.sync_bin_with_link(rcn_global_bin).then(function() {
-    bin_ed.change_bin(rcn_global_bin); // Simple way to force complete bin reload
-  }).catch(function(reason) {
-    alert('Failed to sync bin '+rcn_global_bin.name+': '+reason);
-  }).finally(function() {
+  try {
+    await host.sync_bin_with_link(rcn_global_bin);
+    this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
+  } catch(e) {
+    alert('Failed to sync bin ' + rcn_global_bin.name + ': ' + e);
+  } finally {
     rcn_overlay_pop();
-  });
+  }
 }
 
-rcn_bin_ed.prototype.pull_bin = function() {
+rcn_bin_ed.prototype.pull_bin = async function() {
   let host = this.check_host_for_bin(rcn_global_bin);
   if(!host) return;
 
   rcn_overlay_push();
-
-  let bin_ed = this;
-  host.pull_bin_from_link(rcn_global_bin, rcn_global_bin.link).then(function() {
-    bin_ed.change_bin(rcn_global_bin); // Simple way to force complete bin reload
-  }).catch(function(reason) {
-    alert('Failed to pull bin '+rcn_global_bin.name+': '+reason);
-  }).finally(function() {
+  try {
+    await host.pull_bin_from_link(rcn_global_bin, rcn_global_bin.link);
+    this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
+  } catch(e) {
+    alert('Failed to pull bin ' + rcn_global_bin.name + ': ' + e);
+  } finally {
     rcn_overlay_pop();
-  });
+  }
 }
 
 rcn_bin_ed.prototype.delete_bin = function(bin_name) {
