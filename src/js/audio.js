@@ -54,8 +54,11 @@ rcn_audio.prototype.update_channel = function(i, register) {
     this.channel_play[i] = osc;
   }
 
-  this.channel_play[i].frequency.setTargetAtTime(rcn_pitch_to_freq(register.pitch), rcn_audio_context.currentTime + 0.03, 0.001);
-  this.channel_gain[i].gain.setTargetAtTime(register.volume, rcn_audio_context.currentTime + 0.03, 0.001);
+  let change_time = rcn_audio_context.currentTime;
+  change_time += (1.5 / 30);
+  change_time -= change_time % (1 / 30);
+  this.channel_play[i].frequency.setTargetAtTime(rcn_pitch_to_freq(register.pitch), change_time, 0.001);
+  this.channel_gain[i].gain.setTargetAtTime(register.volume, change_time, 0.001);
 }
 
 function rcn_pitch_to_freq(pitch) {
