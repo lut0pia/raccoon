@@ -5,7 +5,7 @@ async function rcn_xhr(p) {
     p = p instanceof Object && p || {url: p};
     const post_data = p.post && JSON.stringify(p.post);
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
       if(xhr.readyState == 4) {
         if(xhr.status >= 200 && xhr.status < 300) {
@@ -16,7 +16,7 @@ async function rcn_xhr(p) {
       }
     };
 
-    var method = post_data ? 'POST' : 'GET';
+    let method = post_data ? 'POST' : 'GET';
     if(p.method) {
       method = p.method;
     }
