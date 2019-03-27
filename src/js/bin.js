@@ -94,53 +94,42 @@ rcn_bin.prototype.to_json_text = function() {
   return JSON.stringify(json, null, 2);
 }
 
-rcn_bin.prototype.to_html = function() {
-  const bin_json = this.to_json();
-  return Promise.all([
-    'js',
+rcn_bin.prototype.to_html = async function() {
+  let scripts = await Promise.all([
     rcn_xhr('src/js/init.js'), // This needs to stay at the beginning
+    rcn_xhr('src/js/audio.js'),
     rcn_xhr('src/js/bin.js'),
     rcn_xhr('src/js/canvas.js'),
+    rcn_xhr('src/js/game.js'),
     rcn_xhr('src/js/gl.js'),
+    rcn_xhr('src/js/utility.js'),
     rcn_xhr('src/js/vm.js'),
     rcn_xhr('src/js/vm_worker.js'),
-    'css',
+  ]);
+  let styles = await Promise.all([
     rcn_xhr('src/css/reset.css'),
     rcn_xhr('src/css/game.css'),
     rcn_xhr('src/css/export.css'),
-  ]).then(function(files) {
-    var html = document.createElement('html');
-    var head = document.createElement('head');
-    html.appendChild(head);
+  ]);
 
-    var charset_meta = document.createElement('meta');
-    charset_meta.setAttribute('charset', 'UTF-8');
-    head.appendChild(charset_meta);
+  let script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.innerHTML = 'const rcn_static_bin_json = ' + JSON.stringify(this.to_json()) + '\n' + scripts.join('\n');
 
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.innerHTML = 'var rcn_static_bin_json = '+JSON.stringify(bin_json);
-    head.appendChild(script);
+  let style = document.createElement('style');
+  style.type = 'text/css';
+  style.innerHTML = styles.join('\n');
 
-    var type = '';
-    files.forEach(function(file) {
-      if(file.length<=3) {
-        type = file;
-      } else if(type == 'js') {
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.innerHTML = file;
-        head.appendChild(script);
-      } else if(type == 'css') {
-        var style = document.createElement('style');
-        style.type = 'text/css';
-        style.innerHTML = file;
-        head.appendChild(style);
-      }
-    });
+  let html = document.createElement('html');
+  let head = document.createElement('head');
+  let charset_meta = document.createElement('meta');
+  charset_meta.setAttribute('charset', 'UTF-8');
 
-    return html.outerHTML;
-  });
+  head.appendChild(charset_meta);
+  head.appendChild(script);
+  head.appendChild(style);
+  html.appendChild(head);
+  return html.outerHTML;
 }
 
 rcn_bin.prototype.patch_memory = function(bytes, offset) {
