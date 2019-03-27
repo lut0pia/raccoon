@@ -138,13 +138,13 @@ rcn_bin.prototype.patch_memory = function(bytes, offset) {
   }
 }
 
-function rcn_bin_from_env() {
-  for(var i in rcn_hosts) {
+async function rcn_bin_from_env() {
+  for(let i in rcn_hosts) {
     const host = rcn_hosts[i];
     const link = rcn_get_parameters[host.get_param];
     if(link) {
-      return host.pull_bin_from_link(new rcn_bin(), link);
+      return await host.pull_bin_from_link(new rcn_bin(), link);
     }
   }
-  return Promise.resolve(null);
+  return null;
 }
