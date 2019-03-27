@@ -24,14 +24,14 @@ function rcn_start_editor_mode(params) {
   });
   document.body.appendChild(toolbar_div);
 
-  if(params.bin) {
+  rcn_global_bin = new rcn_bin();
+  if(rcn_storage.working_bin) {
+    // Load bin from last session
+    rcn_global_bin.from_json(rcn_storage.working_bin);
+  }
+
+  if(params.bin && rcn_confirm_bin_override()) {
     rcn_global_bin = params.bin;
-  } else {
-    rcn_global_bin = new rcn_bin();
-    if(rcn_storage.working_bin) {
-      // Load bin from last session
-      rcn_global_bin.from_json(rcn_storage.working_bin);
-    }
   }
 
   window.addEventListener('beforeunload', function() {
@@ -155,4 +155,14 @@ function rcn_dispatch_ed_event(type, detail) {
 
   // Useful for global mechanisms, such as undo stack
   document.body.dispatchEvent(event);
+}
+
+function rcn_confirm_bin_override() {
+  const saved_bin = rcn_storage.bins.find(function(bin) {
+    return bin.name == rcn_global_bin.name;
+  });
+  const old_json = JSON.stringify(rcn_global_bin.to_json());
+  const saved_json = saved_bin ? JSON.stringify(saved_bin) : '';
+  return old_json == saved_json ||
+    confirm('Are you sure you want to overwrite your working bin? You have unsaved changes.');
 }

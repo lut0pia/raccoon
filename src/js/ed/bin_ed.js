@@ -161,6 +161,9 @@ rcn_bin_ed.prototype.save_bin = function() {
 }
 
 rcn_bin_ed.prototype.change_bin = function(new_bin) {
+  if(rcn_global_bin != new_bin && !rcn_confirm_bin_override()) {
+    return;
+  }
   rcn_global_bin = new_bin;
   rcn_dispatch_ed_event('rcn_bin_change',{
     begin: 0,
