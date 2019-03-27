@@ -41,32 +41,32 @@ rcn_github_ed.prototype.update_token_input = function() {
   this.token_input.value = rcn_storage.github_token || '';
 }
 
-rcn_github_ed.prototype.login = function() {
+rcn_github_ed.prototype.login = async function() {
   // Erase previous token to avoid authentification conflict
   delete rcn_storage.github_token;
   this.update_token_input();
 
-  let github_ed = this;
   const username = this.name_input.value;
   const password = this.password_input.value;
-  return rcn_github_request({
-    url: '/authorizations',
-    username: username,
-    password: password,
-    post: {
-      scopes: ['public_repo'],
-      note: 'raccoon_' + (new Date(Date.now())).toISOString(),
-      note_url: location.origin,
-    },
-  }).then(function(auth) {
-    github_ed.name_input.value = '';
-    github_ed.password_input.value = '';
-    github_ed.token_input.value = auth.token;
+  try {
+    const auth = await rcn_github_request({
+      url: '/authorizations',
+      username: username,
+      password: password,
+      post: {
+        scopes: ['public_repo'],
+        note: 'raccoon_' + (new Date(Date.now())).toISOString(),
+        note_url: location.origin,
+      },
+    });
+    this.name_input.value = '';
+    this.password_input.value = '';
+    this.token_input.value = auth.token;
     rcn_storage.github_token = auth.token;
-    alert('Log in success!')
-  }).catch(function() {
-    alert('Log in failed');
-  });
+    alert('Log in success!');
+  } catch(e) {
+    alert('Log in failed: ' + e);
+  }
 }
 
 rcn_github_ed.prototype.title = 'GitHub';
@@ -75,35 +75,29 @@ rcn_github_ed.prototype.unique = true;
 
 rcn_editors.push(rcn_github_ed);
 
-function rcn_github_request(p) {
+async function rcn_github_request(p) {
   p = p instanceof Object ? p : {url: p};
   if(rcn_storage.github_token) {
     p.url += (p.url.search('\\?') >= 0) ? '&' : '?';
     p.url += 'access_token='+rcn_storage.github_token;
   }
   p.url = 'https://api.github.com'+p.url;
-  return rcn_xhr(p).then(function(response_text) {
-    try {
-      return Promise.resolve(JSON.parse(response_text));
-    } catch(e) {
-      return Promise.reject(e);
-    }
-  });
+  return JSON.parse(await rcn_xhr(p));
 }
 
-function rcn_github_get_commit(owner, repo, sha) {
+async function rcn_github_get_commit(owner, repo, sha) {
   return rcn_github_request('/repos/'+owner+'/'+repo+'/git/commits/'+sha);
 }
 
-function rcn_github_get_ref(owner, repo, ref) {
+async function rcn_github_get_ref(owner, repo, ref) {
   return rcn_github_request('/repos/'+owner+'/'+repo+'/git/refs/'+ref);
 }
 
-function rcn_github_get_tree(owner, repo, sha) {
+async function rcn_github_get_tree(owner, repo, sha) {
   return rcn_github_request('/repos/'+owner+'/'+repo+'/git/trees/'+sha);
 }
 
-function rcn_github_create_blob(owner, repo, content) {
+async function rcn_github_create_blob(owner, repo, content) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/git/blobs',
     post: {
@@ -113,7 +107,7 @@ function rcn_github_create_blob(owner, repo, content) {
   });
 }
 
-function rcn_github_create_tree(owner, repo, base_tree, tree) {
+async function rcn_github_create_tree(owner, repo, base_tree, tree) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/git/trees',
     post: {
@@ -123,7 +117,7 @@ function rcn_github_create_tree(owner, repo, base_tree, tree) {
   });
 }
 
-function rcn_github_create_commit(owner, repo, parents, message, tree) {
+async function rcn_github_create_commit(owner, repo, parents, message, tree) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/git/commits',
     post: {
@@ -134,7 +128,7 @@ function rcn_github_create_commit(owner, repo, parents, message, tree) {
   });
 }
 
-function rcn_github_update_ref(owner, repo, ref, commit_sha, force) {
+async function rcn_github_update_ref(owner, repo, ref, commit_sha, force) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/git/refs/'+ref,
     post: {
@@ -144,7 +138,7 @@ function rcn_github_update_ref(owner, repo, ref, commit_sha, force) {
   });
 }
 
-function rcn_github_merge(owner, repo, base, head) {
+async function rcn_github_merge(owner, repo, base, head) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/merges',
     post: {
@@ -155,7 +149,7 @@ function rcn_github_merge(owner, repo, base, head) {
 }
 
 function rcn_github_get_tree_bin_node(tree) {
-  for(var i in tree.tree) {
+  for(let i in tree.tree) {
     const node = tree.tree[i];
     if(node.type == 'blob' && node.path.endsWith('.rcn.json')) {
       return node;
@@ -164,93 +158,69 @@ function rcn_github_get_tree_bin_node(tree) {
   return null;
 }
 
-function rcn_github_get_blob(owner, repo, sha) {
-  return rcn_github_request('/repos/'+owner+'/'+repo+'/git/blobs/'+sha).then(function(blob) {
-    if(blob.encoding == 'utf-8') {
-      return Promise.resolve(blob.content);
-    } else if(blob.encoding == 'base64') {
-      return Promise.resolve(atob(blob.content));
-    } else {
-      return Promise.reject('Unknown blob encoding: '+ blob.encoding);
-    }
-  });
+async function rcn_github_get_blob(owner, repo, sha) {
+  const blob = await rcn_github_request('/repos/'+owner+'/'+repo+'/git/blobs/'+sha);
+  if(blob.encoding == 'utf-8') {
+    return blob.content;
+  } else if(blob.encoding == 'base64') {
+    return atob(blob.content);
+  } else {
+    throw 'Unknown blob encoding: '+ blob.encoding;
+  }
 }
 
 rcn_hosts['github'] = {
   get_param: 'gh',
-  pull_bin_from_link: function(bin, link) {
+  pull_bin_from_link: async function(bin, link) {
     const pair = link.split('/');
     const owner = pair[0];
     const repo = pair[1];
-    var commit_sha;
-    return rcn_github_get_ref(owner, repo, 'heads/master').then(function(ref) {
-      commit_sha = ref.object.sha;
-      return rcn_github_get_commit(owner, repo, ref.object.sha)
-    }).then(function(commit) {
-      return rcn_github_get_tree(owner, repo, commit.tree.sha);
-    }).then(function(tree) {
-      const node = rcn_github_get_tree_bin_node(tree);
-      return rcn_github_get_blob(owner, repo, node.sha);
-    }).then(function(json) {
-      try {
-        bin.from_json(JSON.parse(json));
-        bin.host = 'github';
-        bin.link = owner+'/'+repo+'/'+commit_sha;
-        return Promise.resolve(bin);
-      } catch(e) {
-        return Promise.reject(e);
-      }
-    });
+    const ref = await rcn_github_get_ref(owner, repo, 'heads/master');
+    const commit = await rcn_github_get_commit(owner, repo, ref.object.sha);
+    const tree = await rcn_github_get_tree(owner, repo, commit.tree.sha);
+    const node = rcn_github_get_tree_bin_node(tree);
+    const json = await rcn_github_get_blob(owner, repo, node.sha);
+    bin.from_json(JSON.parse(json));
+    bin.host = 'github';
+    bin.link = owner+'/'+repo+'/'+ref.object.sha;
+    return bin;
   },
-  sync_bin_with_link: function(bin) {
+  sync_bin_with_link: async function(bin) {
     const pair = bin.link.split('/');
     const owner = pair[0];
     const repo = pair[1];
     const commit_sha = pair[2];
     const bin_json_text = bin.to_json_text();
-    var new_commit_sha;
-    var new_tree_sha;
-    return rcn_github_get_commit(owner, repo, commit_sha).then(function(commit) {
-      return rcn_github_get_tree(owner, repo, commit.tree.sha);
-    }).then(function(tree) {
-      const node = rcn_github_get_tree_bin_node(tree);
-      return rcn_github_create_tree(owner, repo, tree.sha, [{
-        path: node.path,
-        mode: '100644', // Regular file
-        type: 'blob',
-        content: bin_json_text,
-      }]);
-    }).then(function(tree) {
-      const commit_message = prompt('Commit message:', 'Autocommit from raccoon');
-      return rcn_github_create_commit(owner, repo, [commit_sha], commit_message, tree.sha);
-    }).then(function(new_commit) {
-      new_commit_sha = new_commit.sha;
-      new_tree_sha = new_commit.tree.sha;
-      return rcn_github_update_ref(owner, repo, 'heads/master', new_commit_sha);
-    }).catch(function(e) {
+    const commit = await rcn_github_get_commit(owner, repo, commit_sha);
+    const tree = await rcn_github_get_tree(owner, repo, commit.tree.sha);
+    const node = rcn_github_get_tree_bin_node(tree);
+    const new_tree = await rcn_github_create_tree(owner, repo, tree.sha, [{
+      path: node.path,
+      mode: '100644', // Regular file
+      type: 'blob',
+      content: bin_json_text,
+    }]);
+    const commit_message = prompt('Commit message:', 'Autocommit from raccoon');
+    const new_commit = await rcn_github_create_commit(owner, repo, [commit_sha], commit_message, new_tree.sha);
+    let head_commit_sha = new_commit.sha;
+    let head_tree_sha = new_commit.tree.sha;
+    try { // Attempt fast-forward
+      await rcn_github_update_ref(owner, repo, 'heads/master', head_commit_sha);
+    } catch(e) {
       if(e == 422) { // Update ref failed, try merging
-        return rcn_github_merge(owner, repo, 'master', new_commit_sha).then(function(merge) {
-          new_commit_sha = merge.sha;
-          new_tree_sha = merge.commit.tree.sha;
-          return Promise.resolve();
-        });
+        const merge = await rcn_github_merge(owner, repo, 'master', head_commit_sha);
+        head_commit_sha = merge.sha;
+        head_tree_sha = merge.commit.tree.sha;
       } else { // Something else happened, pass it on
         throw e;
       }
-    }).then(function() {
-      return rcn_github_get_tree(owner, repo, new_tree_sha);
-    }).then(function(tree) {
-      const node = rcn_github_get_tree_bin_node(tree);
-      return rcn_github_get_blob(owner, repo, node.sha);
-    }).then(function(json) {
-      try {
-        bin.from_json(JSON.parse(json));
-        bin.host = 'github';
-        bin.link = owner+'/'+repo+'/'+new_commit_sha;
-        return Promise.resolve(bin);
-      } catch(e) {
-        return Promise.reject(e);
-      }
-    });
+    }
+    const head_tree = await rcn_github_get_tree(owner, repo, head_tree_sha);
+    const head_node = rcn_github_get_tree_bin_node(head_tree);
+    const json = await rcn_github_get_blob(owner, repo, head_node.sha);
+    bin.from_json(JSON.parse(json));
+    bin.host = 'github';
+    bin.link = owner+'/'+repo+'/'+head_commit_sha;
+    return bin;
   },
 }
