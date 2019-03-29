@@ -42,6 +42,13 @@ function rcn_vm_worker_function(rcn) {
   var screen_pixel_index = function(x, y) {
     return rcn_mem_screen_offset + sprite_pixel_index(x, y);
   }
+  const pset_internal = function(x, y, c) {
+    // No bounds-checking, no color palette support
+    const index = screen_pixel_index(x, y);
+    ram[index] = ((x % 2) < 1)
+          ? ((ram[index] & 0xf0) | c)
+          : ((ram[index] & 0x0f) | (c << 4));
+  }
 
   // Raccoon math API
   const _flr = flr = _Math.floor;
@@ -67,10 +74,7 @@ function rcn_vm_worker_function(rcn) {
       return;
     }
     c = _palmget(c);
-    const pixel_index = screen_pixel_index(x, y);
-    ram[pixel_index] = ((x % 2) < 1)
-          ? ((ram[pixel_index] & 0xf0) | c)
-          : ((ram[pixel_index] & 0x0f) | (c << 4));
+    pset_internal(x, y, _palmget(c));
   }
   pget = function(x, y) {
     if(x < 0 || x >= 128 || y < 0 || y >= 128) {
@@ -131,23 +135,13 @@ function rcn_vm_worker_function(rcn) {
         const ti = flip_x ? (wp - i - 1) : i;
         const tj = flip_y ? (hp - j - 1) : j;
         const tex_index = first_texel_index + sprite_pixel_index(ti, tj);
-        var color = ((ti % 2) < 1)
+        const c = ((ti % 2) < 1)
           ? (ram[tex_index] & 0xf)
           : (ram[tex_index] >> 4);
 
-        if(_paltget(color)) {
-          continue;
+        if(!_paltget(c)) {
+          pset_internal(x + i, y + j, _palmget(c));
         }
-
-        color = _palmget(color);
-
-        // Apply color to screen
-        const scr_x = x + i;
-        const scr_y = y + j;
-        const scr_index = screen_pixel_index(scr_x, scr_y);
-        ram[scr_index] = ((scr_x % 2) < 1)
-          ? ((ram[scr_index] & 0xf0) | color)
-          : ((ram[scr_index] & 0xf) | (color << 4));
       }
     }
   }
