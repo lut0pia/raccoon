@@ -196,6 +196,20 @@ function rcn_vm_worker_function(rcn) {
       }
     }
   }
+  const hline = function(x, y, w, c) {
+    // No bounds-checking, no color palette support
+    const cc = c | (c << 4);
+    const x2 = x + (x & 1);
+    if(x != x2) {
+      pset_internal(x, y, c);
+      w -= 1;
+    }
+    if((w & 1) != 0) {
+      pset_internal(x2 + w - 1, y, c);
+    }
+    const index = screen_pixel_index(x2, y);
+    ram.fill(cc, index, index + (w >> 1));
+  }
   line = function(x0, y0, x1, y1, c) {
     x0 = _flr(x0) + 0.5;
     x1 = _flr(x1) + 0.5;
@@ -235,6 +249,38 @@ function rcn_vm_worker_function(rcn) {
       for(let y = y0; y <= y1; y++) {
         _pset(x, y, c);
         x += de;
+      }
+    }
+  }
+  rect = function(x, y, w, h, c) {
+    x <<= 0;
+    y <<= 0;
+    w <<= 0;
+    h <<= 0;
+    for(let i = 0; i < w; i++) {
+      _pset(x + i, y, c);
+      _pset(x + i, y + h - 1, c);
+    }
+    for(let i = 1; i < h - 1; i++) {
+      _pset(x, y + i, c);
+      _pset(x + w - 1, y + i, c);
+    }
+  }
+  rectfill = function(x, y, w, h, c) {
+    x <<= 0;
+    y <<= 0;
+    w <<= 0;
+    h <<= 0;
+    w += _min(0, x);
+    x = _max(0, x);
+    h += _min(0, y);
+    y = _max(0, y);
+    w -= _max(128, x + w) - 128;
+    h -= _max(128, y + h) - 128;
+    if(w > 0 && h > 0) {
+      c = _palmget(c);
+      for(let i = 0; i < h; i++) {
+        hline(x, y + i, w, c);
       }
     }
   }
