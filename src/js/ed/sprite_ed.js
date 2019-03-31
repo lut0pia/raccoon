@@ -212,19 +212,40 @@ rcn_sprite_ed.prototype.set_current_color = function(color) {
 }
 
 rcn_sprite_ed.prototype.set_flag = function(i, value) {
-  const flag_index = rcn.mem_spriteflags_offset + rcn_current_sprite;
-  rcn_global_bin.rom[flag_index] &= ~(1 << i);
-  rcn_global_bin.rom[flag_index] |= (value ? (1 << i) : 0);
-  rcn_dispatch_ed_event('rcn_bin_change', {
-    begin: flag_index,
-    end: flag_index+1,
-  });
+  // Set flag for all selected sprites
+  for(let x = 0; x < rcn_current_sprite_columns; x++) {
+    for(let y = 0; y < rcn_current_sprite_rows; y++) {
+      const sprite_index = rcn_current_sprite + x + (y << 4);
+      const flag_index = rcn.mem_spriteflags_offset + sprite_index;
+      rcn_global_bin.rom[flag_index] &= ~(1 << i);
+      rcn_global_bin.rom[flag_index] |= (value ? (1 << i) : 0);
+
+      rcn_dispatch_ed_event('rcn_bin_change', {
+        begin: flag_index,
+        end: flag_index + 1,
+      });
+    }
+  }
 }
 
 rcn_sprite_ed.prototype.update_flag_inputs = function() {
-  const flags = rcn_global_bin.rom[rcn.mem_spriteflags_offset + rcn_current_sprite];
-  for(var i=0; i < 8; i++) {
-    this.flag_inputs[i].checked = (flags & (1 << i)) != 0;
+  // Collect flags for all selected sprites
+  let flag_totals = [0, 0, 0, 0, 0, 0, 0, 0];
+  for(let x = 0; x < rcn_current_sprite_columns; x++) {
+    for(let y = 0; y < rcn_current_sprite_rows; y++) {
+      const sprite_index = rcn_current_sprite + x + (y << 4);
+      const flags = rcn_global_bin.rom[rcn.mem_spriteflags_offset + sprite_index];
+      for(let i = 0; i < 8; i++) {
+        flag_totals[i] += (flags & (1 << i)) ? 1 : 0;
+      }
+    }
+  }
+
+  // Check flag totals to see whether all or some sprites have a specific flag
+  let sprite_count = rcn_current_sprite_columns * rcn_current_sprite_rows;
+  for(let i = 0; i < 8; i++) {
+    this.flag_inputs[i].checked = flag_totals[i] == sprite_count;
+    this.flag_inputs[i].indeterminate = flag_totals[i] > 0 && flag_totals[i] < sprite_count;
   }
 }
 
