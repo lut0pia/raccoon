@@ -425,7 +425,8 @@ function rcn_vm_worker_function(rcn) {
         break;
     }
   }
-  self.addEventListener('error', function(e) {
+
+  addEventListener('error', function(e) {
     _postMessage({type: 'error', message: e.message, line: e.lineno - 2, column: e.colno});
   });
 }
