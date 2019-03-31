@@ -24,7 +24,7 @@ function rcn_map_ed() {
           map_ed.set_tile(tex_coords.x >> 3, tex_coords.y >> 3);
         } else if(e.buttons == 2) { // Right button: tile pick
           rcn_current_sprite = map_ed.get_tile(tex_coords.x >> 3, tex_coords.y >> 3);
-          rcn_current_sprite_width = rcn_current_sprite_height = 8;
+          rcn_current_sprite_columns = rcn_current_sprite_rows = 1;
           rcn_dispatch_ed_event('rcn_current_sprite_change')
         } else if(e.buttons == 4) { // Middle button: shift map
           if(shift_prev_x != undefined && shift_prev_y != undefined) {

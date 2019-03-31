@@ -1,8 +1,8 @@
 // Raccoon sprite selector
 
-var rcn_current_sprite = 0;
-var rcn_current_sprite_width = 8;
-var rcn_current_sprite_height = 8;
+let rcn_current_sprite = 0;
+let rcn_current_sprite_columns = 1;
+let rcn_current_sprite_rows = 1;
 
 function rcn_sprite_select_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
@@ -46,8 +46,8 @@ function rcn_sprite_select_ed() {
     const spr_y = cur_spr >> 4;
     const x = vp.x + spr_x * vp.mul * 8;
     const y = vp.y + spr_y * vp.mul * 8;
-    const width = rcn_current_sprite_width * vp.mul;
-    const height = rcn_current_sprite_height * vp.mul;
+    const width = rcn_current_sprite_columns * vp.mul * 8;
+    const height = rcn_current_sprite_rows * vp.mul * 8;
     this.draw_quad(x - 2, y - 2, 2, height + 4, 1, 1, 1, 1);
     this.draw_quad(x + width, y - 2, 2, height + 4, 1, 1, 1, 1);
     this.draw_quad(x, y - 2, width, 2, 1, 1, 1, 1);
@@ -90,7 +90,7 @@ rcn_sprite_select_ed.prototype.type = 'sprite_select_ed';
 
 rcn_sprite_select_ed.prototype.set_current_sprite = function(x, y) {
   rcn_current_sprite = x + (y << 4);
-  rcn_current_sprite_width = rcn_current_sprite_height = 8;
+  rcn_current_sprite_columns = rcn_current_sprite_rows = 1;
   rcn_dispatch_ed_event('rcn_current_sprite_change');
 }
 
@@ -99,11 +99,11 @@ rcn_sprite_select_ed.prototype.extend_current_sprite = function(x, y) {
   const old_y0 = rcn_current_sprite >> 4;
   const new_x0 = Math.min(x, old_x0);
   const new_y0 = Math.min(y, old_y0);
-  const new_x1 = Math.max(x + 1, old_x0 + (rcn_current_sprite_width >> 3));
-  const new_y1 = Math.max(y + 1, old_y0 + (rcn_current_sprite_height >> 3));
+  const new_x1 = Math.max(x + 1, old_x0 + rcn_current_sprite_columns);
+  const new_y1 = Math.max(y + 1, old_y0 + rcn_current_sprite_rows);
   rcn_current_sprite = new_x0 + (new_y0 << 4);
-  rcn_current_sprite_width = (new_x1 - new_x0) << 3;
-  rcn_current_sprite_height = (new_y1 - new_y0) << 3;
+  rcn_current_sprite_columns = new_x1 - new_x0;
+  rcn_current_sprite_rows = new_y1 - new_y0;
   rcn_dispatch_ed_event('rcn_current_sprite_change');
 }
 
