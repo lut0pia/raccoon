@@ -135,6 +135,10 @@ function rcn_sprite_ed() {
     sprite_ed.update_draw_canvas();
   });
 
+  this.addEventListener('rcn_window_resize', function() {
+    sprite_ed.draw_canvas.flush();
+  });
+
   this.update_color_inputs();
   this.update_flag_inputs();
   this.update_draw_canvas();

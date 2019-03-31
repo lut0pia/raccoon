@@ -82,6 +82,10 @@ function rcn_map_ed() {
     }
   });
 
+  this.addEventListener('rcn_window_resize', function() {
+    map_ed.map_canvas.flush();
+  });
+
   this.update_map_canvas();
 }
 

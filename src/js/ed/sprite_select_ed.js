@@ -76,6 +76,10 @@ function rcn_sprite_select_ed() {
     sprite_sel_ed.update_spritesheet_canvas();
   })
 
+  this.addEventListener('rcn_window_resize', function() {
+    sprite_sel_ed.spritesheet_canvas.flush();
+  });
+
   this.update_sprite_index_text();
   this.update_spritesheet_canvas();
 }
