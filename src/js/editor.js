@@ -54,7 +54,7 @@ function rcn_start_editor_mode(params) {
   let event_mirror = rcn_global_bin.rom.slice();
   document.body.addEventListener('keydown', function(e) {
     if(!(e.ctrlKey || e.metaKey)) return;
-    if(e.target != document.body) return;
+    if(e.target.type == 'text' || e.target.type == 'textarea') return;
 
     let offset;
     let patch;
