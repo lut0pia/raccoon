@@ -286,7 +286,7 @@ function rcn_vm_worker_function(rcn) {
   }
 
   // Raccoon sound API
-  let sfx_chans = new Array(4);
+  let sfx_chans = [undefined, undefined, undefined, undefined];
   const sfx_update = function() {
     for(let i = 0; i < 4; i++) {
       const state = sfx_chans[i];
