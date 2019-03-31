@@ -49,32 +49,12 @@ function rcn_canvas() {
     -1, 3, 0, -1,
     3, -1, 2, 1,
   ]));
-
-  this.tick();
 }
 
 rcn_canvas.prototype.set_aspect_ratio = function(width, height) {
   this.node.width = width;
   this.node.height = height;
   this.flush();
-}
-
-rcn_canvas.prototype.tick = function() {
-  this.removed_counter = this.removed_counter || 0;
-  if(!document.body.contains(this.node) && ++this.removed_counter > 3) {
-    // That canvas was removed from the visible DOM, bail
-    return;
-  }
-
-  if(this.last_width !== this.node.clientWidth || this.last_height !== this.node.clientHeight) {
-    this.flush();
-
-    this.last_width = this.node.clientWidth;
-    this.last_height = this.node.clientHeight;
-  }
-
-  var canvas = this;
-  this.timeout_handle = setTimeout(function() { canvas.tick(); }, 50);
 }
 
 rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, palette) {
