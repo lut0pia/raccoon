@@ -1,7 +1,7 @@
 // Generic draggable window
 
 function rcn_window() {
-  var window = this;
+  let window = this;
 
   this.section = document.createElement('section');
   this.section.id = ((Math.random() * 0x10000000) >>> 0).toString(16);
@@ -43,6 +43,19 @@ function rcn_window() {
   // Create content
   this.content = document.createElement('content');
   this.section.appendChild(this.content);
+
+  // Create content resize observer
+  this.observer = new MutationObserver(function(mutations) {
+    for(let i = 0; i < mutations.length; i++) {
+      let mutation = mutations[i];
+      if(mutation.attributeName == 'style') {
+        window.section.dispatchEvent(new CustomEvent('rcn_window_resize'));
+      }
+    }
+  });
+  this.observer.observe(this.content, {
+    attributes: true,
+  });
 }
 
 rcn_window.prototype.add_header_icon = function(arg) {
