@@ -13,22 +13,20 @@ function rcn_vm_worker_function(rcn) {
   const rcn_mem_screen_offset = rcn.mem_screen_offset;
   const rcn_mem_screen_size = rcn.mem_screen_size;
 
+  let ram = new Uint8Array(rcn_ram_size);
+
   // Keep parts of the API local
-  var _Function = Function;
-  var _Math = Math;
-  var _postMessage = postMessage;
-  var _Uint8Array = Uint8Array;
+  let _Function = Function;
+  let _Math = Math;
+  let _postMessage = postMessage;
+  let _self = self;
 
   // Remove parts of the API
-  delete eval;
-  delete Function;
-  delete Math;
-  delete postMessage;
-  delete Uint8Array;
-  delete Worker;
-  delete XMLHttpRequest;
-
-  var ram = new _Uint8Array(rcn_ram_size);
+  Object.getOwnPropertyNames(_self).forEach(function(key) {
+    if(key != 'onmessage') {
+      delete _self[key];
+    }
+  });
 
   // Initialize permutation
   for(var i=0; i < 16; i++) {
