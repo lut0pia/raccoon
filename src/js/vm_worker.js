@@ -145,7 +145,7 @@ function rcn_vm_worker_function(rcn) {
   }
   const _fget = fget = function(n, f) {
     const flags = ram[rcn.mem_spriteflags_offset + n];
-    return f ? ((flags & (1 << f)) != 0) : flags;
+    return f !== undefined ? ((flags & (1 << f)) != 0) : flags;
   }
   fset = function(n, f, v) {
     const i = rcn.mem_spriteflags_offset + n;
