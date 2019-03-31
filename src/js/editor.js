@@ -166,3 +166,8 @@ function rcn_confirm_bin_override() {
   return old_json == saved_json ||
     confirm('Are you sure you want to overwrite your working bin? You have unsaved changes.');
 }
+
+// Make sure that rcn_storage.bins is an array
+if(!rcn_storage.bins) {
+  rcn_storage.bins = [];
+}
