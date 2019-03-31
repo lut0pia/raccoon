@@ -60,6 +60,8 @@ rcn_vm.prototype.tick = function() {
 
   if(this.worker && !this.paused) {
     this.update();
+  } else {
+    this.canvas.flush();
   }
 }
 
