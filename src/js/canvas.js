@@ -2,6 +2,7 @@
 
 function rcn_canvas() {
   this.node = document.createElement('canvas');
+  this.node.rcn_canvas = this;
 
   this.padding_x = 0;
   this.padding_y = 0;
@@ -175,3 +176,14 @@ rcn_canvas.prototype.compute_viewport = function() {
     width: vp_width, height: vp_height,
   };
 }
+
+// Flush all canvases on document load
+document.addEventListener('load', function() {
+  let canvases = document.getElementsByTagName('canvas');
+  for(let i = 0; i < canvases.length; i++) {
+    let canvas = canvases[i];
+    if(canvas.rcn_canvas) {
+      canvas.rcn_canvas.flush();
+    }
+  }
+});
