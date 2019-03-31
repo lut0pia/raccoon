@@ -161,9 +161,10 @@ function rcn_confirm_bin_override() {
   const saved_bin = rcn_storage.bins.find(function(bin) {
     return bin.name == rcn_global_bin.name;
   });
-  const old_json = JSON.stringify(rcn_global_bin.to_json());
+  const current_json = JSON.stringify(rcn_global_bin.to_json());
+  const default_json = JSON.stringify((new rcn_bin()).to_json());
   const saved_json = saved_bin ? JSON.stringify(saved_bin) : '';
-  return old_json == saved_json ||
+  return current_json == saved_json || current_json == default_json ||
     confirm('Are you sure you want to overwrite your working bin? You have unsaved changes.');
 }
 
