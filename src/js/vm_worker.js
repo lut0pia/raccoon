@@ -474,6 +474,11 @@ function rcn_vm_worker_function(rcn) {
         code = code.replace(/function ([a-z]+)(\s*)(\([^\)]*\))/gim, '$1 = function$2$3');
         (new _Function(code))();
         break;
+      case 'init':
+        if(typeof init !== 'undefined') {
+          init(); // This is user-defined
+        }
+        break;
       case 'memory':
         ram.set(e.data.bytes, e.data.offset);
         break;

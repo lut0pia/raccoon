@@ -98,6 +98,7 @@ rcn_vm.prototype.load_bin = function(bin) {
   this.reset();
   this.load_memory(bin.rom);
   this.load_code(bin.code);
+  this.worker.postMessage({type: 'init'});
 }
 
 rcn_vm.prototype.load_code = function(code) {
