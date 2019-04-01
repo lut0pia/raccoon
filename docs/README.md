@@ -130,6 +130,10 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `map(celx, cely, sx, sy, celw, celh)`: Draws a rectangle of the map starting at (`celx`;`cely`) with an extent of (`celw`;`celh`) at the pixel (`sx`;`sy`)
 - `print(x, y, text, c)`: Prints the `text` in color `c` starting at screen coordinates (`x`;`y`)
 - `line(x0, y0, x1, y1, c)`: Draws straight line in color `c` between screen coordinates (`x0`;`y0`) and (`x1`;`y1`)
+- `rect(x, y, w, h, c)`: Draws a hollow rectangle at screen coordinates (`x`;`y`) of width `w`, height `h`, and color `c`
+- `rectfill(x, y, w, h, c)`: Draws a filled rectangle at screen coordinates (`x`;`y`) of width `w`, height `h`, and color `c`
+- `circ(x, y, r, c)`: Draws a hollow circle of radius `r` with its center at screen coordinates (`x`;`y`) in color `c`
+- `circfill(x, y, r, c)`: Draws a filled circle (disk) of radius `r` with its center at screen coordinates (`x`;`y`) in color `c`
 
 ## Math Functions
 
