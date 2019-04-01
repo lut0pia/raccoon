@@ -208,6 +208,14 @@ function rcn_vm_worker_function(rcn) {
     const index = screen_pixel_index(x2, y);
     ram.fill(cc, index, index + (w >> 1));
   }
+  const hline_safe = function(x, y, w, c) {
+    if(y >= 0 && y < 128) {
+      w += _min(0, x);
+      x = _max(0, x);
+      w -= _max(128, x + w) - 128;
+      hline(x, y, w, c);
+    }
+  }
   line = function(x0, y0, x1, y1, c) {
     x0 = _flr(x0) + 0.5;
     x1 = _flr(x1) + 0.5;
@@ -279,6 +287,67 @@ function rcn_vm_worker_function(rcn) {
       c = _palmget(c);
       for(let i = 0; i < h; i++) {
         hline(x, y + i, w, c);
+      }
+    }
+  }
+  circ = function(x, y, r, c) {
+    if(_paltget(c)) {
+      return; // Don't draw transparent colors
+    }
+    x <<= 0;
+    y <<= 0;
+    r <<= 0;
+
+    // Bresenham
+    let d = 3 - (2 * r);
+    let ox = 0;
+    let oy = r;
+
+    while(ox <= oy) {
+      _pset(x + ox, y + oy, c);
+      _pset(x + ox, y - oy, c);
+      _pset(x - ox, y + oy, c);
+      _pset(x - ox, y - oy, c);
+      _pset(x + oy, y + ox, c);
+      _pset(x + oy, y - ox, c);
+      _pset(x - oy, y + ox, c);
+      _pset(x - oy, y - ox, c);
+
+      ox++;
+      if(d < 0) {
+        d += 4 * ox + 6;
+      } else {
+        d += 4 * (ox - oy) + 10;
+        oy--;
+      }
+    }
+  }
+  circfill = function(x, y, r, c) {
+    if(_paltget(c)) {
+      return; // Don't draw transparent colors
+    }
+    x <<= 0;
+    y <<= 0;
+    r <<= 0;
+
+    // Bresenham
+    let d = 3 - (2 * r);
+    let ox = 0;
+    let oy = r;
+    c = _palmget(c);
+
+    while(ox <= oy) {
+      hline_safe(x - ox, y + oy, (ox << 1) + 1, c);
+      hline_safe(x - ox, y - oy, (ox << 1) + 1, c);
+      hline_safe(x - oy, y + ox, (oy << 1) + 1, c);
+      hline_safe(x - oy, y - ox, (oy << 1) + 1, c);
+
+      ox++;
+      if(d < 0) {
+        d += 4 * ox + 6;
+      } else {
+        d += 4 * (ox - oy) + 10;
+        oy--;
       }
     }
   }
