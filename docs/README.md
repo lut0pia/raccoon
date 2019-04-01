@@ -73,17 +73,17 @@ N.B. Ranges in memory are expressed with their end excluded.
 
 | Memory range | Usage | Lifetime | Breakdown
 | --- | --- | --- | ---
-| `0x0000-0x2000` | [Spritesheet](#spritesheet-memory) | ROM | 128x128x4bits
-| `0x2000-0x4000` | [Map](#map-memory) | ROM | 128x64x8bits
-| `0x4000-0x4018` | [Palette](#palette-memory) | ROM | 8x24bits
-| `0x4100-0x4200` | [Sprite flags](#sprite-flags-memory) | ROM | 256x8bits
-| `0x5000-0x5010` | [Palette mod](#palette-mod-memory) | RAM | 16x(4+3+1)bits
-| `0x5010-0x5014` | [Gamepad state](#gamepad-state-memory) | RAM | 4x(4+4)bits
+| `0x0000-0x1800` | [Spritesheet](#spritesheet-memory) | ROM | 128x96x4bits
+| `0x1800-0x3800` | [Map](#map-memory) | ROM | 128x64x8bits
+| `0x3800-0x3818` | [Palette](#palette-memory) | ROM | 8x24bits
+| `0x3818-0x38d8` | [Sprite flags](#sprite-flags-memory) | ROM | 192x8bits
+| `0x5fe2-0x5ff8` | [Palette mod](#palette-mod-memory) | RAM | 16x(4+3+1)bits
+| `0x5ff8-0x6000` | [Gamepad state](#gamepad-state-memory) | RAM | 2x4x(4+4)bits
 | `0x6000-0x8000` | [Screen](#screen-memory) | RAM | 128x128x4bits
 
 ## Spritesheet Memory
 
-Spritesheet data is 128x128 pixels, arranged in 256 8x8 sprites from left to right, top to bottom.
+Spritesheet data is 128x96 pixels, arranged in 192 8x8 sprites from left to right, top to bottom.
 
 ## Map Memory
 
@@ -95,7 +95,7 @@ Palette data is 8 RGB colors, each 3 bytes for the red, green and blue channels.
 
 ## Sprite Flags Memory
 
-Sprite flags are 256 8bits bitfields.
+Sprite flags are 192 8bits bitfields.
 
 ## Palette Mod Memory
 
