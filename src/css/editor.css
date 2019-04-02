@@ -7,6 +7,29 @@ body {
   z-index: 100;
   background-color: lightgrey;
   border: 2px lightgrey outset;
+
+  /* Minimized by default, expand animation uses max-size */
+  min-width: 32px;
+  max-width: 32px;
+  min-height: 32px;
+  max-height: 32px;
+  transition: max-width 0.2s ease, max-height 0.2s ease;
+  overflow: hidden;
+}
+
+#toolbar div {
+  white-space: nowrap; /* Avoids divs changing height during animation */
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#toolbar:hover {
+  max-width: 200px;
+  max-height: 512px;
+}
+
+#toolbar:hover div {
+  opacity: 1;
 }
 
 #toolbar .editor_button {
