@@ -24,7 +24,7 @@ function rcn_sound_ed() {
   // Create speed select
   this.speed_select = document.createElement('select');
   this.speed_select.onchange = function() {
-    sound_ed.set_current_speed(Number(this.value));
+    sound_ed.set_speed(Number(this.value));
   }
   for(let i = 0; i < 256; i++) {
     let option = document.createElement('option');
@@ -62,7 +62,7 @@ rcn_sound_ed.prototype.get_current_sound_offset = function() {
   return rcn.mem_sound_offset + this.current_sound * 66;
 }
 
-rcn_sound_ed.prototype.set_current_speed = function(speed) {
+rcn_sound_ed.prototype.set_speed = function(speed) {
   const sound_offset = this.get_current_sound_offset();
   rcn_global_bin.rom[sound_offset] = speed;
   rcn_dispatch_ed_event('rcn_bin_change', {
