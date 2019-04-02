@@ -39,6 +39,10 @@ The virtual machine is where your game actually comes to life.
 
 The `Reboot` button will wipe everything and load the current bin again, useful to check what happens with a fresh start of your game.
 
+The `Step` button triggers a single frame update. It is useful when paused, to see what happens frame after frame.
+
+The `Paused` checkbox controls whether the virtual machine is currently paused. You can toggle it by pressince `Space` while focusing the virtual machine.
+
 The `Autoapply` checkbox indicates whether or not data changes made to the current bin should be replicated directly inside the virtual machine. You may want to disable it if your game code modifies sprite or map data in realtime.
 
 ## Code Editor
