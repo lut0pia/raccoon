@@ -4,8 +4,6 @@ function rcn_sound_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
-  this.current_sound = 0;
-
   let sound_ed = this;
 
   // Create sound select
@@ -48,8 +46,7 @@ function rcn_sound_ed() {
     }
   });
 
-  this.update_speed();
-  this.update_notes();
+  this.set_current_sound(0);
 }
 
 rcn_sound_ed.prototype.set_current_sound = function(i) {
