@@ -7,6 +7,9 @@ function rcn_sound_ed() {
   let sound_ed = this;
 
   // Create sound select
+  let sound_select_label = document.createElement('label');
+  sound_select_label.innerText = 'Track: ';
+  this.add_child(sound_select_label);
   this.sound_select = document.createElement('select');
   this.sound_select.onchange = function() {
     sound_ed.set_current_sound(Number(this.value));
@@ -18,8 +21,12 @@ function rcn_sound_ed() {
     this.sound_select.appendChild(option);
   }
   this.add_child(this.sound_select);
+  this.add_child(document.createElement('br'));
 
   // Create speed select
+  let speed_select_label = document.createElement('label');
+  speed_select_label.innerText = 'Speed: ';
+  this.add_child(speed_select_label);
   this.speed_select = document.createElement('select');
   this.speed_select.onchange = function() {
     sound_ed.set_speed(Number(this.value));
@@ -31,6 +38,7 @@ function rcn_sound_ed() {
     this.speed_select.appendChild(option);
   }
   this.add_child(this.speed_select);
+  this.add_child(document.createElement('br'));
 
   // Create note table
   this.note_table = document.createElement('table');

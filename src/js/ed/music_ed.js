@@ -9,6 +9,9 @@ function rcn_music_ed() {
   let music_ed = this;
 
   // Create music select
+  let music_select_label = document.createElement('label');
+  music_select_label.innerText = 'Music: ';
+  this.add_child(music_select_label);
   this.music_select = document.createElement('select');
   this.music_select.onchange = function() {
     music_ed.set_current_music(Number(this.value));
@@ -20,8 +23,12 @@ function rcn_music_ed() {
     this.music_select.appendChild(option);
   }
   this.add_child(this.music_select);
+  this.add_child(document.createElement('br'));
 
   // Create track count range
+  let tracks_label = document.createElement('label');
+  tracks_label.innerText = 'Tracks: ';
+  this.add_child(tracks_label);
   this.track_count_range = document.createElement('input');
   this.track_count_range.type = 'range';
   this.track_count_range.min = 1;
@@ -47,8 +54,12 @@ function rcn_music_ed() {
     this.add_child(select);
     this.track_select.push(select);
   }
+  this.add_child(document.createElement('br'));
 
   // Create next select
+  let next_select_label = document.createElement('label');
+  next_select_label.innerText = 'Next: ';
+  this.add_child(next_select_label);
   this.next_select = document.createElement('select');
   this.next_select.onchange = function() {
     music_ed.set_next(Number(this.value));
