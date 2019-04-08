@@ -31,11 +31,20 @@ function rcn_vm() {
   });
 
   this.reset();
+  this.last_tick = 0;
 
   var vm = this;
-  this.tick_interval = setInterval(function() {
-    vm.tick();
-  }, 1000/30);
+  const tick = function() {
+    const now = performance.now();
+    if(now > vm.last_tick + 30) {
+      if(!vm.tick()) {
+        return;
+      }
+      vm.last_tick = now;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 }
 
 rcn_vm.prototype.kill = function() {
@@ -53,9 +62,8 @@ rcn_vm.prototype.kill = function() {
 rcn_vm.prototype.tick = function() {
   if(!document.body.contains(this.canvas.node)) {
     // The canvas was removed from the visible DOM, bail
-    clearInterval(this.tick_interval);
     this.kill();
-    return;
+    return false;
   }
 
   if(this.worker && !this.paused) {
@@ -63,6 +71,7 @@ rcn_vm.prototype.tick = function() {
   } else {
     this.canvas.flush();
   }
+  return true;
 }
 
 rcn_vm.prototype.update = function() {
