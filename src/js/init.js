@@ -60,7 +60,6 @@ function rcn_add_head_node(name) {
   return new_node;
 }
 function rcn_load_script(script) {
-  // TODO: keep array of script promises
   var path = 'src/js/'+script+'.js';
   var script_node = rcn_add_head_node('script');
   script_node.type = 'text/javascript';
@@ -77,7 +76,6 @@ function rcn_load_scripts(scripts) {
   return Promise.all(script_promises);
 }
 function rcn_load_style(style) {
-  // TODO: keep array of style promises
   var path = 'src/css/'+style+'.css';
   var style_node = rcn_add_head_node('link');
   style_node.rel = 'stylesheet';
