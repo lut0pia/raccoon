@@ -40,6 +40,24 @@ function rcn_sound_ed() {
   this.add_child(this.speed_select);
   this.add_child(document.createElement('br'));
 
+  // Create instrument select
+  let instrument_select_label = document.createElement('label');
+  instrument_select_label.innerText = 'Instrument: ';
+  this.add_child(instrument_select_label);
+  this.instrument_select = document.createElement('select');
+  this.instrument_select.onchange = function() {
+    sound_ed.set_instrument(Number(this.value));
+  }
+  for(let i in rcn_instruments) {
+    let instrument = rcn_instruments[i];
+    let option = document.createElement('option');
+    option.innerText = instrument.name;
+    option.value = i;
+    this.instrument_select.appendChild(option);
+  }
+  this.add_child(this.instrument_select);
+  this.add_child(document.createElement('br'));
+
   // Create note table
   this.note_table = document.createElement('table');
   this.add_child(this.note_table);
@@ -50,6 +68,7 @@ function rcn_sound_ed() {
     const mem_sound_end = rcn.mem_sound_offset + rcn.mem_sound_size;
     if(e.detail.begin < mem_sound_end && e.detail.end > mem_sound_begin) {
       sound_ed.update_speed();
+      sound_ed.update_instrument();
       sound_ed.update_notes();
     }
   });
@@ -60,6 +79,7 @@ function rcn_sound_ed() {
 rcn_sound_ed.prototype.set_current_sound = function(i) {
   this.current_sound = i;
   this.update_speed();
+  this.update_instrument();
   this.update_notes();
 }
 
@@ -79,6 +99,20 @@ rcn_sound_ed.prototype.set_speed = function(speed) {
 rcn_sound_ed.prototype.update_speed = function() {
   const sound_offset = this.get_current_sound_offset();
   this.speed_select.value = rcn_global_bin.rom[sound_offset];
+}
+
+rcn_sound_ed.prototype.set_instrument = function(instrument) {
+  const sound_offset = this.get_current_sound_offset();
+  rcn_global_bin.rom[sound_offset + 1] = instrument;
+  rcn_dispatch_ed_event('rcn_bin_change', {
+    begin: sound_offset + 1,
+    end: sound_offset + 2,
+  });
+}
+
+rcn_sound_ed.prototype.update_instrument = function() {
+  const sound_offset = this.get_current_sound_offset();
+  this.instrument_select.value = rcn_global_bin.rom[sound_offset + 1];
 }
 
 rcn_sound_ed.prototype.update_notes = function() {
