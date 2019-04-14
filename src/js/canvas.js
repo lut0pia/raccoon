@@ -177,6 +177,30 @@ rcn_canvas.prototype.compute_viewport = function() {
   };
 }
 
+rcn_canvas.prototype.interaction = function(f) {
+  const canvas = this;
+  let focused = false;
+  const event_callback = function(e) {
+    if(e.buttons > 0) {
+      const canvas_coords = this.getBoundingClientRect();
+      const tex_coords = canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
+      if(tex_coords) {
+        if(e.type == 'mousedown') {
+          focused = true;
+        }
+        if(focused) {
+          f(e, tex_coords);
+        }
+      }
+    } else {
+      focused = false;
+    }
+  }
+  this.node.addEventListener('contextmenu', function(e){e.preventDefault()});
+  this.node.addEventListener('mousedown', event_callback);
+  this.node.addEventListener('mousemove', event_callback);
+}
+
 // Flush all canvases on document load
 document.addEventListener('load', function() {
   let canvases = document.getElementsByTagName('canvas');
