@@ -58,9 +58,14 @@ function rcn_sound_ed() {
   this.add_child(this.instrument_select);
   this.add_child(document.createElement('br'));
 
+  // Create note table wrapper
+  let note_table_wrapper = document.createElement('div');
+  note_table_wrapper.classList.add('wrapper');
+  this.add_child(note_table_wrapper);
+
   // Create note table
   this.note_table = document.createElement('table');
-  this.add_child(this.note_table);
+  note_table_wrapper.appendChild(this.note_table);
 
   this.addEventListener('rcn_bin_change', function(e) {
     // Sound update
