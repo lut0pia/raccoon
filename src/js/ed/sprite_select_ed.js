@@ -24,11 +24,7 @@ function rcn_sprite_select_ed() {
   this.spritesheet_canvas = new rcn_canvas();
   this.spritesheet_canvas.padding_x = this.spritesheet_canvas.padding_y = 2;
   this.spritesheet_canvas.node.classList.add('spritesheet');
-  const sheet_mouse_callback = function(e) {
-    if(e.buttons !== 1) return; // Only care about left button
-    const canvas_coords = this.getBoundingClientRect();
-    const tex_coords = sprite_sel_ed.spritesheet_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
-    if(!tex_coords) return;
+  this.spritesheet_canvas.interaction(function(e, tex_coords) {
     const spr_x = tex_coords.x >> 3;
     const spr_y = tex_coords.y >> 3;
     if(e.type === 'mousedown') {
@@ -36,9 +32,7 @@ function rcn_sprite_select_ed() {
     } else {
       sprite_sel_ed.extend_current_sprite(spr_x, spr_y);
     }
-  }
-  this.spritesheet_canvas.node.addEventListener('mousedown', sheet_mouse_callback);
-  this.spritesheet_canvas.node.addEventListener('mousemove', sheet_mouse_callback);
+  });
   this.spritesheet_canvas.onpostflush = function() {
     const vp = this.compute_viewport();
     const cur_spr = rcn_current_sprite;

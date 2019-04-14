@@ -13,41 +13,31 @@ function rcn_map_ed() {
   // Create map canvas
   this.map_canvas = new rcn_canvas();
   this.map_canvas.node.classList.add('map');
-  var shift_prev_x;
-  var shift_prev_y;
-  var draw_mouse_callback = function(e) {
-    if(e.buttons > 0) {
-      const canvas_coords = this.getBoundingClientRect();
-      const tex_coords = map_ed.map_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
-      if(tex_coords) {
-        if(e.buttons == 1) { // Left button: draw
-          map_ed.set_tile(tex_coords.x >> 3, tex_coords.y >> 3);
-        } else if(e.buttons == 2) { // Right button: tile pick
-          rcn_current_sprite = map_ed.get_tile(tex_coords.x >> 3, tex_coords.y >> 3);
-          rcn_current_sprite_columns = rcn_current_sprite_rows = 1;
-          rcn_dispatch_ed_event('rcn_current_sprite_change')
-        } else if(e.buttons == 4) { // Middle button: shift map
-          if(shift_prev_x != undefined && shift_prev_y != undefined) {
-            const vp = map_ed.map_canvas.compute_viewport();
-            map_ed.current_offset_x += (shift_prev_x - e.clientX) / (vp.mul * 8);
-            map_ed.current_offset_y += (shift_prev_y - e.clientY) / (vp.mul * 8);
-            map_ed.current_offset_x = Math.max(0, Math.min(128-16, map_ed.current_offset_x));
-            map_ed.current_offset_y = Math.max(0, Math.min(64-16, map_ed.current_offset_y));
-            map_ed.update_map_canvas();
-          }
-
-          shift_prev_x = e.clientX;
-          shift_prev_y = e.clientY;
-        }
+  let shift_start_client_x, shift_start_client_y, shift_start_offset_x, shift_start_offset_y;
+  this.map_canvas.interaction(function(e, tex_coords) {
+    if(e.buttons == 1) { // Left button: draw
+      map_ed.set_tile(tex_coords.x >> 3, tex_coords.y >> 3);
+    } else if(e.buttons == 2) { // Right button: tile pick
+      rcn_current_sprite = map_ed.get_tile(tex_coords.x >> 3, tex_coords.y >> 3);
+      rcn_current_sprite_columns = rcn_current_sprite_rows = 1;
+      rcn_dispatch_ed_event('rcn_current_sprite_change')
+    } else if(e.buttons == 4) { // Middle button: shift map
+      if(e.type == 'mousedown') {
+        shift_start_client_x = e.clientX;
+        shift_start_client_y = e.clientY;
+        shift_start_offset_x = map_ed.current_offset_x;
+        shift_start_offset_y = map_ed.current_offset_y;
       }
-    } else {
-      shift_prev_x = undefined;
-      shift_prev_y = undefined;
+      if(shift_start_client_x != undefined && shift_start_offset_y != undefined) {
+        const vp = map_ed.map_canvas.compute_viewport();
+        map_ed.current_offset_x = shift_start_offset_x + (shift_start_client_x - e.clientX) / (vp.mul * 8);
+        map_ed.current_offset_y = shift_start_offset_y + (shift_start_client_y - e.clientY) / (vp.mul * 8);
+        map_ed.current_offset_x = Math.max(0, Math.min(128 - 16, map_ed.current_offset_x)) << 0;
+        map_ed.current_offset_y = Math.max(0, Math.min(64 - 16, map_ed.current_offset_y)) << 0;
+        map_ed.update_map_canvas();
+      }
     }
-  }
-  this.map_canvas.node.addEventListener('contextmenu', function(e){e.preventDefault()});
-  this.map_canvas.node.addEventListener('mousedown', draw_mouse_callback);
-  this.map_canvas.node.addEventListener('mousemove', draw_mouse_callback);
+  });
   this.add_child(this.map_canvas.node);
 
   // Create apply button

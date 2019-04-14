@@ -77,22 +77,13 @@ function rcn_sprite_ed() {
   // Create draw canvas
   this.draw_canvas = new rcn_canvas();
   this.draw_canvas.node.classList.add('draw');
-  var draw_mouse_callback = function(e) {
-    if(e.buttons > 0) {
-      var canvas_coords = this.getBoundingClientRect();
-      var tex_coords = sprite_ed.draw_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
-      if(tex_coords) {
-        if(e.buttons == 1) { // Left button: draw
-          sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
-        } else if(e.buttons == 2) { // Right button: color pick
-          sprite_ed.set_current_color(sprite_ed.get_pixel(tex_coords.x, tex_coords.y))
-        }
-      }
+  this.draw_canvas.interaction(function(e, tex_coords) {
+    if(e.buttons == 1) { // Left button: draw
+      sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
+    } else if(e.buttons == 2) { // Right button: color pick
+      sprite_ed.set_current_color(sprite_ed.get_pixel(tex_coords.x, tex_coords.y))
     }
-  }
-  this.draw_canvas.node.addEventListener('contextmenu', function(e){e.preventDefault()});
-  this.draw_canvas.node.addEventListener('mousedown', draw_mouse_callback);
-  this.draw_canvas.node.addEventListener('mousemove', draw_mouse_callback);
+  });
   this.add_child(this.draw_canvas.node);
 
   // Create apply button
