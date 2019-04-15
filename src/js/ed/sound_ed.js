@@ -10,52 +10,38 @@ function rcn_sound_ed() {
   let sound_select_label = document.createElement('label');
   sound_select_label.innerText = 'Track: ';
   this.add_child(sound_select_label);
-  this.sound_select = document.createElement('select');
-  this.sound_select.onchange = function() {
-    sound_ed.set_current_sound(Number(this.value));
-  }
-  for(let i = 0; i < 64; i++) {
-    let option = document.createElement('option');
-    option.innerText = i;
-    option.value = i;
-    this.sound_select.appendChild(option);
-  }
-  this.add_child(this.sound_select);
+  this.add_child(this.sound_select = rcn_ui_select({
+    options: new Array(64).fill(0).map(function(v, i){ return i; }),
+    onchange: function() {
+      sound_ed.set_current_sound(Number(this.value));
+    },
+  }));
   this.add_child(document.createElement('br'));
 
   // Create speed select
   let speed_select_label = document.createElement('label');
   speed_select_label.innerText = 'Speed: ';
   this.add_child(speed_select_label);
-  this.speed_select = document.createElement('select');
-  this.speed_select.onchange = function() {
-    sound_ed.set_speed(Number(this.value));
-  }
-  for(let i = 0; i < 256; i++) {
-    let option = document.createElement('option');
-    option.innerText = i;
-    option.value = i;
-    this.speed_select.appendChild(option);
-  }
-  this.add_child(this.speed_select);
+  this.add_child(this.speed_select = rcn_ui_select({
+    options: new Array(256).fill(0).map(function(v, i){ return i; }),
+    onchange: function() {
+      sound_ed.set_speed(Number(this.value));
+    },
+  }));
   this.add_child(document.createElement('br'));
 
   // Create instrument select
   let instrument_select_label = document.createElement('label');
   instrument_select_label.innerText = 'Instrument: ';
   this.add_child(instrument_select_label);
-  this.instrument_select = document.createElement('select');
-  this.instrument_select.onchange = function() {
-    sound_ed.set_instrument(Number(this.value));
-  }
-  for(let i in rcn_instruments) {
-    let instrument = rcn_instruments[i];
-    let option = document.createElement('option');
-    option.innerText = instrument.name;
-    option.value = i;
-    this.instrument_select.appendChild(option);
-  }
-  this.add_child(this.instrument_select);
+  this.add_child(this.instrument_select = rcn_ui_select({
+    options: Object.assign(...Object.keys(rcn_instruments).map(function(i) {
+      return {[i]: rcn_instruments[i].name};
+    })),
+    onchange: function() {
+      sound_ed.set_instrument(Number(this.value));
+    },
+  }));
   this.add_child(document.createElement('br'));
 
   // Create note table wrapper
