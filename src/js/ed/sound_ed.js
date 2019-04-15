@@ -132,23 +132,30 @@ rcn_sound_ed.prototype.update_notes = function() {
       if(pitch == current_pitch && volume > 0) {
         cell.classList.add('active');
         cell.innerText = volume;
-        cell.onclick = function() {
-          rcn_global_bin.rom[note_offset + 1] = 0; // Volume
+        cell.onmousedown = function(e) {
+          if(e.buttons == 1) {
+            rcn_global_bin.rom[note_offset + 1] &= ~7; // Set volume to 0
+          } else if(e.buttons == 2) {
+            let volume = rcn_global_bin.rom[note_offset + 1];
+            volume = volume > 0 ? volume - 1 : 7;
+            rcn_global_bin.rom[note_offset + 1] = volume;
+          }
           rcn_dispatch_ed_event('rcn_bin_change', {
             begin: note_offset + 1,
             end: note_offset + 2,
           });
         }
       } else {
-        cell.onclick = function() {
+        cell.onmousedown = function(e) {
           rcn_global_bin.rom[note_offset + 0] = pitch;
-          rcn_global_bin.rom[note_offset + 1] = 7; // Volume
+          rcn_global_bin.rom[note_offset + 1] |= 7; // Set volume to 7
           rcn_dispatch_ed_event('rcn_bin_change', {
             begin: note_offset,
             end: note_offset + 2,
           });
         }
       }
+      cell.oncontextmenu = function(e) { e.preventDefault(); }
     }
   }
 }
