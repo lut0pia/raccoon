@@ -12,17 +12,12 @@ function rcn_music_ed() {
   let music_select_label = document.createElement('label');
   music_select_label.innerText = 'Music: ';
   this.add_child(music_select_label);
-  this.music_select = document.createElement('select');
-  this.music_select.onchange = function() {
-    music_ed.set_current_music(Number(this.value));
-  }
-  for(let i = 0; i < 64; i++) {
-    let option = document.createElement('option');
-    option.innerText = i;
-    option.value = i;
-    this.music_select.appendChild(option);
-  }
-  this.add_child(this.music_select);
+  this.add_child(this.music_select = rcn_ui_select({
+    options: new Array(64).fill(0).map(function(v, i){ return i; }),
+    onchange: function() {
+      music_ed.set_current_music(Number(this.value));
+    },
+  }));
   this.add_child(document.createElement('br'));
 
   // Create track count range
@@ -41,16 +36,12 @@ function rcn_music_ed() {
   // Create track select
   this.track_select = [];
   for(let i = 0; i < 4; i++) {
-    let select = document.createElement('select');
-    select.onchange = function() {
-      music_ed.set_track(i, Number(this.value));
-    }
-    for(let i = 0; i < 64; i++) {
-      let option = document.createElement('option');
-      option.innerText = i;
-      option.value = i;
-      select.appendChild(option);
-    }
+    let select = rcn_ui_select({
+      options: new Array(64).fill(0).map(function(v, i){ return i; }),
+      onchange: function() {
+        music_ed.set_track(i, Number(this.value));
+      },
+    });
     this.add_child(select);
     this.track_select.push(select);
   }
@@ -60,17 +51,12 @@ function rcn_music_ed() {
   let next_select_label = document.createElement('label');
   next_select_label.innerText = 'Next: ';
   this.add_child(next_select_label);
-  this.next_select = document.createElement('select');
-  this.next_select.onchange = function() {
-    music_ed.set_next(Number(this.value));
-  }
-  for(let i = 0; i < 64; i++) {
-    let option = document.createElement('option');
-    option.innerText = i;
-    option.value = i;
-    this.next_select.appendChild(option);
-  }
-  this.add_child(this.next_select);
+  this.add_child(this.next_select = rcn_ui_select({
+    options: new Array(64).fill(0).map(function(v, i){ return i; }),
+    onchange: function() {
+      music_ed.set_next(Number(this.value));
+    },
+  }));
 
   this.addEventListener('rcn_bin_change', function(e) {
     // Music update
