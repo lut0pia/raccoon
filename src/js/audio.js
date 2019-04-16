@@ -27,8 +27,8 @@ rcn_audio.prototype.set_master_gain = function(gain) {
   this.master_gain.gain.setValueAtTime(gain, rcn_audio_context.currentTime);
 }
 
-rcn_audio.prototype.update = function(bytes) {
-  const change_time = rcn_audio_context.currentTime + (1.5 / 30);
+rcn_audio.prototype.update = function(frame_time, bytes) {
+  const change_time = frame_time + (1.5 / 30);
 
   for(let i = 0; i < rcn_audio_channel_count; i++) {
     this.update_channel(i, change_time, {
