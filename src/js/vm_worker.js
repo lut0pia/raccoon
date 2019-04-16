@@ -404,30 +404,33 @@ function rcn_vm_worker_function(rcn) {
       const state = sfx_chans[i];
       if(state === undefined) continue;
 
-      const sreg_offset = rcn_mem_soundreg_offset + i * 3;
       const snd_offset = rcn_mem_sound_offset + state.n * 66;
-      const speed = ram[snd_offset + 0];
+      const period = ram[snd_offset + 0] + 4; // In audio frames
 
-      if(state.time >= speed) {
-        state.time = 0;
-        state.i += 1;
+      const next_note_index = _ceil(state.time / period);
+      const next_note_time = next_note_index * period;
+      if(state.time <= next_note_time && state.time > next_note_time - 4) {
+        // Next note should be triggered in the next frame
+        const offset = next_note_time - state.time;
+        const sreg_offset = rcn_mem_soundreg_offset + i * 3;
+
+        if(next_note_index >= state.length) {
+          // We've reached the end of the sfx, stop
+          ram[sreg_offset + 1] = (offset << 6); // Offset and pitch
+          ram[sreg_offset + 2] = 0; // Volume and effect
+          delete sfx_chans[i];
+          continue;
+        } else {
+          const note_offset = snd_offset + 2 + (state.offset + next_note_index) * 2;
+          const note_1 = ram[note_offset + 0];
+          const note_2 = ram[note_offset + 1];
+          ram[sreg_offset + 0] = ram[snd_offset + 1]; // Instrument
+          ram[sreg_offset + 1] = (offset << 6) | (note_1 & 0x3f); // Offset and pitch
+          ram[sreg_offset + 2] = note_2; // Volume and effect
+        }
       }
 
-      if(state.i >= state.length) {
-        ram[sreg_offset + 2] = 0; // Volume and effect
-        delete sfx_chans[i];
-        continue;
-      }
-      if(state.time == 0) {
-        const note_offset = snd_offset + 2 + (state.offset + state.i) * 2;
-        const note_1 = ram[note_offset + 0];
-        const note_2 = ram[note_offset + 1];
-
-        ram[sreg_offset + 0] = ram[snd_offset + 1]; // Instrument (shouldn't have to do this every frame)
-        ram[sreg_offset + 1] = note_1 & 0x3f; // Pitch
-        ram[sreg_offset + 2] = note_2; // Volume and effect
-      }
-      state.time++;
+      state.time += 4;
     }
   }
   const _sfx = sfx = function(n, channel = -1, offset = 0, length = 32) {
@@ -437,19 +440,17 @@ function rcn_vm_worker_function(rcn) {
       }), 0);
     }
     sfx_chans[channel] = {
-      n: n,
-      offset: offset,
-      length: length,
-      i: 0,
-      time: 0,
+      n: n, // Sfx index
+      offset: offset, // In notes
+      length: length, // In notes
+      time: 0, // In audio frames (120 per second)
     };
   }
   let mus_state = undefined;
   const mus_update = function() {
     if(mus_state === undefined) return;
 
-
-    if(mus_state.next && mus_state.time >= mus_state.next) {
+    if(mus_state.max_time && mus_state.time >= mus_state.max_time) {
       const mus_index = rcn.mem_music_offset + mus_state.n * 4;
       let next_n = 0;
       next_n += (ram[mus_index + 1] >> 6) << 4;
@@ -462,17 +463,17 @@ function rcn_vm_worker_function(rcn) {
     if(mus_state.time == 0) {
       const mus_index = rcn.mem_music_offset + mus_state.n * 4;
       const track_count = (ram[mus_index] >> 6) + 1;
-      mus_state.next = 0;
+      mus_state.max_time = 0;
       for(let i = 0; i < track_count; i++) {
         const sound_n = ram[mus_index + i] & 0x3f;
         _sfx(sound_n);
         const sound_offset = rcn_mem_sound_offset + sound_n * 66;
-        const speed = ram[sound_offset + 0];
-        mus_state.next = _max(mus_state.next, speed * 32);
+        const period = ram[sound_offset + 0] + 4;
+        mus_state.max_time = _max(mus_state.max_time, period * 32);
       }
     }
 
-    mus_state.time += 1;
+    mus_state.time += 4;
   }
   mus = function(n) {
     if(n < 0) {
