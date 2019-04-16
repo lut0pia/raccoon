@@ -19,13 +19,13 @@ function rcn_sound_ed() {
   this.add_child(document.createElement('br'));
 
   // Create speed select
-  let speed_select_label = document.createElement('label');
-  speed_select_label.innerText = 'Speed: ';
-  this.add_child(speed_select_label);
-  this.add_child(this.speed_select = rcn_ui_select({
-    options: new Array(256).fill(0).map(function(v, i){ return i; }),
+  let period_select_label = document.createElement('label');
+  period_select_label.innerText = 'Period: ';
+  this.add_child(period_select_label);
+  this.add_child(this.period_select = rcn_ui_select({
+    options: new Array(256).fill(0).map(function(v, i){ return (i + 4) / 4; }),
     onchange: function() {
-      sound_ed.set_speed(Number(this.value));
+      sound_ed.set_period(Number(this.value));
     },
   }));
   this.add_child(document.createElement('br'));
@@ -58,7 +58,7 @@ function rcn_sound_ed() {
     const mem_sound_begin = rcn.mem_sound_offset;
     const mem_sound_end = rcn.mem_sound_offset + rcn.mem_sound_size;
     if(e.detail.begin < mem_sound_end && e.detail.end > mem_sound_begin) {
-      sound_ed.update_speed();
+      sound_ed.update_period();
       sound_ed.update_instrument();
       sound_ed.update_notes();
     }
@@ -69,7 +69,7 @@ function rcn_sound_ed() {
 
 rcn_sound_ed.prototype.set_current_sound = function(i) {
   this.current_sound = i;
-  this.update_speed();
+  this.update_period();
   this.update_instrument();
   this.update_notes();
 }
@@ -78,18 +78,18 @@ rcn_sound_ed.prototype.get_current_sound_offset = function() {
   return rcn.mem_sound_offset + this.current_sound * 66;
 }
 
-rcn_sound_ed.prototype.set_speed = function(speed) {
+rcn_sound_ed.prototype.set_period = function(period) {
   const sound_offset = this.get_current_sound_offset();
-  rcn_global_bin.rom[sound_offset] = speed;
+  rcn_global_bin.rom[sound_offset] = period;
   rcn_dispatch_ed_event('rcn_bin_change', {
     begin: sound_offset,
     end: sound_offset + 1,
   });
 }
 
-rcn_sound_ed.prototype.update_speed = function() {
+rcn_sound_ed.prototype.update_period = function() {
   const sound_offset = this.get_current_sound_offset();
-  this.speed_select.value = rcn_global_bin.rom[sound_offset];
+  this.period_select.value = rcn_global_bin.rom[sound_offset];
 }
 
 rcn_sound_ed.prototype.set_instrument = function(instrument) {
