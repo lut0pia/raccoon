@@ -172,3 +172,6 @@ function rcn_confirm_bin_override() {
 if(!rcn_storage.bins) {
   rcn_storage.bins = [];
 }
+
+// Clipboard functionality
+let rcn_clipboard;
