@@ -132,12 +132,6 @@ rcn_bin.prototype.to_html = async function() {
   return html.outerHTML;
 }
 
-rcn_bin.prototype.patch_memory = function(bytes, offset) {
-  for(var i=0; i<bytes.byteLength; i++) {
-    this.rom[offset+i] = bytes[i];
-  }
-}
-
 async function rcn_bin_from_env() {
   for(let i in rcn_hosts) {
     const host = rcn_hosts[i];

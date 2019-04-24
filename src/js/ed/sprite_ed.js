@@ -40,7 +40,7 @@ function rcn_sprite_ed() {
     color_input.id = color_input_id;
     color_input.onchange = function() {
       // Update bin's palette with UI palette
-      rcn_global_bin.patch_memory(sprite_ed.get_palette_bytes(), rcn.mem_palette_offset);
+      rcn_global_bin.rom.set(sprite_ed.get_palette_bytes(), rcn.mem_palette_offset);
       rcn_dispatch_ed_event('rcn_bin_change', {
         begin: rcn.mem_palette_offset,
         end: rcn.mem_palette_offset+rcn.mem_palette_size,
