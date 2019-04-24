@@ -1,5 +1,5 @@
 .window.sound_ed .wrapper {
-  height: calc(100% - 100px);
+  height: calc(100% - 64px);
   margin-top: 4px;
   overflow: auto;
 }
