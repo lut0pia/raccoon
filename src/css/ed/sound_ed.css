@@ -1,3 +1,7 @@
+.window.sound_ed content {
+  height: 256px;
+}
+
 .window.sound_ed .wrapper {
   height: calc(100% - 64px);
   margin-top: 4px;
