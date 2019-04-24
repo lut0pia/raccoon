@@ -34,6 +34,7 @@ function rcn_sprite_select_ed() {
     }
   });
   this.spritesheet_canvas.onpostflush = function() {
+    // Draw selection outline
     const vp = this.compute_viewport();
     const cur_spr = rcn_current_sprite;
     const spr_x = cur_spr & 0xf;
