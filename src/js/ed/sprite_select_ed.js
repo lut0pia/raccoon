@@ -8,7 +8,7 @@ function rcn_sprite_select_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
-  var sprite_sel_ed = this;
+  const sprite_sel_ed = this;
 
   // Create sprite index text
   this.sprite_index_text = document.createElement('div');

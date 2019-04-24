@@ -4,7 +4,7 @@ function rcn_bin_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
-  var bin_ed = this;
+  const bin_ed = this;
 
   // Create name input
   this.name_input = document.createElement('input');
@@ -21,12 +21,12 @@ function rcn_bin_ed() {
     rcn_global_bin.host = this.value == 'undefined' ? undefined : this.value;
     rcn_dispatch_ed_event('rcn_bin_change');
   }
-  var none_option = document.createElement('option');
+  const none_option = document.createElement('option');
   none_option.innerText = 'None';
   none_option.value = 'undefined';
   this.host_select.appendChild(none_option);
-  for(var host_id in rcn_hosts) {
-    var option = document.createElement('option');
+  for(let host_id in rcn_hosts) {
+    const option = document.createElement('option');
     option.innerText = host_id;
     option.value = host_id;
     this.host_select.appendChild(option);
@@ -104,11 +104,11 @@ function rcn_bin_ed() {
   this.file_input.type = 'file';
   this.file_input.onchange = function(e) {
     if(this.files.length>0) {
-      var file = this.files[0];
+      const file = this.files[0];
       if(file.name.match(/\.rcn\.json$/i)) { // It's a text format
-        var file_reader = new FileReader();
+        const file_reader = new FileReader();
         file_reader.onload = function() {
-          var bin = new rcn_bin();
+          const bin = new rcn_bin();
           bin.from_json(JSON.parse(this.result));
           bin_ed.change_bin(bin);
         }
@@ -232,19 +232,19 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
     this.bin_node.parentNode.removeChild(this.bin_node);
   }
 
-  var bin_ed = this;
+  const bin_ed = this;
   this.bin_node = document.createElement('div');
   rcn_storage.bins.forEach(function(stored_bin) {
-    var bin_node = document.createElement('article');
+    const bin_node = document.createElement('article');
 
-    var bin_name = document.createElement('span');
+    const bin_name = document.createElement('span');
     bin_name.innerText = stored_bin.name;
     bin_node.appendChild(bin_name);
 
     bin_node.appendChild(rcn_ui_button({
       value: 'Load',
       onclick: function() {
-        var bin = new rcn_bin();
+        const bin = new rcn_bin();
         bin.from_json(stored_bin);
         bin_ed.change_bin(bin);
       },
@@ -260,7 +260,7 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
 
     if(stored_bin.host && stored_bin.link) {
       // This is a hosted bin
-      var bin_host = document.createElement('span');
+      const bin_host = document.createElement('span');
       bin_host.classList.add('host');
       bin_host.innerText += '('+stored_bin.host+'/'+stored_bin.link+')';
       bin_node.appendChild(bin_host);

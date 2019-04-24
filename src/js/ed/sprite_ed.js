@@ -6,7 +6,7 @@ function rcn_sprite_ed() {
 
   this.current_color = 0;
 
-  var sprite_ed = this;
+  const sprite_ed = this;
 
   // Create panel
   this.panel_div = document.createElement('div');
@@ -16,9 +16,9 @@ function rcn_sprite_ed() {
   // Create color inputs
   this.color_inputs = [];
   this.color_radios = [];
-  for(var i=0; i<8; i++) {
-    var color_wrapper = document.createElement('div');
-    var color_radio = document.createElement('input');
+  for(let i = 0; i < 8; i++) {
+    const color_wrapper = document.createElement('div');
+    const color_radio = document.createElement('input');
     color_radio.type = 'radio';
     color_radio.name = 'sprite_ed_color_radio';
     color_radio.color_index = i;
@@ -29,13 +29,13 @@ function rcn_sprite_ed() {
     this.color_radios.push(color_radio);
     color_wrapper.appendChild(color_radio);
 
-    var color_input_id = 'color_input_'+i;
-    var color_label = document.createElement('label');
+    const color_input_id = 'color_input_'+i;
+    const color_label = document.createElement('label');
     color_label.innerText = i;
     color_label.htmlFor = color_input_id;
     color_wrapper.appendChild(color_label);
 
-    var color_input = document.createElement('input');
+    const color_input = document.createElement('input');
     color_input.type = 'color';
     color_input.id = color_input_id;
     color_input.onchange = function() {
@@ -54,9 +54,9 @@ function rcn_sprite_ed() {
 
   // Create sprite flags inputs
   this.flag_inputs = [];
-  for(var i=0; i<8; i++) {
-    var flag_wrapper = document.createElement('div');
-    var flag_checkbox = document.createElement('input');
+  for(let i = 0; i < 8; i++) {
+    const flag_wrapper = document.createElement('div');
+    const flag_checkbox = document.createElement('input');
     flag_checkbox.id = this.id+'_flag_'+i;
     flag_checkbox.type = 'checkbox';
     flag_checkbox.flag_index = i;
@@ -66,7 +66,7 @@ function rcn_sprite_ed() {
     this.flag_inputs.push(flag_checkbox);
     flag_wrapper.appendChild(flag_checkbox);
 
-    var flag_label = document.createElement('label');
+    const flag_label = document.createElement('label');
     flag_label.innerText = i;
     flag_label.htmlFor = flag_checkbox.id;
     flag_wrapper.appendChild(flag_label);
@@ -140,10 +140,10 @@ rcn_sprite_ed.prototype.docs_link = 'sprite-editor';
 rcn_sprite_ed.prototype.type = 'sprite_ed';
 
 rcn_sprite_ed.prototype.update_color_inputs = function() {
-  var palette_bytes = rcn_global_bin.rom.slice(rcn.mem_palette_offset, rcn.mem_palette_offset + rcn.mem_palette_size);
-  for(var i=0; i<8; i++) {
-    var rgb_str = '#';
-    for(var j=0; j<3; j++) {
+  const palette_bytes = rcn_global_bin.rom.slice(rcn.mem_palette_offset, rcn.mem_palette_offset + rcn.mem_palette_size);
+  for(let i = 0; i < 8; i++) {
+    let rgb_str = '#';
+    for(let j = 0; j < 3; j++) {
       rgb_str += ('00'+palette_bytes[i*3+j].toString(16)).slice(-2);
     }
     this.color_inputs[i].value = rgb_str;
@@ -151,9 +151,9 @@ rcn_sprite_ed.prototype.update_color_inputs = function() {
 }
 
 rcn_sprite_ed.prototype.get_palette_bytes = function() {
-  var palette_bytes = new Uint8Array(rcn.mem_palette_size); // 8 RGB values
-  for(var i=0; i<8; i++) {
-    var rgb_int = parseInt(this.color_inputs[i].value.slice(1), 16);
+  const palette_bytes = new Uint8Array(rcn.mem_palette_size); // 8 RGB values
+  for(let i = 0; i < 8; i++) {
+    const rgb_int = parseInt(this.color_inputs[i].value.slice(1), 16);
     palette_bytes[i*3+0] = (rgb_int>>16);
     palette_bytes[i*3+1] = (rgb_int>>8) & 0xff;
     palette_bytes[i*3+2] = rgb_int & 0xff;
@@ -162,16 +162,16 @@ rcn_sprite_ed.prototype.get_palette_bytes = function() {
 }
 
 rcn_sprite_ed.prototype.get_texel_index = function(draw_x, draw_y) {
-  var spritesheet_offset_x = (rcn_current_sprite & 0xf) << 3;
-  var spritesheet_offset_y = (rcn_current_sprite >> 4) << 3;
-  var x = draw_x + spritesheet_offset_x;
-  var y = draw_y + spritesheet_offset_y;
+  const spritesheet_offset_x = (rcn_current_sprite & 0xf) << 3;
+  const spritesheet_offset_y = (rcn_current_sprite >> 4) << 3;
+  const x = draw_x + spritesheet_offset_x;
+  const y = draw_y + spritesheet_offset_y;
   return rcn.mem_spritesheet_offset+(y<<6)+(x>>1);
 }
 
 rcn_sprite_ed.prototype.set_pixel = function(draw_x, draw_y) {
-  var texel_index = this.get_texel_index(draw_x, draw_y);
-  var texel = rcn_global_bin.rom[texel_index];
+  const texel_index = this.get_texel_index(draw_x, draw_y);
+  const texel = rcn_global_bin.rom[texel_index];
   if((draw_x % 2) < 1) {
     texel &= 0xf0;
     texel |= this.current_color;
@@ -188,8 +188,8 @@ rcn_sprite_ed.prototype.set_pixel = function(draw_x, draw_y) {
 }
 
 rcn_sprite_ed.prototype.get_pixel = function(draw_x, draw_y) {
-  var texel_index = this.get_texel_index(draw_x, draw_y);
-  var texel = rcn_global_bin.rom[texel_index];
+  const texel_index = this.get_texel_index(draw_x, draw_y);
+  const texel = rcn_global_bin.rom[texel_index];
   if((draw_x % 2) < 1) {
     return texel & 0xf;
   } else {
@@ -247,8 +247,8 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
   const row_size = spr_w >> 1;
   let pixels = new Uint8Array((spr_w * spr_h) >> 1);
 
-  for(var i=0; i < spr_h; i++) {
-    var row_index = texel_index + (i << 6);
+  for(let i = 0; i < spr_h; i++) {
+    const row_index = texel_index + (i << 6);
     pixels.set(rcn_global_bin.rom.slice(row_index, row_index + row_size), i * row_size);
   }
 

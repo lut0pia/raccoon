@@ -3,7 +3,7 @@
 function rcn_code_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
-  var code_ed = this;
+  const code_ed = this;
 
   this.textmirror = document.createElement('div');
   this.textmirror.classList.add('textmirror');
@@ -37,7 +37,7 @@ function rcn_code_ed() {
         if(e.shiftKey) {
           this.selectionEnd = line_last_space;
           this.selectionStart = Math.max(line_last_space - tab_size, start_line_beg);
-          var diff = this.selectionStart - this.selectionEnd;
+          const diff = this.selectionStart - this.selectionEnd;
           rcn_code_ed_textarea_insert_text(this, '');
           this.selectionStart = Math.max(start_line_beg, start + diff);
           this.selectionEnd = Math.max(start_line_beg, end + diff);
@@ -102,7 +102,7 @@ rcn_code_ed.prototype.update_textarea = function() {
 rcn_code_ed.prototype.update_mirror = function() {
   const keywords = ['const', 'else', 'for', 'function', 'if', 'in', 'let', 'new', 'return', 'this', 'var', 'while'];
   const keyword_regexp = new RegExp('\\b('+keywords.join('|')+')\\b','g');
-  var code_html = html_encode(this.textarea.value)
+  let code_html = html_encode(this.textarea.value)
     .replace(/ /gi, '&nbsp;')
     .replace(/\n/gi, '<br>')
     .replace(keyword_regexp, '<span class="keyword">$1</span>')

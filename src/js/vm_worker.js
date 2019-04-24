@@ -29,15 +29,15 @@ function rcn_vm_worker_function(rcn) {
   });
 
   // Initialize permutation
-  for(var i=0; i < 16; i++) {
+  for(let i = 0; i < 16; i++) {
     ram[rcn_mem_palmod_offset+i] = i;
   }
 
   // Local helper functions
-  var sprite_pixel_index = function(x, y) {
+  const sprite_pixel_index = function(x, y) {
     return (y<<6)+(x>>1);
   }
-  var screen_pixel_index = function(x, y) {
+  const screen_pixel_index = function(x, y) {
     return rcn_mem_screen_offset + sprite_pixel_index(x, y);
   }
   const pset_internal = function(x, y, c) {
@@ -84,7 +84,7 @@ function rcn_vm_worker_function(rcn) {
     if(x < 0 || x >= 128 || y < 0 || y >= 128) {
       return 0;
     }
-    var pixel = ram[screen_pixel_index(x, y)];
+    const pixel = ram[screen_pixel_index(x, y)];
     if((x % 2) < 1) {
       return pixel & 0xf;
     } else {
@@ -119,7 +119,7 @@ function rcn_vm_worker_function(rcn) {
     ram[rcn.mem_cam_offset + 2] = y & 0xff;
     ram[rcn.mem_cam_offset + 3] = y >> 8;
   }
-  var _spr = spr = function(n, x, y, w, h, flip_x, flip_y) {
+  const _spr = spr = function(n, x, y, w, h, flip_x, flip_y) {
     // Default width and height
     w = w || 1.0;
     h = h || 1.0;
@@ -144,8 +144,8 @@ function rcn_vm_worker_function(rcn) {
     const ihp = ih * 8;
     const wp = w * 8;
     const hp = h * 8;
-    for(var i=iwp; i < wp; i++) {
-      for(var j=ihp; j < hp; j++) {
+    for(let i=iwp; i < wp; i++) {
+      for(let j=ihp; j < hp; j++) {
         // Fetch sprite color
         const ti = flip_x ? (wp - i - 1) : i;
         const tj = flip_y ? (hp - j - 1) : j;
@@ -168,7 +168,7 @@ function rcn_vm_worker_function(rcn) {
     const i = rcn.mem_spriteflags_offset + n;
     ram[i] = f ? (ram[i] & ~(1 << f)) | (v ? (1 << f) : 0) : v;
   }
-  var _mget = mget = function(celx, cely) {
+  const _mget = mget = function(celx, cely) {
     return ram[rcn.mem_map_offset + (cely << 7) + (celx << 0)];
   }
   mset = function(celx, cely, n) {
@@ -177,8 +177,8 @@ function rcn_vm_worker_function(rcn) {
   map = function(celx, cely, sx, sy, celw, celh, layer) {
     layer = layer || 0xff;
 
-    for(var x = 0; x < celw; x++) {
-      for(var y = 0; y < celh; y++) {
+    for(let x = 0; x < celw; x++) {
+      for(let y = 0; y < celh; y++) {
         _spr(_mget(celx + x, cely + y), sx + (x << 3), sy + (y << 3));
       }
     }
@@ -514,7 +514,7 @@ function rcn_vm_worker_function(rcn) {
   onmessage = function(e) {
     switch(e.data.type) {
       case 'code':
-        var code = e.data.code;
+        let code = e.data.code;
         // Allow function thing() {} syntax to work as expected
         // by replacing it with thing = function() {}
         code = code.replace(/function ([a-z]+)(\s*)(\([^\)]*\))/gim, '$1 = function$2$3');

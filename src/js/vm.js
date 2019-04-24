@@ -33,7 +33,7 @@ function rcn_vm() {
   this.reset();
   this.last_tick = 0;
 
-  var vm = this;
+  const vm = this;
   const tick = function() {
     const now = performance.now();
     if(now > vm.last_tick + 30) {
@@ -101,7 +101,7 @@ rcn_vm.prototype.update = function() {
 rcn_vm.prototype.reset = function() {
   this.kill();
   this.worker = new Worker(rcn_vm_worker_url);
-  var vm = this;
+  const vm = this;
   this.worker.onmessage = function(e) { vm.onmessage(e); }
   this.audio = new rcn_audio();
 }

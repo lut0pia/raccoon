@@ -7,11 +7,11 @@ function rcn_start_game_mode(params) {
   document.body.classList.toggle('touch', rcn_is_touch_device);
   document.body.classList.toggle('export', !!params.export);
 
-  var viewport_meta = rcn_add_head_node('meta');
+  const viewport_meta = rcn_add_head_node('meta');
   viewport_meta.setAttribute('name', 'viewport');
   viewport_meta.setAttribute('content', 'user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi');
 
-  var vm = new rcn_vm();
+  const vm = new rcn_vm();
   vm.load_bin(params.bin);
   document.title = params.bin.name;
   document.body.appendChild(vm.canvas.node);
@@ -24,7 +24,7 @@ function rcn_start_game_mode(params) {
     });
   }
 
-  var edit_link = document.createElement('a');
+  const edit_link = document.createElement('a');
   edit_link.id = 'edit_link';
   edit_link.href = location.href + '&edit';
   edit_link.innerText = 'Open in edit mode';
@@ -33,17 +33,17 @@ function rcn_start_game_mode(params) {
 }
 
 function rcn_create_touch_controls(vm) {
-  var controls_div = document.createElement('div');
+  const controls_div = document.createElement('div');
   controls_div.classList.add('controls');
 
-  var control_axes = document.createElement('div');
+  const control_axes = document.createElement('div');
   control_axes.classList.add('axes');
   const axes_touch_event = function(e) {
     e.preventDefault();
     const div_coords = this.getBoundingClientRect();
-    var axes_bits = [false, false, false, false];
+    const axes_bits = [false, false, false, false];
     if(e.type != 'touchend') {
-      for(var i = 0; i < e.changedTouches.length; i++) {
+      for(let i = 0; i < e.changedTouches.length; i++) {
         const touch = e.changedTouches[i];
         const div_x = ((touch.clientX - div_coords.x) / div_coords.width) - 0.5;
         const div_y = ((touch.clientY - div_coords.y) / div_coords.height) - 0.5;
@@ -55,7 +55,7 @@ function rcn_create_touch_controls(vm) {
       }
     }
 
-    for(var i = 0; i < 4; i++) {
+    for(let i = 0; i < 4; i++) {
       vm.set_gamepad_bit(0, i, axes_bits[i]);
     }
   }
@@ -67,18 +67,18 @@ function rcn_create_touch_controls(vm) {
   });
   controls_div.appendChild(control_axes);
 
-  var control_axes_img = document.createElement('img');
+  const control_axes_img = document.createElement('img');
   control_axes_img.src = 'src/img/control_axes.svg';
   control_axes.appendChild(control_axes_img);
 
-  var controls_buttons = document.createElement('div');
+  const controls_buttons = document.createElement('div');
   controls_buttons.classList.add('buttons');
   const buttons_touch_event = function(e) {
     e.preventDefault();
     const div_coords = this.getBoundingClientRect();
-    var buttons_bits = [false, false, false, false];
+    const buttons_bits = [false, false, false, false];
     if(e.type != 'touchend') {
-      for(var i = 0; i < e.changedTouches.length; i++) {
+      for(let i = 0; i < e.changedTouches.length; i++) {
         const touch = e.changedTouches[i];
         const div_x = ((touch.clientX - div_coords.x) / div_coords.width) - 0.5;
         const div_y = ((touch.clientY - div_coords.y) / div_coords.height) - 0.5;
@@ -92,7 +92,7 @@ function rcn_create_touch_controls(vm) {
       }
     }
 
-    for(var i = 0; i < 4; i++) {
+    for(let i = 0; i < 4; i++) {
       vm.set_gamepad_bit(0, i+4, !!buttons_bits[i]);
     }
   }
@@ -104,7 +104,7 @@ function rcn_create_touch_controls(vm) {
   });
   controls_div.appendChild(controls_buttons);
 
-  var control_buttons_img = document.createElement('img');
+  const control_buttons_img = document.createElement('img');
   control_buttons_img.src = 'src/img/control_buttons.svg';
   controls_buttons.appendChild(control_buttons_img);
 

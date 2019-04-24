@@ -8,7 +8,7 @@ function rcn_map_ed() {
   this.current_offset_x = 0;
   this.current_offset_y = 0;
 
-  var map_ed = this;
+  const map_ed = this;
 
   // Create map canvas
   this.map_canvas = new rcn_canvas();
@@ -105,22 +105,22 @@ rcn_map_ed.prototype.get_tile = function(map_x, map_y) {
 }
 
 rcn_map_ed.prototype.update_map_canvas = function() {
-  var map_w = 16;
-  var map_h = 16;
-  var pixels = new Uint8Array(((map_w * map_h) << 6) >> 1);
-  var map_row_size = (map_w << 3) >> 1;
+  const map_w = 16;
+  const map_h = 16;
+  const pixels = new Uint8Array(((map_w * map_h) << 6) >> 1);
+  const map_row_size = (map_w << 3) >> 1;
 
-  for(var mx=0; mx < map_w; mx++) {
-    for(var my=0; my < map_h; my++) {
-      var pix_x = mx << 3;
-      var pix_y = my << 3;
-      var pix_index = (pix_y<<6)+(pix_x>>1);
-      var spr = this.get_tile(mx, my);
-      var spr_tex_index = ((spr & 0xf) << 2) + ((spr >> 4) << 9);
-      var spr_row_size = 4;
+  for(let mx = 0; mx < map_w; mx++) {
+    for(let my = 0; my < map_h; my++) {
+      const pix_x = mx << 3;
+      const pix_y = my << 3;
+      const pix_index = (pix_y<<6)+(pix_x>>1);
+      const spr = this.get_tile(mx, my);
+      const spr_tex_index = ((spr & 0xf) << 2) + ((spr >> 4) << 9);
+      const spr_row_size = 4;
 
-      for(var i=0; i < 8; i++) {
-        var spr_row_index = spr_tex_index + (i << 6);
+      for(let i = 0; i < 8; i++) {
+        const spr_row_index = spr_tex_index + (i << 6);
         pixels.set(rcn_global_bin.rom.slice(spr_row_index, spr_row_index + spr_row_size), pix_index + i * map_row_size);
       }
     }

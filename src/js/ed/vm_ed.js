@@ -4,7 +4,7 @@ function rcn_vm_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
-  var vm_ed = this;
+  const vm_ed = this;
 
   this.vm = new rcn_vm();
   this.vm.canvas.node.addEventListener('keydown', function(e) {
@@ -34,7 +34,7 @@ function rcn_vm_ed() {
   }));
 
   // Create paused checkbox
-  var paused_checkbox_id = 'paused_checkbox'; // TODO: this will have to depend on window id
+  const paused_checkbox_id = 'paused_checkbox'; // TODO: this will have to depend on window id
   this.paused_checkbox = document.createElement('input');
   this.paused_checkbox.id = paused_checkbox_id;
   this.paused_checkbox.type = 'checkbox';
@@ -48,7 +48,7 @@ function rcn_vm_ed() {
   this.add_child(this.paused_checkbox_label);
 
   // Create autoapply checkbox
-  var autoapply_checkbox_id = 'autoapply_checkbox'; // TODO: this will have to depend on window id
+  const autoapply_checkbox_id = 'autoapply_checkbox'; // TODO: this will have to depend on window id
   this.autoapply_checkbox = document.createElement('input');
   this.autoapply_checkbox.id = autoapply_checkbox_id;
   this.autoapply_checkbox.type = 'checkbox';

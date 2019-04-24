@@ -66,10 +66,10 @@ rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, pa
 
   const x_end = x_start + width;
   const y_end = y_start + height;
-  for(var x = x_start; x < x_end; x++) {
-    for(var y = y_start; y < y_end; y++) {
+  for(let x = x_start; x < x_end; x++) {
+    for(let y = y_start; y < y_end; y++) {
       const pixel_index = y*(width>>1) + (x>>1); // Bitshift because pixels are 4bits
-      var pixel = pixels[pixel_index];
+      let pixel = pixels[pixel_index];
       pixel = ((x & 1) == 0) ? (pixel & 0xf) : (pixel >> 4); // Deal with left or right pixel
 
       const cpixel_index = y*width + x;
@@ -104,12 +104,12 @@ rcn_canvas.prototype.flush = function() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Render at the client size
-    var client_width = this.node.clientWidth;
-    var client_height = this.node.clientHeight;
+    const client_width = this.node.clientWidth;
+    const client_height = this.node.clientHeight;
     this.node.width = client_width;
     this.node.height = client_height;
 
-    var vp = this.compute_viewport();
+    const vp = this.compute_viewport();
     gl.viewport(vp.x, vp.y, vp.width, vp.height);
 
     // Set and upload texture
@@ -143,13 +143,13 @@ rcn_canvas.prototype.set_size = function(width, height) {
   this.img = new Uint8Array(width * height * 4);
 
   // Set all alpha values to 255 in advance to avoid doing it later
-  for(var i=3; i < this.img.length; i+=4) {
+  for(let i = 3; i < this.img.length; i += 4) {
     this.img[i] = 255;
   }
 }
 
 rcn_canvas.prototype.client_to_texture_coords = function(x, y) {
-  var vp = this.compute_viewport();
+  const vp = this.compute_viewport();
   if(vp.x <= x && vp.y <= y && x < vp.x + vp.width  && y < vp.y + vp.height) {
     return {
       x: Math.floor((x - vp.x) / vp.mul),

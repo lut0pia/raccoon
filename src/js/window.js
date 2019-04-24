@@ -59,7 +59,7 @@ function rcn_window() {
 }
 
 rcn_window.prototype.add_header_icon = function(arg) {
-  var icon = document.createElement('icon');
+  const icon = document.createElement('icon');
   icon.innerHTML = '&#x'+arg.codepoint;
   icon.classList.add(arg.type);
   icon.onclick = arg.onclick;
@@ -76,7 +76,7 @@ rcn_window.prototype.addEventListener = function(type, listener, options) {
 function rcn_window_onmousedown(e) {
   // Set window's z-index greater than any other
   this.style.zIndex = rcn_window_container.childElementCount+1;
-  var z_index = 0;
+  let z_index = 0;
   Array.from(rcn_window_container.children).sort(function(a, b) { // Sort windows by z-index
     return a.style.zIndex - b.style.zIndex;
   }).forEach(function(window) { // Assign incrementally greater z-indices starting from 0
@@ -104,11 +104,11 @@ rcn_window.prototype.kill = function() {
 }
 
 function rcn_window_save_layout() {
-  var layout = {};
+  const layout = {};
 
-  for(var i=0; i<rcn_window_container.childElementCount; i++) {
-    var section = rcn_window_container.children[i];
-    var window = section.rcn_window;
+  for(let i = 0; i < rcn_window_container.childElementCount; i++) {
+    const section = rcn_window_container.children[i];
+    const window = section.rcn_window;
 
     layout[section.id] = {
       ctor: window.constructor.name,
@@ -122,7 +122,7 @@ function rcn_window_save_layout() {
   return layout;
 }
 
-var rcn_has_loaded_window_layout_once = false;
+let rcn_has_loaded_window_layout_once = false;
 
 function rcn_window_load_layout(layout) {
   // Clear all windows
@@ -130,9 +130,9 @@ function rcn_window_load_layout(layout) {
     rcn_window_container.removeChild(rcn_window_container.firstChild);
   }
 
-  for(const id in layout) {
+  for(let id in layout) {
     const save = layout[id];
-    var editor = new window[save.ctor]();
+    const editor = new window[save.ctor]();
     editor.section.id = id;
     editor.section.style.left = save.left;
     editor.section.style.top = save.top;
@@ -160,12 +160,12 @@ document.addEventListener('mousemove', function(e) {
   e = e || window.event;
   e.preventDefault();
 
-  var dx = e.clientX - rcn_window_drag.x;
-  var dy = e.clientY - rcn_window_drag.y;
+  const dx = e.clientX - rcn_window_drag.x;
+  const dy = e.clientY - rcn_window_drag.y;
   rcn_window_drag.x = e.clientX;
   rcn_window_drag.y = e.clientY;
 
-  var node = rcn_window_drag.node;
+  const node = rcn_window_drag.node;
   node.style.left = (node.offsetLeft + dx) + "px";
   node.style.top = Math.max(0, (node.offsetTop + dy)) + "px";
 });

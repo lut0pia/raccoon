@@ -11,10 +11,10 @@ function rcn_start_editor_mode(params) {
   });
 
   // Create toolbar
-  var toolbar_div = document.createElement('div');
+  const toolbar_div = document.createElement('div');
   toolbar_div.id = 'toolbar';
   rcn_editors.forEach(function(ed) {
-    var editor_button = document.createElement('div');
+    const editor_button = document.createElement('div');
     editor_button.classList.add('editor_button');
     editor_button.innerText = ed.prototype.title;
     editor_button.onclick = function() {

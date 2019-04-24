@@ -8,7 +8,7 @@ function rcn_bin() {
 }
 
 rcn_bin.prototype.clone = function() {
-  var bin_clone = new rcn_bin();
+  const bin_clone = new rcn_bin();
   bin_clone.from_json(this.to_json());
   return bin_clone;
 }
@@ -17,7 +17,7 @@ rcn_bin.prototype.from_json = function(bin) {
   if(bin.version == 2) {
     this.name = bin.name;
 
-    var code = '';
+    let code = '';
     bin.code.forEach(function(line) {
       code += line + '\n';
     });
@@ -26,7 +26,7 @@ rcn_bin.prototype.from_json = function(bin) {
     const hex_to_rom = function(rom, offset, hex_lines) {
       if(hex_lines) {
         hex_lines.forEach(function(hex_line) {
-          for(var j = 0; j < hex_line.length; j += 2) {
+          for(let j = 0; j < hex_line.length; j += 2) {
             rom[offset++] = parseInt(hex_line.substr(j, 2), 16);
           }
         });
@@ -49,9 +49,9 @@ rcn_bin.prototype.from_json = function(bin) {
 rcn_bin.prototype.to_json = function() {
   const rom_to_hex = function(rom, offset, size) {
     const line_size = 32;
-    var hex_lines = [];
-    var hex = '';
-    for(var i=0; i<size; i++) {
+    let hex_lines = [];
+    let hex = '';
+    for(let i = 0; i < size; i++) {
       hex += ('00'+rom[offset+i].toString(16)).slice(-2);
 
       if(i % line_size == (line_size - 1) || i == size-1) {
@@ -63,7 +63,7 @@ rcn_bin.prototype.to_json = function() {
     return hex_lines;
   }
 
-  var code_lines = this.code.split('\n');
+  let code_lines = this.code.split('\n');
 
   // Remove trailing empty lines
   while(code_lines.length>0 && code_lines[code_lines.length-1].match(/^\s*$/)) {
@@ -88,7 +88,7 @@ rcn_bin.prototype.to_json = function() {
 }
 
 rcn_bin.prototype.to_json_text = function() {
-  var json = this.to_json();
+  const json = this.to_json();
   delete json.host; // Host information should not be saved outside raccoon
   delete json.link;
   return JSON.stringify(json, null, 2);
