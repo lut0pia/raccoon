@@ -22,7 +22,6 @@ function rcn_sprite_select_ed() {
 
   // Create spritesheet canvas
   this.spritesheet_canvas = new rcn_canvas();
-  this.spritesheet_canvas.padding_x = this.spritesheet_canvas.padding_y = 2;
   this.spritesheet_canvas.node.classList.add('spritesheet');
   this.spritesheet_canvas.node.tabIndex = 0;
   this.spritesheet_canvas.node.addEventListener('keydown', function(e) {
@@ -75,6 +74,8 @@ function rcn_sprite_select_ed() {
       sprite_sel_ed.extend_current_sprite(spr_x, spr_y);
     }
   });
+  // Always keep space for selection outline
+  this.spritesheet_canvas.padding_x = this.spritesheet_canvas.padding_y = 2;
   this.spritesheet_canvas.onpostflush = function() {
     // Draw selection outline
     const vp = this.compute_viewport();
