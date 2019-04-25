@@ -200,14 +200,3 @@ rcn_canvas.prototype.interaction = function(f) {
   this.node.addEventListener('mousedown', event_callback);
   this.node.addEventListener('mousemove', event_callback);
 }
-
-// Flush all canvases on document load
-document.addEventListener('load', function() {
-  let canvases = document.getElementsByTagName('canvas');
-  for(let i = 0; i < canvases.length; i++) {
-    let canvas = canvases[i];
-    if(canvas.rcn_canvas) {
-      canvas.rcn_canvas.flush();
-    }
-  }
-});
