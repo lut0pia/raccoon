@@ -168,7 +168,7 @@ class rcn_instrument_instance {
   }
 
   update(change_time, register) {
-    this.free_after = change_time + (1 / 30);
+    this.free_after = change_time + (register.period / 120);
     this.gain.gain.setTargetAtTime(register.volume, change_time, 0.001);
     for(let osc of this.oscillators) {
       osc.frequency.setTargetAtTime(rcn_pitch_to_freq(register.pitch), change_time, 0.001);
