@@ -412,21 +412,23 @@ function rcn_vm_worker_function(rcn) {
       if(state.time <= next_note_time && state.time > next_note_time - 4) {
         // Next note should be triggered in the next frame
         const offset = next_note_time - state.time;
-        const sreg_offset = rcn_mem_soundreg_offset + i * 3;
+        const sreg_offset = rcn_mem_soundreg_offset + i * 4;
 
         if(next_note_index >= state.length) {
           // We've reached the end of the sfx, stop
-          ram[sreg_offset + 1] = (offset << 6); // Offset and pitch
-          ram[sreg_offset + 2] = 0; // Volume and effect
+          ram[sreg_offset + 0] = 0; // Period
+          ram[sreg_offset + 2] = (offset << 6); // Offset and pitch
+          ram[sreg_offset + 3] = 0; // Volume and effect
           delete sfx_chans[i];
           continue;
         } else {
           const note_offset = snd_offset + 2 + (state.offset + next_note_index) * 2;
           const note_1 = ram[note_offset + 0];
           const note_2 = ram[note_offset + 1];
-          ram[sreg_offset + 0] = ram[snd_offset + 1]; // Instrument
-          ram[sreg_offset + 1] = (offset << 6) | (note_1 & 0x3f); // Offset and pitch
-          ram[sreg_offset + 2] = note_2; // Volume and effect
+          ram[sreg_offset + 0] = period; // Period
+          ram[sreg_offset + 1] = ram[snd_offset + 1]; // Instrument
+          ram[sreg_offset + 2] = (offset << 6) | (note_1 & 0x3f); // Offset and pitch
+          ram[sreg_offset + 3] = note_2; // Volume and effect
         }
       }
 

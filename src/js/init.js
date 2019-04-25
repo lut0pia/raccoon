@@ -22,10 +22,10 @@ const rcn = {
   // ... 0x05a8
   // RAM/ROM limit
   // ... 0x0fd2
-  mem_cam_offset: 0x5fd2,
+  mem_cam_offset: 0x5fce,
   mem_cam_size: 0x0004, // 4B = 2x16bits
-  mem_soundreg_offset: 0x5fd6,
-  mem_soundreg_size: 0x000c, // 12B = 4x(8+6+1+3+3)
+  mem_soundreg_offset: 0x5fd2,
+  mem_soundreg_size: 0x0010, // 16B = 4x(8+8+6+1+3+3)
   mem_palmod_offset: 0x5fe2,
   mem_palmod_size: 0x0010, // 16B = 16x(7+1)bits (4b color + 1b transp)
   mem_gamepad_offset: 0x5ff8,

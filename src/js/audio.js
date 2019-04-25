@@ -31,13 +31,15 @@ rcn_audio.prototype.update = function(frame_time, bytes) {
   const change_time = frame_time + (1.5 / 30);
 
   for(let i = 0; i < rcn_audio_channel_count; i++) {
+    const register = bytes.slice(i * 4, (i + 1) * 4);
     const offset = bytes[i * 3 + 1] >> 6;
     const sub_change_time = change_time + offset / 120; // Divide by audio frames per second
     this.update_channel(i, sub_change_time, {
-      instrument: bytes[i * 3],
-      pitch: bytes[i * 3 + 1] & 0x3f,
-      volume: (bytes[i * 3 + 2] & 0x7) / 7,
-      effect: (bytes[i * 3 + 2] >> 3) & 0x7,
+      period: register[0],
+      instrument: register[1],
+      pitch: register[2] & 0x3f,
+      volume: (register[3] & 0x7) / 7,
+      effect: (register[3] >> 3) & 0x7,
     });
   }
 
