@@ -171,7 +171,7 @@ rcn_sprite_ed.prototype.get_texel_index = function(draw_x, draw_y) {
 
 rcn_sprite_ed.prototype.set_pixel = function(draw_x, draw_y) {
   const texel_index = this.get_texel_index(draw_x, draw_y);
-  const texel = rcn_global_bin.rom[texel_index];
+  let texel = rcn_global_bin.rom[texel_index];
   if((draw_x % 2) < 1) {
     texel &= 0xf0;
     texel |= this.current_color;
