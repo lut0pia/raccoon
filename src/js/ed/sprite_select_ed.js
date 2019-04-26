@@ -29,40 +29,20 @@ function rcn_sprite_select_ed() {
     if(!(e.ctrlKey || e.metaKey)) return;
     if(e.key == 'c') { // Copy
       e.preventDefault();
-      const spr_w = rcn_current_sprite_columns << 3;
-      const spr_h = rcn_current_sprite_rows << 3;
-      const texel_index = ((rcn_current_sprite & 0xf) << 2) + ((rcn_current_sprite >> 4) << 9);
-      const row_size = spr_w >> 1;
-      const texel_count = (spr_w * spr_h) >> 1; // Divided by two because texels are 4bits
-      let spr_texels = new Uint8Array(texel_count);
-      for(let i = 0; i < spr_h; i++) {
-        const row_index = texel_index + (i << 6);
-        spr_texels.set(rcn_global_bin.rom.slice(row_index, row_index + row_size), i * row_size);
-      }
-      rcn_clipboard = {
-        type: 'texels',
-        width: spr_w,
-        height: spr_h,
-        texels: spr_texels,
-      };
+      rcn_copy_sprite_region(
+        (rcn_current_sprite & 0xf) << 3,
+        (rcn_current_sprite >> 4) << 3,
+        rcn_current_sprite_columns << 3,
+        rcn_current_sprite_rows << 3,
+      );
     } else if(e.key == 'v') { // Paste
       e.preventDefault();
-      if(!rcn_clipboard || rcn_clipboard.type != 'texels') return;
-      const texel_index = ((rcn_current_sprite & 0xf) << 2) + ((rcn_current_sprite >> 4) << 9);
-      // Clamp copy sizes to spritesheet size
-      const cpy_height = Math.min(rcn_clipboard.height, 96 - ((rcn_current_sprite >> 4) << 3));
-      const cpy_width = Math.min(rcn_clipboard.width, 128 - ((rcn_current_sprite & 0xf) << 3));
-      const row_size = rcn_clipboard.width >> 1;
-      const cpy_row_size = cpy_width >> 1;
-      for(let i = 0; i < cpy_height; i++) {
-        const row_index = texel_index + (i << 6);
-        const row_texels = rcn_clipboard.texels.slice(i * row_size, i * row_size + cpy_row_size);
-        rcn_global_bin.rom.set(row_texels, row_index);
-      }
-      rcn_dispatch_ed_event('rcn_bin_change', {
-        begin: texel_index,
-        end: texel_index + (cpy_height << 6),
-      });
+      rcn_paste_sprite_region(
+        (rcn_current_sprite & 0xf) << 3,
+        (rcn_current_sprite >> 4) << 3,
+        rcn_current_sprite_columns << 3,
+        rcn_current_sprite_rows << 3,
+      );
     }
   });
   this.spritesheet_canvas.interaction(function(e, tex_coords) {

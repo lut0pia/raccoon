@@ -184,3 +184,54 @@ if(!rcn_storage.bins) {
 
 // Clipboard functionality
 let rcn_clipboard;
+
+function rcn_copy_sprite_region(x, y, w, h) {
+  const texel_count = w * h;
+  let texels = new Uint8Array(texel_count);
+  for(let i = 0; i < w; i++) {
+    for(let j = 0; j < h; j++) {
+      texels[i + j * w] = rcn_get_sprite_texel(x + i, y + j);
+    }
+  }
+  rcn_clipboard = {
+    type: 'texels',
+    width: w,
+    height: h,
+    texels: texels,
+  };
+}
+
+function rcn_paste_sprite_region(x, y, w, h) {
+  if(!rcn_clipboard || rcn_clipboard.type != 'texels') return;
+  // Clamp copy sizes to spritesheet size
+  w = Math.min(rcn_clipboard.width, 128 - x);
+  h = Math.min(rcn_clipboard.height, 96 - y);
+  for(let i = 0; i < w; i++) {
+    for(let j = 0; j < h; j++) {
+      rcn_set_sprite_texel(
+        x + i, y + j,
+        rcn_clipboard.texels[i + j * rcn_clipboard.width],
+      );
+    }
+  }
+  rcn_dispatch_ed_event('rcn_bin_change', {
+    begin: (y << 6) + (x >> 1),
+    end: ((y + h) << 6) + ((x + w) >> 1) + 1,
+  });
+}
+
+// Editor utility
+
+function rcn_set_sprite_texel(x, y, c) {
+  const texel_index = (y << 6) + (x >> 1);
+  const texel = rcn_global_bin.rom[texel_index];
+  rcn_global_bin.rom[texel_index] = ((x % 2) < 1)
+    ? ((texel & 0xf0) | c)
+    : ((texel & 0x0f) | (c << 4));
+}
+
+function rcn_get_sprite_texel(x, y) {
+  const texel_index = (y << 6) + (x >> 1);
+  let texel = rcn_global_bin.rom[texel_index];
+  return ((x % 2) < 1) ? (texel & 0xf) : (texel >> 4);
+}
