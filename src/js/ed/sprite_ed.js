@@ -104,6 +104,7 @@ function rcn_sprite_ed() {
     }
   });
   this.draw_canvas.node.addEventListener('keydown', function(e) {
+    const ctrl = e.ctrlKey || e.metaKey;
     if(e.key == 'ArrowLeft') {
       sprite_ed.move_selection(-1, 0);
     } else if(e.key == 'ArrowRight') {
@@ -112,6 +113,10 @@ function rcn_sprite_ed() {
       sprite_ed.move_selection(0, -1);
     } else if(e.key == 'ArrowDown') {
       sprite_ed.move_selection(0, 1);
+    } else if(ctrl && e.key == 'c') {
+      sprite_ed.copy_selection();
+    } else if(ctrl && e.key == 'v') {
+      sprite_ed.paste_selection();
     }
   });
   this.draw_canvas.node.addEventListener('blur', function(e) {
@@ -252,6 +257,32 @@ rcn_sprite_ed.prototype.move_selection = function(x, y) {
   this.selection.x = new_x;
   this.selection.y = new_y;
   this.update_draw_canvas();
+}
+
+rcn_sprite_ed.prototype.copy_selection = function() {
+  if(this.selection) {
+    const spr_x = (rcn_current_sprite & 0xf) << 3;
+    const spr_y = (rcn_current_sprite >> 4) << 3;
+    rcn_copy_sprite_region(
+      this.selection.x + spr_x,
+      this.selection.y + spr_y,
+      this.selection.w,
+      this.selection.h,
+    );
+  }
+}
+
+rcn_sprite_ed.prototype.paste_selection = function() {
+  if(this.selection) {
+    const spr_x = (rcn_current_sprite & 0xf) << 3;
+    const spr_y = (rcn_current_sprite >> 4) << 3;
+    rcn_paste_sprite_region(
+      this.selection.x + spr_x,
+      this.selection.y + spr_y,
+      this.selection.w,
+      this.selection.h,
+    );
+  }
 }
 
 rcn_sprite_ed.prototype.update_color_inputs = function() {
