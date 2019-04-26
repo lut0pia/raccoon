@@ -50,7 +50,6 @@ function rcn_start_editor_mode(params) {
 
   // Flush all canvases
   const canvases = document.getElementsByTagName('canvas');
-  console.log(canvases);
   for(let i = 0; i < canvases.length; i++) {
     const canvas = canvases[i];
     if(canvas.rcn_canvas) {
