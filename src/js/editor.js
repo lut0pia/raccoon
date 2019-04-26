@@ -242,4 +242,8 @@ function rcn_clear_sprite_region(x, y, w, h, c) {
       rcn_set_sprite_texel(x + i, y + j, c);
     }
   }
+  rcn_dispatch_ed_event('rcn_bin_change', {
+    begin: (y << 6) + (x >> 1),
+    end: ((y + h) << 6) + ((x + w) >> 1) + 1,
+  });
 }
