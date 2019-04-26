@@ -5,6 +5,7 @@ function rcn_sprite_ed() {
   rcn_window.call(this);
 
   this.current_color = 0;
+  this.selection = null;
 
   const sprite_ed = this;
 
@@ -76,14 +77,62 @@ function rcn_sprite_ed() {
 
   // Create draw canvas
   this.draw_canvas = new rcn_canvas();
+  this.draw_canvas.node.tabIndex = 0;
   this.draw_canvas.node.classList.add('draw');
   this.draw_canvas.interaction(function(e, tex_coords) {
-    if(e.buttons == 1) { // Left button: draw
-      sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
-    } else if(e.buttons == 2) { // Right button: color pick
-      sprite_ed.set_current_color(sprite_ed.get_pixel(tex_coords.x, tex_coords.y))
+    let mode = 'normal';
+    if(e.shiftKey) {
+      mode = 'selection';
+    }
+    switch(mode) {
+      case 'normal':
+        if(e.buttons == 1) { // Left button: draw
+          sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
+        } else if(e.buttons == 2) { // Right button: color pick
+          sprite_ed.set_current_color(sprite_ed.get_pixel(tex_coords.x, tex_coords.y))
+        }
+        break;
+      case 'selection':
+        if(e.buttons == 1) { // Left button: select
+          if(e.type === 'mousedown') {
+            sprite_ed.reset_selection();
+          } else {
+            sprite_ed.extend_selection(tex_coords.x, tex_coords.y);
+          }
+        }
+        break;
     }
   });
+  this.draw_canvas.node.addEventListener('keydown', function(e) {
+    if(e.key == 'ArrowLeft') {
+      sprite_ed.move_selection(-1, 0);
+    } else if(e.key == 'ArrowRight') {
+      sprite_ed.move_selection(1, 0);
+    } else if(e.key == 'ArrowUp') {
+      sprite_ed.move_selection(0, -1);
+    } else if(e.key == 'ArrowDown') {
+      sprite_ed.move_selection(0, 1);
+    }
+  });
+  this.draw_canvas.node.addEventListener('blur', function(e) {
+    sprite_ed.reset_selection();
+  });
+  // Always keep space for selection outline
+  this.draw_canvas.padding_x = this.draw_canvas.padding_y = 2;
+  this.draw_canvas.onpostflush = function() {
+    if(sprite_ed.selection) {
+      // Draw selection outline
+      const vp = this.compute_viewport();
+      const x = vp.x + sprite_ed.selection.x * vp.mul;
+      const y = vp.y + sprite_ed.selection.y * vp.mul;
+      const w = sprite_ed.selection.w * vp.mul;
+      const h = sprite_ed.selection.h * vp.mul;
+      this.draw_quad(x - 2, y - 2, 2, h + 4, 1, 1, 1, 1);
+      this.draw_quad(x + w, y - 2, 2, h + 4, 1, 1, 1, 1);
+      this.draw_quad(x, y - 2, w, 2, 1, 1, 1, 1);
+      this.draw_quad(x, y + h, w, 2, 1, 1, 1, 1);
+    }
+  }
   this.add_child(this.draw_canvas.node);
 
   // Create apply button
@@ -138,6 +187,72 @@ function rcn_sprite_ed() {
 rcn_sprite_ed.prototype.title = 'Sprite Editor';
 rcn_sprite_ed.prototype.docs_link = 'sprite-editor';
 rcn_sprite_ed.prototype.type = 'sprite_ed';
+
+rcn_sprite_ed.prototype.reset_selection = function() {
+  this.selection = null;
+  this.update_draw_canvas();
+}
+
+rcn_sprite_ed.prototype.extend_selection = function(x, y) {
+  if(this.selection) {
+    const old_x = this.selection.x;
+    const old_y = this.selection.y;
+    this.selection.x = Math.min(x, old_x);
+    this.selection.y = Math.min(y, old_y);
+    this.selection.w = Math.max(x + 1, old_x + this.selection.w) - this.selection.x;
+    this.selection.h = Math.max(y + 1, old_y + this.selection.h) - this.selection.y;
+  } else {
+    this.selection = {
+      x: x,
+      y: y,
+      w: 1,
+      h: 1,
+    };
+  }
+  this.update_draw_canvas();
+}
+
+rcn_sprite_ed.prototype.move_selection = function(x, y) {
+  if(!this.selection) return;
+
+  const spr_w = rcn_current_sprite_columns << 3;
+  const spr_h = rcn_current_sprite_rows << 3;
+  const new_x = Math.min(Math.max(this.selection.x + x, 0), spr_w - this.selection.w);
+  const new_y = Math.min(Math.max(this.selection.y + y, 0), spr_h - this.selection.h);
+
+  if(this.selection.x == new_x && this.selection.y == new_y) return;
+
+  // Hijack the clipboard to move the sprite region
+  // This is temporary anyway
+
+  const old_clipboard = rcn_clipboard;
+  const spr_x = (rcn_current_sprite & 0xf) << 3;
+  const spr_y = (rcn_current_sprite >> 4) << 3;
+  rcn_copy_sprite_region(
+    spr_x + this.selection.x,
+    spr_y + this.selection.y,
+    this.selection.w,
+    this.selection.h,
+  );
+  rcn_clear_sprite_region(
+    spr_x + this.selection.x,
+    spr_y + this.selection.y,
+    this.selection.w,
+    this.selection.h,
+    0,
+  )
+  rcn_paste_sprite_region(
+    spr_x + new_x,
+    spr_y + new_y,
+    this.selection.w,
+    this.selection.h,
+  );
+  rcn_clipboard = old_clipboard;
+
+  this.selection.x = new_x;
+  this.selection.y = new_y;
+  this.update_draw_canvas();
+}
 
 rcn_sprite_ed.prototype.update_color_inputs = function() {
   const palette_bytes = rcn_global_bin.rom.slice(rcn.mem_palette_offset, rcn.mem_palette_offset + rcn.mem_palette_size);
