@@ -235,3 +235,11 @@ function rcn_get_sprite_texel(x, y) {
   let texel = rcn_global_bin.rom[texel_index];
   return ((x % 2) < 1) ? (texel & 0xf) : (texel >> 4);
 }
+
+function rcn_clear_sprite_region(x, y, w, h, c) {
+  for(let i = 0; i < w; i++) {
+    for(let j = 0; j < h; j++) {
+      rcn_set_sprite_texel(x + i, y + j, c);
+    }
+  }
+}
