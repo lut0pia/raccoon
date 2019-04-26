@@ -83,6 +83,8 @@ function rcn_sprite_ed() {
     let mode = 'normal';
     if(e.shiftKey) {
       mode = 'selection';
+    } else if(e.ctrlKey) {
+      mode = 'fill';
     }
     switch(mode) {
       case 'normal':
@@ -99,6 +101,11 @@ function rcn_sprite_ed() {
           } else {
             sprite_ed.extend_selection(tex_coords.x, tex_coords.y);
           }
+        }
+        break;
+      case 'fill':
+        if(e.buttons == 1) { // Left button: select
+          sprite_ed.fill_pixel(tex_coords.x, tex_coords.y);
         }
         break;
     }
@@ -331,6 +338,31 @@ rcn_sprite_ed.prototype.set_pixel = function(draw_x, draw_y) {
     begin: texel_index,
     end: texel_index+1,
   });
+}
+
+rcn_sprite_ed.prototype.fill_pixel = function(start_x, start_y) {
+  const visited = new Set();
+  const queue = [];
+  queue.push({x: start_x, y: start_y});
+  const color_cmp = this.get_pixel(start_x, start_y);
+
+  while(queue.length > 0) {
+    const node = queue.pop();
+    const x = node.x;
+    const y = node.y;
+    const key = x + (y << 8);
+    if(visited.has(key)) continue; // Already visited this pixel
+    visited.add(key);
+    if(x < 0 || y < 0 || x >= (rcn_current_sprite_columns << 3) || y >= (rcn_current_sprite_rows << 3)) continue; // Outside sprite selection
+    if(this.get_pixel(x, y) != color_cmp) continue; // Outside wanted area
+    this.set_pixel(x, y, this.current_color);
+    queue.push(
+      {x: x, y: y - 1},
+      {x: x, y: y + 1},
+      {x: x - 1, y: y},
+      {x: x + 1, y: y},
+    );
+  }
 }
 
 rcn_sprite_ed.prototype.get_pixel = function(draw_x, draw_y) {
