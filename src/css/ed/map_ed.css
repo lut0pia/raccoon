@@ -3,10 +3,17 @@
   height: 666px;
 }
 
-.window.map_ed canvas.map {
-  width: 100%;
+.window.map_ed .map_coords {
+  border: inset 2px lightgray;
+  padding: 2px;
+  margin: auto;
 }
 
-.window.map_ed canvas.spritesheet {
+.window.map_ed .wrapper {
+  height: calc(100% - 52px);
+  overflow-y: auto;
+}
+
+.window.map_ed canvas.map {
   width: 100%;
 }

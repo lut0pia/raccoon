@@ -10,6 +10,16 @@ function rcn_map_ed() {
 
   const map_ed = this;
 
+  // Create map coords text
+  this.map_coords_text = document.createElement('div');
+  this.map_coords_text.classList.add('map_coords');
+  this.add_child(this.map_coords_text);
+
+  // Create map wrapper
+  this.map_wrapper = document.createElement('div');
+  this.map_wrapper.classList.add('wrapper');
+  this.add_child(this.map_wrapper);
+
   // Create map canvas
   this.map_canvas = new rcn_canvas();
   this.map_canvas.node.classList.add('map');
@@ -34,11 +44,12 @@ function rcn_map_ed() {
         map_ed.current_offset_y = shift_start_offset_y + (shift_start_client_y - e.clientY) / (vp.mul * 8);
         map_ed.current_offset_x = Math.max(0, Math.min(128 - 16, map_ed.current_offset_x)) << 0;
         map_ed.current_offset_y = Math.max(0, Math.min(64 - 16, map_ed.current_offset_y)) << 0;
+        map_ed.update_map_coords_text();
         map_ed.update_map_canvas();
       }
     }
   });
-  this.add_child(this.map_canvas.node);
+  this.map_wrapper.appendChild(this.map_canvas.node);
 
   // Create apply button
   this.add_child(this.apply_button = rcn_ui_button({
@@ -76,6 +87,7 @@ function rcn_map_ed() {
     map_ed.map_canvas.flush();
   });
 
+  this.update_map_coords_text();
   this.update_map_canvas();
 }
 
@@ -102,6 +114,12 @@ rcn_map_ed.prototype.set_tile = function(map_x, map_y) {
 rcn_map_ed.prototype.get_tile = function(map_x, map_y) {
   const tile_index = this.get_tile_index(map_x, map_y);
   return rcn_global_bin.rom[tile_index];
+}
+
+rcn_map_ed.prototype.update_map_coords_text = function() {
+  this.map_coords_text.innerText =
+    this.current_offset_x.toString().padStart(3, '0') + ';' +
+    this.current_offset_y.toString().padStart(3, '0');
 }
 
 rcn_map_ed.prototype.update_map_canvas = function() {
