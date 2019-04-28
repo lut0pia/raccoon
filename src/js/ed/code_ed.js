@@ -100,7 +100,10 @@ rcn_code_ed.prototype.update_textarea = function() {
 }
 
 rcn_code_ed.prototype.update_mirror = function() {
-  const keywords = ['const', 'else', 'false', 'for', 'function', 'if', 'in', 'let', 'new', 'return', 'this', 'true', 'var', 'while'];
+  const keywords = [
+    'class', 'const', 'constructor', 'else', 'extends', 'false', 'for', 'function', 'if',
+    'in', 'let', 'new', 'null', 'return', 'super', 'this', 'true', 'var', 'while',
+  ];
   const keyword_regexp = new RegExp('\\b('+keywords.join('|')+')\\b','g');
   let code_html = html_encode(this.textarea.value)
     .replace(/ /gi, '&nbsp;')
