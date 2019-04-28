@@ -468,7 +468,7 @@ function rcn_vm_worker_function(rcn) {
       mus_state.max_time = 0;
       for(let i = 0; i < track_count; i++) {
         const sound_n = ram[mus_index + i] & 0x3f;
-        _sfx(sound_n);
+        _sfx(sound_n, i);
         const sound_offset = rcn_mem_sound_offset + sound_n * 66;
         const period = ram[sound_offset + 0] + 4;
         mus_state.max_time = _max(mus_state.max_time, period * 32);
