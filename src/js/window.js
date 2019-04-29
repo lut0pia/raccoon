@@ -11,7 +11,7 @@ function rcn_window() {
   this.section.onmousedown = rcn_window_onmousedown;
   this.section.style.left = '256px';
   this.section.style.top = '256px';
-  this.section.style.zIndex = 100;
+  this.section.style.zIndex = rcn_window_container.childElementCount;
   rcn_window_container.appendChild(this.section);
 
   // Create header
