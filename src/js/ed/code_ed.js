@@ -104,25 +104,45 @@ rcn_code_ed.prototype.update_mirror = function() {
     'class', 'const', 'constructor', 'else', 'extends', 'false', 'for', 'function', 'if',
     'in', 'let', 'new', 'null', 'return', 'super', 'this', 'true', 'var', 'while',
   ];
-  const keyword_regexp = new RegExp('\\b('+keywords.join('|')+')\\b','g');
-  let code_html = html_encode(this.textarea.value)
-    .replace(/ /gi, '&nbsp;')
-    .replace(/\n/gi, '<br>')
-    .replace(keyword_regexp, '<span class="keyword">$1</span>')
-    .replace(/\b(0x[\da-f]+)\b/gi, '<span class="number hex">$1</span>')
-    .replace(/\b(\d[\d.]*)\b/gi, '<span class="number dec">$1</span>');
+  const keyword_regexp = new RegExp('\\b('+keywords.join('|')+')\\b', 'g');
 
-  // If the're an error, highlight the line
-  if(this.error) {
-    let lines = code_html.split('<br>')
-    let line_index = Math.min(lines.length, this.error.line) - 1;
-    lines[line_index] = '<span class="error" title="'+this.error.message+'">'+lines[line_index]+'</span>';
-    code_html = lines.join('<br>');
+  const lines = this.textarea.value.split('\n');
+
+  // Remove excess lines
+  while(this.textmirror.childElementCount >= lines.length) {
+    this.textmirror.removeChild(this.textmirror.lastChild);
   }
 
-  code_html += '<br>'; // There's an implicit newline at the end of the textarea
+  for(let i = 0; i < lines.length; i++) {
+    // Add missing line
+    if(this.textmirror.childElementCount <= i) {
+      this.textmirror.appendChild(document.createElement('line'));
+    }
 
-  this.textmirror.innerHTML = code_html;
+    const line_node = this.textmirror.childNodes[i];
+    const line_content_changed = lines[i] != line_node.rcn_line;
+    const is_error_line = !!(this.error && this.error.line == i + 1);
+    const line_error_changed = is_error_line != line_node.classList.contains('error');
+    const regen = line_content_changed || line_error_changed;
+
+    if(regen) {
+      let line_html = html_encode(lines[i])
+        .replace(/ /gi, '&nbsp;')
+        .replace(keyword_regexp, '<span class="keyword">$1</span>')
+        .replace(/\b(0x[\da-f]+)\b/gi, '<span class="number hex">$1</span>')
+        .replace(/\b(\d[\d.]*)\b/gi, '<span class="number dec">$1</span>');
+
+      if(is_error_line) {
+        line_node.classList.add('error');
+        line_node.title = this.error.message;
+      } else {
+        line_node.classList.remove('error');
+      }
+
+      line_node.rcn_line = lines[i];
+      line_node.innerHTML = line_html;
+    }
+  }
 }
 
 rcn_code_ed.prototype.set_error = function(e) {

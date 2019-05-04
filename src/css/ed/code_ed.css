@@ -7,11 +7,12 @@
   width: 100%;
   height: calc(100% - 32px);
   font-family: monospace;
-  font-size: 1em;
+  font-size: 13px;
   background: none;
   overflow: auto;
   overflow-wrap: normal;
   word-break: initial;
+  line-height: 15px;
 }
 
 .window.code_ed textarea {
@@ -32,6 +33,12 @@
   margin: 3px;
   z-index: -1;
   white-space: nowrap;
+}
+
+.window.code_ed .textmirror line {
+  display: block;
+  margin: 0px;
+  height: 15px;
 }
 
 /* Syntax highlighting */
