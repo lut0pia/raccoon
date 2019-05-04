@@ -47,6 +47,10 @@
   font-weight: bold;
 }
 
+.window.code_ed .textmirror .comment {
+  color: #727272;
+}
+
 .window.code_ed .textmirror .number {
   font-weight: bold;
 }

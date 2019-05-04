@@ -130,7 +130,11 @@ rcn_code_ed.prototype.update_mirror = function() {
         .replace(/ /gi, '&nbsp;')
         .replace(keyword_regexp, '<span class="keyword">$1</span>')
         .replace(/\b(0x[\da-f]+)\b/gi, '<span class="number hex">$1</span>')
-        .replace(/\b(\d[\d.]*)\b/gi, '<span class="number dec">$1</span>');
+        .replace(/\b(\d[\d.]*)\b/gi, '<span class="number dec">$1</span>')
+        .replace(/\/\/.*$/, function(text) {
+          text = text.replace(/\<.*?\>/gi, ''); // Remove html
+          return '<span class="comment">' + text + '</span>';
+        });
 
       if(is_error_line) {
         line_node.classList.add('error');
