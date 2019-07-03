@@ -519,7 +519,9 @@ function rcn_vm_worker_function(rcn) {
         let code = e.data.code;
         // Allow function thing() {} syntax to work as expected
         // by replacing it with thing = function() {}
-        code = code.replace(/function ([a-z]+)(\s*)(\([^\)]*\))/gim, '$1 = function$2$3');
+        // Also create an indirection to allow hot reload to work
+        // even when function has been saved somewhere as a value
+        code = code.replace(/function (\w+)(\s*)(\([^\)]*\))/gim, '$1 = function$3 { return __$1$3; }; __$1 = function$3');
         (new _Function(code))();
         break;
       case 'init':
