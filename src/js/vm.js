@@ -71,6 +71,9 @@ rcn_vm.prototype.tick = function() {
   } else {
     this.canvas.flush();
   }
+  if(this.worker) {
+    this.draw();
+  }
   return true;
 }
 
@@ -92,10 +95,17 @@ rcn_vm.prototype.update = function() {
     this.set_gamepad_bit(gamepad.index, 7, gamepad.buttons[3].pressed);
   }
 
-  this.worker.postMessage({type:'memory', offset: rcn.mem_gamepad_offset, bytes: this.gamepad_state});
+  this.worker.postMessage({type: 'write', offset: rcn.mem_gamepad_offset, bytes: this.gamepad_state});
   this.worker.postMessage({type: 'update'});
+  this.worker.postMessage({type: 'read', name: 'audio', offset: rcn.mem_soundreg_offset, size: rcn.mem_soundreg_size});
 
   this.gamepad_state.copyWithin(4, 0, 4); // Keep copy of previous frame gamepad state
+}
+
+rcn_vm.prototype.draw = function() {
+  this.worker.postMessage({type: 'draw'});
+  this.worker.postMessage({type: 'read', name: 'palette', offset: rcn.mem_palette_offset, size: rcn.mem_palette_size});
+  this.worker.postMessage({type: 'read', name: 'screen', offset: rcn.mem_screen_offset, size: rcn.mem_screen_size});
 }
 
 rcn_vm.prototype.reset = function() {
@@ -123,7 +133,7 @@ rcn_vm.prototype.load_code_from_bin = function() {
 
 rcn_vm.prototype.load_memory = function(bytes, offset) {
   offset = offset || 0;
-  this.worker.postMessage({type:'memory', offset:offset, bytes:bytes});
+  this.worker.postMessage({type: 'write', offset:offset, bytes:bytes});
 }
 
 rcn_vm.prototype.load_memory_from_bin = function(offset, size) {
@@ -140,10 +150,15 @@ rcn_vm.prototype.set_gamepad_bit = function(player, offset, value) {
 
 rcn_vm.prototype.onmessage = function(e) {
   switch(e.data.type) {
-    case 'blit':
-      this.canvas.blit(e.data.x, e.data.y, e.data.w, e.data.h, e.data.pixels, e.data.palette);
-      this.audio.update(this.audio_frame_time, e.data.sound);
+    case 'palette':
+      this.palette = e.data.bytes;
+      break;
+    case 'screen':
+      this.canvas.blit(0, 0, 128, 128, e.data.bytes, this.palette);
       this.canvas.flush();
+      break;
+    case 'audio':
+      this.audio.update(this.audio_frame_time, e.data.bytes);
       break;
     case 'error':
       this.kill();

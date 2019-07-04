@@ -529,20 +529,25 @@ function rcn_vm_worker_function(rcn) {
           init(); // This is user-defined
         }
         break;
-      case 'memory':
-        ram.set(e.data.bytes, e.data.offset);
-        break;
       case 'update':
         if(typeof update !== 'undefined') {
           update(); // This is user-defined
         }
         mus_update();
         sfx_update();
+        break;
+      case 'draw':
+        if(typeof draw !== 'undefined') {
+          draw(); // This is user-defined
+        }
+        break;
+      case 'write':
+        ram.set(e.data.bytes, e.data.offset);
+        break;
+      case 'read':
         _postMessage({
-          type:'blit', x:0, y:0, w:128, h:128,
-          pixels:ram.slice(rcn_mem_screen_offset, rcn_mem_screen_offset + rcn_mem_screen_size),
-          palette:ram.slice(rcn_mem_palette_offset, rcn_mem_palette_offset + rcn_mem_palette_size),
-          sound:ram.slice(rcn_mem_soundreg_offset, rcn_mem_soundreg_offset + rcn_mem_soundreg_size),
+          type: e.data.name,
+          bytes: ram.slice(e.data.offset, e.data.offset + e.data.size),
         });
         break;
     }
