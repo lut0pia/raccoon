@@ -49,13 +49,17 @@ function rcn_start_editor_mode(params) {
   });
 
   // Flush all canvases
-  const canvases = document.getElementsByTagName('canvas');
-  for(let i = 0; i < canvases.length; i++) {
-    const canvas = canvases[i];
-    if(canvas.rcn_canvas) {
-      canvas.rcn_canvas.flush();
+  // Need to wait a bit because we just created the DOM elements
+  // and layout may not have kicked in yet
+  setTimeout(function() {
+    const canvases = document.getElementsByTagName('canvas');
+    for(let i = 0; i < canvases.length; i++) {
+      const canvas = canvases[i];
+      if(canvas.rcn_canvas) {
+        canvas.rcn_canvas.flush();
+      }
     }
-  }
+  }, 100);
 
   // Event history (undo/redo)
   let event_stack = [];
