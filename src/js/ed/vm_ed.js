@@ -47,6 +47,14 @@ function rcn_vm_ed() {
     checked: true,
   }));
 
+  // Create mute checkbox
+  this.add_child(this.muted_checkbox = rcn_ui_checkbox({
+    label: 'Muted',
+    onchange: function(e) {
+      vm_ed.vm.set_volume(this.checked ? 0 : 1);
+    },
+  }));
+
   this.addEventListener('rcn_bin_change', function(e) {
     if(e.detail.load) {
       // We just loaded a new bin, therefore we reboot

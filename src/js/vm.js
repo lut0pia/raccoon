@@ -148,6 +148,10 @@ rcn_vm.prototype.set_gamepad_bit = function(player, offset, value) {
   }
 }
 
+rcn_vm.prototype.set_volume = function(volume) {
+  this.audio.set_volume(volume);
+}
+
 rcn_vm.prototype.onmessage = function(e) {
   switch(e.data.type) {
     case 'palette':

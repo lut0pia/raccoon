@@ -11,8 +11,7 @@ function rcn_audio() {
   this.channel_map = new Array(rcn_audio_channel_count);
   this.register = new Array(rcn_audio_channel_count);
   this.instrument_pool = [];
-
-  this.set_master_gain(0.33);
+  this.volume = 1;
 }
 
 rcn_audio.prototype.kill = function() {
@@ -23,8 +22,8 @@ rcn_audio.prototype.kill = function() {
   }
 }
 
-rcn_audio.prototype.set_master_gain = function(gain) {
-  this.master_gain.gain.setValueAtTime(gain, rcn_audio_context.currentTime);
+rcn_audio.prototype.set_volume = function(volume) {
+  this.volume = volume;
 }
 
 rcn_audio.prototype.update = function(frame_time, bytes) {
@@ -46,7 +45,7 @@ rcn_audio.prototype.update = function(frame_time, bytes) {
   // Suppress sound when updates are scarce (likely unfocused tab)
   if(!this.last_update || this.last_update > rcn_audio_context.currentTime - (2 / 30)) {
     this.master_gain.gain.cancelScheduledValues(rcn_audio_context.currentTime);
-    this.master_gain.gain.setValueAtTime(0.33, rcn_audio_context.currentTime);
+    this.master_gain.gain.setValueAtTime(0.33 * this.volume, rcn_audio_context.currentTime);
   }
   this.master_gain.gain.setTargetAtTime(0, change_time + (2 / 30), 0.001);
   this.last_update = rcn_audio_context.currentTime;
