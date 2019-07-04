@@ -25,3 +25,18 @@ function rcn_ui_select(o) {
   }
   return select;
 }
+
+function rcn_ui_checkbox(o) {
+  const checkbox_id = 'checkbox_' + Math.random().toString().substr(2);
+  let checkbox = document.createElement('input');
+  checkbox.id = checkbox_id;
+  checkbox.type = 'checkbox';
+  checkbox.onchange = o.onchange;
+  checkbox.checked = o.checked;
+  let checkbox_label = document.createElement('label');
+  checkbox_label.htmlFor = checkbox_id;
+  checkbox_label.innerText = o.label;
+  checkbox_label.prepend(checkbox);
+  checkbox_label.checkbox = checkbox;
+  return checkbox_label;
+}
