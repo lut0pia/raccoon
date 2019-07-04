@@ -1,6 +1,7 @@
 # Table of contents
 
 1. [Introduction](#introduction)
+    1. [Game Loop](#game-loop)
 1. [Editors](#editors)
     1. [Bin Browser](#bin-browser)
     1. [Virtual Machine](#virtual-machine)
@@ -24,6 +25,18 @@
 # Introduction
 
 Raccoon is a browser-based fantasy console. It's a tool to make, share and play small games. Its capabilities are purposefully limited to allow you, the creator, not to be overwhelmed by the possibilities. Although the console is limited, the tools are carefully crafted to give you a smooth creating experience. Raccoon games are contained in bins, they're a virtual equivalent to console cartridges. Programming is done in JavaScript.
+
+## Game Loop
+
+There are three special functions that you can define in your code: `init`, `update` and `draw`.
+
+`init` will be called at the very beginning of the game. It won't be called again if you live edit code from the editor. It will be called again if you reboot the virtual machine.
+
+`update` will be called every frame while the virtual machine is not paused. This is generally where most of the game logic goes.
+
+`draw` will be called every frame, even if the virtual machine is paused. That means that in editor you can pause your game on a specific animation frame, and still live edit your draw code and data, and see the result on the virtual machine's screen.
+
+It's not mandatory to put your draw code in the draw function, you can work with `update` only if you want, but it's encouraged because it usually forces you to write better code.
 
 # Editors
 
