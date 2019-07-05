@@ -94,44 +94,6 @@ rcn_bin.prototype.to_json_text = function() {
   return JSON.stringify(json, null, 2);
 }
 
-rcn_bin.prototype.to_html = async function() {
-  let scripts = await Promise.all([
-    rcn_xhr('src/js/init.js'), // This needs to stay at the beginning
-    rcn_xhr('src/js/audio.js'),
-    rcn_xhr('src/js/bin.js'),
-    rcn_xhr('src/js/canvas.js'),
-    rcn_xhr('src/js/game.js'),
-    rcn_xhr('src/js/gl.js'),
-    rcn_xhr('src/js/utility.js'),
-    rcn_xhr('src/js/vm.js'),
-    rcn_xhr('src/js/vm_worker.js'),
-  ]);
-  let styles = await Promise.all([
-    rcn_xhr('src/css/reset.css'),
-    rcn_xhr('src/css/game.css'),
-    rcn_xhr('src/css/export.css'),
-  ]);
-
-  let script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.innerHTML = 'const rcn_static_bin_json = ' + JSON.stringify(this.to_json()) + '\n' + scripts.join('\n');
-
-  let style = document.createElement('style');
-  style.type = 'text/css';
-  style.innerHTML = styles.join('\n');
-
-  let html = document.createElement('html');
-  let head = document.createElement('head');
-  let charset_meta = document.createElement('meta');
-  charset_meta.setAttribute('charset', 'UTF-8');
-
-  head.appendChild(charset_meta);
-  head.appendChild(script);
-  head.appendChild(style);
-  html.appendChild(head);
-  return html.outerHTML;
-}
-
 async function rcn_bin_from_env() {
   for(let i in rcn_hosts) {
     const host = rcn_hosts[i];

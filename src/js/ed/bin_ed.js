@@ -94,7 +94,7 @@ function rcn_bin_ed() {
     onclick: async function() {
       rcn_download_file({
         file_name: rcn_global_bin.name + '.rcn.html',
-        content: await rcn_global_bin.to_html(),
+        content: await bin_ed.bin_to_html(),
       });
     },
   }));
@@ -224,6 +224,44 @@ rcn_bin_ed.prototype.delete_bin = function(bin_name) {
   });
   rcn_storage.bins.splice(bin_index, 1);
   rcn_dispatch_ed_event('rcn_bins_change');
+}
+
+rcn_bin_ed.prototype.bin_to_html = async function() {
+  let scripts = await Promise.all([
+    rcn_xhr('src/js/init.js'), // This needs to stay at the beginning
+    rcn_xhr('src/js/audio.js'),
+    rcn_xhr('src/js/bin.js'),
+    rcn_xhr('src/js/canvas.js'),
+    rcn_xhr('src/js/game.js'),
+    rcn_xhr('src/js/gl.js'),
+    rcn_xhr('src/js/utility.js'),
+    rcn_xhr('src/js/vm.js'),
+    rcn_xhr('src/js/vm_worker.js'),
+  ]);
+  let styles = await Promise.all([
+    rcn_xhr('src/css/reset.css'),
+    rcn_xhr('src/css/game.css'),
+    rcn_xhr('src/css/export.css'),
+  ]);
+
+  let script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.innerHTML = 'const rcn_static_bin_json = ' + JSON.stringify(rcn_global_bin.to_json()) + '\n' + scripts.join('\n');
+
+  let style = document.createElement('style');
+  style.type = 'text/css';
+  style.innerHTML = styles.join('\n');
+
+  let html = document.createElement('html');
+  let head = document.createElement('head');
+  let charset_meta = document.createElement('meta');
+  charset_meta.setAttribute('charset', 'UTF-8');
+
+  head.appendChild(charset_meta);
+  head.appendChild(script);
+  head.appendChild(style);
+  html.appendChild(head);
+  return html.outerHTML;
 }
 
 rcn_bin_ed.prototype.refresh_bins_ui = function() {
