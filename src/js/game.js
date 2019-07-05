@@ -68,7 +68,7 @@ function rcn_create_touch_controls(vm) {
   controls_div.appendChild(control_axes);
 
   const control_axes_img = document.createElement('img');
-  control_axes_img.src = 'src/img/control_axes.svg';
+  control_axes_img.src = rcn_resource('src/img/control_axes.svg');
   control_axes.appendChild(control_axes_img);
 
   const controls_buttons = document.createElement('div');
@@ -105,7 +105,7 @@ function rcn_create_touch_controls(vm) {
   controls_div.appendChild(controls_buttons);
 
   const control_buttons_img = document.createElement('img');
-  control_buttons_img.src = 'src/img/control_buttons.svg';
+  control_buttons_img.src = rcn_resource('src/img/control_buttons.svg');
   controls_buttons.appendChild(control_buttons_img);
 
   document.body.appendChild(controls_div);

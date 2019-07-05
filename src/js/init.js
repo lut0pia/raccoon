@@ -36,6 +36,7 @@ const rcn = {
 
 rcn_editors = []; // This gets filled with the constructors of each type of editor
 rcn_hosts = {};
+rcn_resources = {}; // This can be used to redirect URLs to ObjectURLs
 
 // Raccoon storage
 try {
@@ -53,6 +54,10 @@ window.addEventListener('unload', function() {
     console.log(e);
   }
 })
+
+function rcn_resource(url) {
+  return rcn_resources[url] || url;
+}
 
 function rcn_add_head_node(name) {
   const new_node = document.createElement(name);

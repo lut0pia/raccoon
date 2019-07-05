@@ -244,9 +244,25 @@ rcn_bin_ed.prototype.bin_to_html = async function() {
     rcn_xhr('src/css/export.css'),
   ]);
 
+  let resources = await Promise.all([
+    'src/img/control_axes.svg',
+    'src/img/control_buttons.svg',
+  ].map(async function(url) {
+    const mime = {
+      svg: 'image/svg+xml',
+    }[url.split('.').pop()];
+    return 'rcn_resources[' + JSON.stringify(url) + '] = '
+    + 'URL.createObjectURL(new Blob('
+    + '[' + JSON.stringify(await rcn_xhr(url)) + '],'
+    + '{type: ' + JSON.stringify(mime) + '}));';
+  }));
+
   let script = document.createElement('script');
   script.type = 'text/javascript';
-  script.innerHTML = 'const rcn_static_bin_json = ' + JSON.stringify(rcn_global_bin.to_json()) + '\n' + scripts.join('\n');
+  script.innerHTML =
+    'const rcn_static_bin_json = ' + JSON.stringify(rcn_global_bin.to_json()) + '\n'
+    + scripts.join('\n') + '\n'
+    + resources.join('\n');
 
   let style = document.createElement('style');
   style.type = 'text/css';
