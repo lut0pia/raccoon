@@ -124,6 +124,9 @@ function rcn_sprite_ed() {
       sprite_ed.copy_selection();
     } else if(ctrl && e.key == 'v') {
       sprite_ed.paste_selection();
+    } else if (e.keyCode >= 49 && e.keyCode <= 56) {
+      sprite_ed.set_current_color(e.keyCode - 49);
+      e.preventDefault();
     }
   });
   this.draw_canvas.node.addEventListener('blur', function(e) {
