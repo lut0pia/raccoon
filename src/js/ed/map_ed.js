@@ -30,13 +30,14 @@ function rcn_map_ed() {
     } else if(e.buttons == 2) { // Right button: tile pick
       rcn_current_sprite = map_ed.get_tile(tex_coords.x >> 3, tex_coords.y >> 3);
       rcn_current_sprite_columns = rcn_current_sprite_rows = 1;
-      rcn_dispatch_ed_event('rcn_current_sprite_change')
+      rcn_dispatch_ed_event('rcn_current_sprite_change');
     } else if(e.buttons == 4) { // Middle button: shift map
       if(e.type == 'mousedown') {
         shift_start_client_x = e.clientX;
         shift_start_client_y = e.clientY;
         shift_start_offset_x = map_ed.current_offset_x;
         shift_start_offset_y = map_ed.current_offset_y;
+        e.preventDefault();
       }
       if(shift_start_client_x != undefined && shift_start_offset_y != undefined) {
         const vp = map_ed.map_canvas.compute_viewport();
@@ -46,6 +47,7 @@ function rcn_map_ed() {
         map_ed.current_offset_y = Math.max(0, Math.min(64 - 16, map_ed.current_offset_y)) << 0;
         map_ed.update_map_coords_text();
         map_ed.update_map_canvas();
+        e.preventDefault();
       }
     }
   });
