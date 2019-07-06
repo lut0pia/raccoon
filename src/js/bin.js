@@ -1,5 +1,6 @@
 // Bins are containers for raccoon software
 // They can be saved, shared, and loaded into a raccoon VM
+'use strict';
 
 function rcn_bin() {
   this.name = 'Untitled';

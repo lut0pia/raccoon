@@ -1,4 +1,5 @@
 // Raccoon canvas
+'use strict';
 
 function rcn_canvas() {
   this.node = document.createElement('canvas');

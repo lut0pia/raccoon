@@ -1,4 +1,5 @@
 // UI helper functions
+'use strict';
 
 function rcn_ui_button(o) {
   const button = document.createElement('input');

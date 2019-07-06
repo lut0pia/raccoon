@@ -1,4 +1,5 @@
 // Raccoon vm editor
+'use strict';
 
 function rcn_vm_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;

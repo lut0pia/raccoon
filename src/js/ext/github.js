@@ -1,4 +1,5 @@
 // Raccoon GitHub integration
+'use strict';
 
 function rcn_github_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;

@@ -1,4 +1,5 @@
 // Raccoon game mode functionality
+'use strict';
 
 function rcn_start_game_mode(params) {
   rcn_log('Starting game mode');

@@ -1,4 +1,5 @@
 // Raccoon sprite editor
+'use strict';
 
 function rcn_sprite_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;

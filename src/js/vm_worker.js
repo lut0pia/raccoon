@@ -1,5 +1,6 @@
 // Raccoon virtual machine
 // This is the worker script that gets executed inside a web worker
+'use strict';
 
 function rcn_vm_worker_function(rcn) {
   const rcn_ram_size = rcn.ram_size;
@@ -448,9 +449,9 @@ function rcn_vm_worker_function(rcn) {
       time: 0, // In audio frames (120 per second)
     };
   }
-  let mus_state = undefined;
+  let mus_state = null;
   const mus_update = function() {
-    if(mus_state === undefined) return;
+    if(mus_state == null) return;
 
     if(mus_state.max_time && mus_state.time >= mus_state.max_time) {
       const mus_index = rcn.mem_music_offset + mus_state.n * 4;
@@ -479,7 +480,7 @@ function rcn_vm_worker_function(rcn) {
   }
   mus = function(n) {
     if(n < 0) {
-      delete mus_state;
+      mus_state = null;
     } else {
       mus_state = {
         n: n,

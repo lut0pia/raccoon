@@ -1,4 +1,5 @@
 // Raccoon bin browser
+'use strict';
 
 function rcn_bin_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;

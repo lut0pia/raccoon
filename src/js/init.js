@@ -1,4 +1,5 @@
 // Basic functionality, bootstrap, config
+'use strict';
 
 document.title = 'raccoon';
 
@@ -34,16 +35,17 @@ const rcn = {
   mem_screen_size: 0x2000, // 8KiB = 128x128x4bits
 };
 
-rcn_editors = []; // This gets filled with the constructors of each type of editor
-rcn_hosts = {};
-rcn_resources = {}; // This can be used to redirect URLs to ObjectURLs
+let rcn_global_bin;
+const rcn_editors = []; // This gets filled with the constructors of each type of editor
+const rcn_hosts = {};
+const rcn_resources = {}; // This can be used to redirect URLs to ObjectURLs
 
 // Raccoon storage
+let rcn_storage = {}
 try {
   rcn_storage = JSON.parse(localStorage.rcn);
 } catch(e) {
   rcn_log('Could not read localStorage');
-  rcn_storage = {};
   console.log(e);
 }
 window.addEventListener('unload', function() {

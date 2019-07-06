@@ -1,4 +1,5 @@
 // Raccoon map editor
+'use strict';
 
 function rcn_map_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;

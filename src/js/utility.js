@@ -1,7 +1,8 @@
 // Raccoon utility
 // Honestly I don't know where else to put those
+'use strict';
 
-rcn_get_parameters = (function() {
+const rcn_get_parameters = (function() {
   const params = {};
   location.search.substr(1).split('&')
   .forEach(function(item) {

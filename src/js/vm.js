@@ -1,5 +1,6 @@
 // Raccoon virtual machine
 // This is the client that spawns the web worker
+'use strict';
 
 const rcn_keycode_to_gamepad = {
   37: 0, 39: 1, 38: 2, 40: 3, // Left Right Up Down

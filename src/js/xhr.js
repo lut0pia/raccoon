@@ -1,4 +1,5 @@
 // Raccoon XMLHttpRequest helper
+'use strict';
 
 async function rcn_xhr(p) {
   return new Promise(function(resolve, reject) {

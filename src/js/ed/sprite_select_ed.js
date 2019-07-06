@@ -1,4 +1,5 @@
 // Raccoon sprite selector
+'use strict';
 
 let rcn_current_sprite = 0;
 let rcn_current_sprite_columns = 1;

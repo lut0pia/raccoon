@@ -1,4 +1,5 @@
 // WebGL helper functions
+'use strict';
 
 function rcn_gl_create_shader(gl, type, source) {
   const shader = gl.createShader(type);

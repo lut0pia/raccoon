@@ -1,4 +1,5 @@
 // Raccoon editor functionality
+'use strict';
 
 function rcn_start_editor_mode(params) {
   rcn_log('Starting editor mode');

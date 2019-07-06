@@ -1,4 +1,7 @@
 // Generic draggable window
+'use strict';
+
+let rcn_window_drag = null;
 
 function rcn_window() {
   let window = this;
@@ -153,7 +156,7 @@ function rcn_window_load_layout(layout) {
 }
 
 document.addEventListener('mousemove', function(e) {
-  if(typeof rcn_window_drag === 'undefined') {
+  if(rcn_window_drag == null) {
     return;
   }
 
@@ -171,5 +174,5 @@ document.addEventListener('mousemove', function(e) {
 });
 
 document.addEventListener('mouseup', function(e) {
-  delete rcn_window_drag;
+  rcn_window_drag = null;
 });

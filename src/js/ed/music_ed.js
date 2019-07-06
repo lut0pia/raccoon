@@ -1,4 +1,5 @@
 // Raccoon music editor
+'use strict';
 
 function rcn_music_ed() {
   this.__proto__.__proto__ = rcn_window.prototype;

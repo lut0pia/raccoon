@@ -1,4 +1,5 @@
 // Raccoon audio context
+'use strict';
 
 const rcn_audio_context = new AudioContext();
 const rcn_audio_channel_count = 4;
