@@ -51,7 +51,7 @@ function rcn_vm_ed() {
   this.add_child(this.muted_checkbox = rcn_ui_checkbox({
     label: 'Muted',
     onchange: function(e) {
-      vm_ed.vm.set_volume(this.checked ? 0 : 1);
+      vm_ed.update_volume();
     },
   }));
 
@@ -86,8 +86,13 @@ rcn_vm_ed.prototype.title = 'Virtual Machine';
 rcn_vm_ed.prototype.docs_link = 'virtual-machine';
 rcn_vm_ed.prototype.type = 'vm_ed';
 
+rcn_vm_ed.prototype.update_volume = function() {
+  this.vm.set_volume(this.muted_checkbox.checkbox.checked ? 0 : 1);
+}
+
 rcn_vm_ed.prototype.reboot = function() {
   this.vm.load_bin(rcn_global_bin);
+  this.update_volume();
   rcn_dispatch_ed_event('rcn_reboot');
 }
 
