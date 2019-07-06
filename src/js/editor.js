@@ -170,14 +170,27 @@ function rcn_dispatch_ed_event(type, detail) {
   document.body.dispatchEvent(event);
 }
 
-function rcn_confirm_bin_override() {
+function rcn_bin_save_status() {
   const saved_bin = rcn_storage.bins.find(function(bin) {
     return bin.name == rcn_global_bin.name;
   });
   const current_json = JSON.stringify(rcn_global_bin.to_json());
   const default_json = JSON.stringify((new rcn_bin()).to_json());
   const saved_json = saved_bin ? JSON.stringify(saved_bin) : '';
-  return current_json == saved_json || current_json == default_json ||
+  if(current_json == default_json) {
+    return 'default';
+  } else if(!saved_json) {
+    return 'new';
+  } else if(current_json != saved_json) {
+    return 'unsaved';
+  } else {
+    return 'saved';
+  }
+}
+
+function rcn_confirm_bin_override() {
+  const save_status = rcn_bin_save_status();
+  return (save_status != 'unsaved' && save_status != 'new') ||
     confirm('Are you sure you want to overwrite your working bin? You have unsaved changes.');
 }
 

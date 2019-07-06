@@ -10,8 +10,9 @@ function rcn_bin_ed() {
   this.name_input = document.createElement('input');
   this.name_input.type = 'text';
   this.name_input.placeholder = 'Bin name';
-  this.name_input.onchange = function() { // Update bin name on input change
+  this.name_input.oninput = function() { // Update bin name on input change
     rcn_global_bin.name = this.value;
+    bin_ed.update_bin_save_status();
   }
   this.add_child(this.name_input);
 
@@ -122,14 +123,17 @@ function rcn_bin_ed() {
   this.add_child(this.file_input);
 
   this.addEventListener('rcn_bin_change', function() { // Update name input on bin change
+    bin_ed.update_bin_save_status();
     bin_ed.update_name_input();
     bin_ed.update_host_select();
     bin_ed.update_link_input();
   });
   this.addEventListener('rcn_bins_change', function() {
+    bin_ed.update_bin_save_status();
     bin_ed.refresh_bins_ui();
   });
 
+  this.update_bin_save_status();
   this.update_name_input();
   this.update_host_select();
   this.update_link_input();
@@ -327,6 +331,23 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
 
 rcn_bin_ed.prototype.update_name_input = function() {
   this.name_input.value = rcn_global_bin.name;
+}
+
+rcn_bin_ed.prototype.update_bin_save_status = function() {
+  const save_status = rcn_bin_save_status();
+  this.name_input.style.backgroundColor = {
+    saved: 'white',
+    unsaved: '#faa',
+    new: '#faa',
+    default: 'white',
+  }[save_status];
+
+  this.save_button.style.fontWeight = {
+    saved: 'normal',
+    unsaved: 'normal',
+    new: 'bold',
+    default: 'normal',
+  }[save_status];
 }
 
 rcn_bin_ed.prototype.update_host_select = function() {
