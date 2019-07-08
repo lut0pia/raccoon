@@ -96,6 +96,7 @@ function rcn_window_header_onmousedown(e) {
     x: e.clientX,
     y: e.clientY,
   }
+  document.body.classList.add('window_dragging')
 }
 
 rcn_window.prototype.add_child = function(node) {
@@ -175,4 +176,5 @@ document.addEventListener('mousemove', function(e) {
 
 document.addEventListener('mouseup', function(e) {
   rcn_window_drag = null;
+  document.body.classList.remove('window_dragging')
 });
