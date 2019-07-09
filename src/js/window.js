@@ -93,9 +93,10 @@ function rcn_window_header_onmousedown(e) {
 
   rcn_window_drag = {
     node: this.parentElement,
-    x: e.clientX,
-    y: e.clientY,
-  }
+    dx: this.parentElement.offsetLeft - e.clientX,
+    dy: this.parentElement.offsetTop - e.clientY,
+  };
+
   document.body.classList.add('window_dragging')
 }
 
@@ -164,14 +165,14 @@ document.addEventListener('mousemove', function(e) {
   e = e || window.event;
   e.preventDefault();
 
-  const dx = e.clientX - rcn_window_drag.x;
-  const dy = e.clientY - rcn_window_drag.y;
-  rcn_window_drag.x = e.clientX;
-  rcn_window_drag.y = e.clientY;
-
   const node = rcn_window_drag.node;
-  node.style.left = (node.offsetLeft + dx) + "px";
-  node.style.top = Math.max(0, (node.offsetTop + dy)) + "px";
+  let new_x = e.clientX + rcn_window_drag.dx;
+  let new_y = e.clientY + rcn_window_drag.dy;
+  new_x = Math.max(0, Math.min(new_x, rcn_window_container.clientWidth - node.clientWidth - 2));
+  new_y = Math.max(0, Math.min(new_y, rcn_window_container.clientHeight - node.clientHeight - 2));
+
+  node.style.left = new_x + "px";
+  node.style.top = new_y + "px";
 });
 
 document.addEventListener('mouseup', function(e) {
