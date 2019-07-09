@@ -23,7 +23,7 @@ function rcn_start_editor_mode(params) {
     }
     toolbar_div.appendChild(editor_button);
   });
-  document.body.appendChild(toolbar_div);
+  rcn_side_panel.appendChild(toolbar_div);
 
   rcn_global_bin = new rcn_bin();
   if(rcn_storage.working_bin) {
@@ -156,6 +156,9 @@ function rcn_overlay_pop() {
     rcn_overlay.classList.remove('active');
   }
 }
+
+const rcn_side_panel = document.createElement('aside');
+document.body.appendChild(rcn_side_panel);
 
 const rcn_window_container = document.createElement('main');
 document.body.appendChild(rcn_window_container);
