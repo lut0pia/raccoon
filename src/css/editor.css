@@ -17,22 +17,28 @@ main {
 }
 
 /*
-  Toolbar
+  Toolbox
 */
 
-#toolbar {
+#toolbox {
   background-color: lightgrey;
   border: 2px lightgrey outset;
 }
 
-#toolbar .editor_button {
+#toolbox::before {
+  content: "Toolbox";
+  display: block;
+  text-align: center;
+}
+
+#toolbox article {
   padding: 4px;
   margin: 2px;
   background-color: rgb(236, 236, 236);
   cursor: pointer;
 }
 
-#toolbar .editor_button:hover {
+#toolbox article:hover {
   background-color: lightslategrey;
 }
 

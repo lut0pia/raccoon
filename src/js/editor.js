@@ -11,15 +11,14 @@ function rcn_start_editor_mode(params) {
     return a.prototype.title > b.prototype.title;
   });
 
-  // Fill toolbar
+  // Fill toolbox
   rcn_editors.forEach(function(ed) {
-    const editor_button = document.createElement('div');
-    editor_button.classList.add('editor_button');
-    editor_button.innerText = ed.prototype.title;
-    editor_button.onclick = function() {
+    const tool = document.createElement('article');
+    tool.innerText = ed.prototype.title;
+    tool.onclick = function() {
       new ed();
     }
-    toolbar_div.appendChild(editor_button);
+    toolbox_div.appendChild(tool);
   });
 
   // Fill layout box
@@ -160,9 +159,9 @@ function rcn_overlay_pop() {
 const rcn_side_panel = document.createElement('aside');
 document.body.appendChild(rcn_side_panel);
 
-const toolbar_div = document.createElement('div');
-toolbar_div.id = 'toolbar';
-rcn_side_panel.appendChild(toolbar_div);
+const toolbox_div = document.createElement('div');
+toolbox_div.id = 'toolbox';
+rcn_side_panel.appendChild(toolbox_div);
 
 const rcn_layoutbox = document.createElement('div');
 rcn_layoutbox.id = 'layoutbox';
