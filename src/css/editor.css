@@ -16,6 +16,10 @@ main {
   height: 100%;
 }
 
+/*
+  Toolbar
+*/
+
 #toolbar {
   background-color: lightgrey;
   border: 2px lightgrey outset;
