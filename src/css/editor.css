@@ -37,6 +37,32 @@ main {
 }
 
 /*
+  Layout box
+*/
+
+#layoutbox {
+  background-color: lightgrey;
+  border: 2px lightgrey outset;
+}
+
+#layoutbox::before {
+  content: "Layoutbox";
+  display: block;
+  text-align: center;
+}
+
+#layoutbox article {
+  padding: 4px;
+  margin: 2px;
+  background-color: lightyellow;
+}
+
+#layoutbox input {
+  margin-top: -1px;
+  float: right;
+}
+
+/*
   The overlay appears when it has the active class
   Its function is to block access to underlying editors
 */

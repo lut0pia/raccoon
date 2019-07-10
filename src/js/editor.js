@@ -11,9 +11,7 @@ function rcn_start_editor_mode(params) {
     return a.prototype.title > b.prototype.title;
   });
 
-  // Create toolbar
-  const toolbar_div = document.createElement('div');
-  toolbar_div.id = 'toolbar';
+  // Fill toolbar
   rcn_editors.forEach(function(ed) {
     const editor_button = document.createElement('div');
     editor_button.classList.add('editor_button');
@@ -23,7 +21,9 @@ function rcn_start_editor_mode(params) {
     }
     toolbar_div.appendChild(editor_button);
   });
-  rcn_side_panel.appendChild(toolbar_div);
+
+  // Fill layout box
+  rcn_update_layoutbox();
 
   rcn_global_bin = new rcn_bin();
   if(rcn_storage.working_bin) {
@@ -160,8 +160,54 @@ function rcn_overlay_pop() {
 const rcn_side_panel = document.createElement('aside');
 document.body.appendChild(rcn_side_panel);
 
+const toolbar_div = document.createElement('div');
+toolbar_div.id = 'toolbar';
+rcn_side_panel.appendChild(toolbar_div);
+
+const rcn_layoutbox = document.createElement('div');
+rcn_layoutbox.id = 'layoutbox';
+rcn_side_panel.appendChild(rcn_layoutbox);
+
 const rcn_window_container = document.createElement('main');
 document.body.appendChild(rcn_window_container);
+
+function rcn_update_layoutbox() {
+  // Clear
+  while(rcn_layoutbox.firstChild) {
+    rcn_layoutbox.removeChild(rcn_layoutbox.firstChild);
+  }
+
+  for(const layout_name in rcn_storage.window_layouts) {
+    const layout_article = document.createElement('article');
+    layout_article.innerText = layout_name;
+    rcn_layoutbox.appendChild(layout_article);
+
+    layout_article.appendChild(rcn_ui_button({
+      value: 'Load',
+      onclick: function() {
+        rcn_window_load_layout(rcn_storage.window_layouts[layout_name]);
+      },
+    }));
+
+    layout_article.appendChild(rcn_ui_button({
+      value: 'Delete',
+      onclick: function() {
+        delete rcn_storage.window_layouts[layout_name];
+        rcn_update_layoutbox();
+      },
+    }));
+  }
+  rcn_layoutbox.appendChild(rcn_ui_button({
+    value: 'Save',
+    onclick: function() {
+      const layout_name = prompt('Layout name:');
+      if(layout_name) {
+        rcn_storage.window_layouts[layout_name] = rcn_window_save_layout();
+        rcn_update_layoutbox();
+      }
+    },
+  }));
+}
 
 function rcn_dispatch_ed_event(type, detail) {
   const event = new CustomEvent(type, {detail: detail || {}});
@@ -198,9 +244,13 @@ function rcn_confirm_bin_override() {
     confirm('Are you sure you want to overwrite your working bin? You have unsaved changes.');
 }
 
-// Make sure that rcn_storage.bins is an array
+// Create defaults in rcn_storage
 if(!rcn_storage.bins) {
   rcn_storage.bins = [];
+}
+
+if(!rcn_storage.window_layouts) {
+  rcn_storage.window_layouts = {};
 }
 
 // Clipboard functionality
