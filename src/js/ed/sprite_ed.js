@@ -434,7 +434,6 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
     pixels.set(rcn_global_bin.rom.slice(row_index, row_index + row_size), i * row_size);
   }
 
-  this.draw_canvas.set_aspect_ratio(1, 1);
   this.draw_canvas.set_size(spr_w, spr_h);
   this.draw_canvas.blit(0, 0, spr_w, spr_h, pixels);
   this.draw_canvas.flush();

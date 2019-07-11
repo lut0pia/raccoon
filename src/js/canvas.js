@@ -53,12 +53,6 @@ function rcn_canvas() {
   ]));
 }
 
-rcn_canvas.prototype.set_aspect_ratio = function(width, height) {
-  this.node.width = width;
-  this.node.height = height;
-  this.flush();
-}
-
 rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, palette) {
   if(!palette) {
     // Use current bin palette if unspecified
@@ -103,6 +97,10 @@ rcn_canvas.prototype.flush = function() {
     // Clear all to black
     gl.viewport(0, 0, this.node.width, this.node.height);
     gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // I think this resets the aspect ratio of the canvas
+    this.node.width = this.width;
+    this.node.height = this.height;
 
     // Render at the client size
     const client_width = this.node.clientWidth;

@@ -131,7 +131,6 @@ rcn_sprite_select_ed.prototype.update_sprite_index_text = function() {
 }
 
 rcn_sprite_select_ed.prototype.update_spritesheet_canvas = function() {
-  this.spritesheet_canvas.set_aspect_ratio(128, 96);
   this.spritesheet_canvas.set_size(128, 96);
   this.spritesheet_canvas.blit(0, 0, 128, 96, rcn_global_bin.rom.slice(rcn.mem_spritesheet_begin));
   this.spritesheet_canvas.flush();
