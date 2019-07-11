@@ -1,6 +1,6 @@
 .window.sprite_ed content {
   width: 512px;
-  height: 602px;
+  height: 512px;
 }
 
 .window.sprite_ed div.panel {
@@ -10,6 +10,7 @@
 
 .window.sprite_ed canvas.draw {
   width: calc(100% - 70px);
+  max-height: calc(100% - 24px);
 }
 
 .window.sprite_ed content input[type=color] {
