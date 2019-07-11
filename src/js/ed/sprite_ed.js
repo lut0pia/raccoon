@@ -2,7 +2,7 @@
 'use strict';
 
 function rcn_sprite_ed() {
-  this.__proto__.__proto__ = rcn_window.prototype;
+  rcn_sprite_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
   this.current_color = 0;

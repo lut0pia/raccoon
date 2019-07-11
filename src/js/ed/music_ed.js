@@ -2,7 +2,7 @@
 'use strict';
 
 function rcn_music_ed() {
-  this.__proto__.__proto__ = rcn_window.prototype;
+  rcn_music_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
   this.current_music = 0;

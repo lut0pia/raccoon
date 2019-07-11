@@ -6,7 +6,7 @@ let rcn_current_sprite_columns = 1;
 let rcn_current_sprite_rows = 1;
 
 function rcn_sprite_select_ed() {
-  this.__proto__.__proto__ = rcn_window.prototype;
+  rcn_sprite_select_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
   const sprite_sel_ed = this;

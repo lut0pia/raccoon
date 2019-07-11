@@ -2,7 +2,7 @@
 'use strict';
 
 function rcn_github_ed() {
-  this.__proto__.__proto__ = rcn_window.prototype;
+  rcn_github_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
   let github_ed = this;

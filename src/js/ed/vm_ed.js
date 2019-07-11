@@ -2,7 +2,7 @@
 'use strict';
 
 function rcn_vm_ed() {
-  this.__proto__.__proto__ = rcn_window.prototype;
+  rcn_vm_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
   const vm_ed = this;

@@ -2,7 +2,7 @@
 'use strict';
 
 function rcn_bin_ed() {
-  this.__proto__.__proto__ = rcn_window.prototype;
+  rcn_bin_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
   const bin_ed = this;

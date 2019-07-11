@@ -2,7 +2,7 @@
 'use strict';
 
 function rcn_map_ed() {
-  this.__proto__.__proto__ = rcn_window.prototype;
+  rcn_map_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
   // Init map editing state
