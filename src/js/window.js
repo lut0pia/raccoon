@@ -25,7 +25,7 @@ function rcn_window() {
 
   // Create close icon
   this.add_header_icon({
-    codepoint: '274E',
+    codepoint: '274C',
     type: 'close',
     onclick: function() {
       window.kill();
