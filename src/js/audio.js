@@ -12,7 +12,7 @@ function rcn_audio() {
   this.master_gain.connect(rcn_audio_context.destination);
 
   this.volume = 1;
-  this.last_update = 0;
+  this.play_time = this.last_update = 0;
 
   this.channels = new Array(rcn_audio_channel_count);
   for(let i = 0; i < rcn_audio_channel_count; i++) {
