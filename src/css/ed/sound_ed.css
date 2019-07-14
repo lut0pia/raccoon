@@ -18,8 +18,25 @@
 .window.sound_ed td {
   min-width: 10px;
   border: 1px grey solid;
+  text-align: center;
 }
 
-.window.sound_ed td.active {
+/* Sound effects */
+.window.sound_ed td.active.effect_none {
   background-color: lightblue;
+}
+.window.sound_ed td.active.effect_slide {
+  background-image: linear-gradient(white, lightblue, white);
+}
+.window.sound_ed td.active.effect_vibrato {
+  background-image: linear-gradient(to right, lightblue, white, lightblue, white, lightblue, white, lightblue, white);
+}
+.window.sound_ed td.active.effect_drop {
+  background-image: radial-gradient(lightblue, #00000000);
+}
+.window.sound_ed td.active.effect_fadein {
+  background-image: linear-gradient(to right, #00000000, lightblue);
+}
+.window.sound_ed td.active.effect_fadeout {
+  background-image: linear-gradient(to right, lightblue, #00000000);
 }

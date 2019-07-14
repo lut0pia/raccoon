@@ -126,30 +126,39 @@ rcn_sound_ed.prototype.update_notes = function() {
       const note_offset = sound_offset + 2 + note * 2;
       const note_1 = rcn_global_bin.rom[note_offset + 0];
       const note_2 = rcn_global_bin.rom[note_offset + 1];
-      const current_pitch = note_1 & 0x3f; // Pitch
+      const current_pitch = note_1 & 0x3f;
+      const effect = note_2 >> 3;
       const volume = note_2 & 0x7;
       let cell = document.createElement('td');
       row.appendChild(cell);
       if(pitch == current_pitch && volume > 0) {
         cell.classList.add('active');
+        cell.classList.add('effect_' + ['none', 'slide', 'vibrato', 'drop', 'fadein', 'fadeout'][effect]);
         cell.innerText = volume;
         cell.onmousedown = function(e) {
-          if(e.buttons == 1) {
-            rcn_global_bin.rom[note_offset + 1] &= ~7; // Set volume to 0
-          } else if(e.buttons == 2) {
-            let volume = rcn_global_bin.rom[note_offset + 1];
-            volume = volume > 0 ? volume - 1 : 7;
-            rcn_global_bin.rom[note_offset + 1] = volume;
+          if(e.buttons == 1) { // Remove note
+            rcn_global_bin.rom[note_offset + 0] = 0;
+            rcn_global_bin.rom[note_offset + 1] = 0;
+          } else if(e.buttons == 2) { // Decrease volume
+            let volume = rcn_global_bin.rom[note_offset + 1] & 0x3f;
+            volume = volume > 1 ? volume - 1 : 7;
+            rcn_global_bin.rom[note_offset + 1] &= 0xf8; // Reset volume
+            rcn_global_bin.rom[note_offset + 1] |= volume;
+          } else if(e.buttons == 4) { // Change effect
+            let effect = rcn_global_bin.rom[note_offset + 1] >> 3;
+            effect = (effect + 1) % 6;
+            rcn_global_bin.rom[note_offset + 1] &= 0xc7; // Reset effect
+            rcn_global_bin.rom[note_offset + 1] |= effect << 3;
           }
           rcn_dispatch_ed_event('rcn_bin_change', {
-            begin: note_offset + 1,
+            begin: note_offset,
             end: note_offset + 2,
           });
         }
       } else {
         cell.onmousedown = function(e) {
           rcn_global_bin.rom[note_offset + 0] = pitch;
-          rcn_global_bin.rom[note_offset + 1] |= 7; // Set volume to 7
+          rcn_global_bin.rom[note_offset + 1] = 7; // Set volume to 7 and effect to 0
           rcn_dispatch_ed_event('rcn_bin_change', {
             begin: note_offset,
             end: note_offset + 2,
