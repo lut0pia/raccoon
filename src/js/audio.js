@@ -134,6 +134,9 @@ rcn_audio.prototype.update = function(bytes) {
         channel.phi += frequency / rcn_audio_sample_rate;
       }
     }
+
+    // Avoid saturation
+    samples[i] /= rcn_audio_channel_count;
   }
 
   // Play the buffer at some time in the future
