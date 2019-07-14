@@ -8,7 +8,7 @@ function rcn_start_editor_mode(params) {
 
   // Sort editors alphabetically
   rcn_editors.sort(function(a, b) {
-    return a.prototype.title > b.prototype.title;
+    return a.prototype.title > b.prototype.title ? 1 : -1;
   });
 
   // Fill toolbox
