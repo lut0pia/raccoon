@@ -12,14 +12,14 @@ function rcn_start_editor_mode(params) {
   });
 
   // Fill toolbox
-  rcn_editors.forEach(function(ed) {
+  for(let ed of rcn_editors) {
     const tool = document.createElement('article');
     tool.innerText = ed.prototype.title;
     tool.onclick = function() {
       new ed();
     }
     toolbox_div.appendChild(tool);
-  });
+  }
 
   // Fill layout box
   rcn_update_layoutbox();
