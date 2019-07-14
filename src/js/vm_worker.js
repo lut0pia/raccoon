@@ -399,38 +399,43 @@ function rcn_vm_worker_function(rcn) {
   }
 
   // Raccoon sound API
-  let sfx_chans = [undefined, undefined, undefined, undefined];
+  let sfx_chans = [null, null, null, null];
   const sfx_update = function() {
     for(let i = 0; i < 4; i++) {
+      const sreg_offset = rcn_mem_soundreg_offset + i * 4;
       const state = sfx_chans[i];
-      if(state === undefined) continue;
+      if(state == null) {
+        ram[sreg_offset + 0] &= 0x7f; // Switch off
+        continue;
+      }
 
       const snd_offset = rcn_mem_sound_offset + state.n * 66;
       const period = ram[snd_offset + 0] + 4; // In audio frames
 
       const next_note_index = _ceil(state.time / period);
       const next_note_time = next_note_index * period;
-      if(state.time <= next_note_time && state.time > next_note_time - 4) {
+      if(state.time <= next_note_time && next_note_time < state.time + 4) {
         // Next note should be triggered in the next frame
         const offset = next_note_time - state.time;
-        const sreg_offset = rcn_mem_soundreg_offset + i * 4;
 
         if(next_note_index >= state.length) {
           // We've reached the end of the sfx, stop
-          ram[sreg_offset + 0] = 0; // Period
+          ram[sreg_offset + 0] = 0x80; // Switch on and period 0
           ram[sreg_offset + 2] = (offset << 6); // Offset and pitch
           ram[sreg_offset + 3] = 0; // Volume and effect
-          delete sfx_chans[i];
+          sfx_chans[i] = null;
           continue;
         } else {
           const note_offset = snd_offset + 2 + (state.offset + next_note_index) * 2;
           const note_1 = ram[note_offset + 0];
           const note_2 = ram[note_offset + 1];
-          ram[sreg_offset + 0] = period; // Period
+          ram[sreg_offset + 0] = 0x80 | period; // Switch on and period
           ram[sreg_offset + 1] = ram[snd_offset + 1]; // Instrument
           ram[sreg_offset + 2] = (offset << 6) | (note_1 & 0x3f); // Offset and pitch
           ram[sreg_offset + 3] = note_2; // Volume and effect
         }
+      } else {
+        ram[sreg_offset + 0] &= 0x7f; // Switch off
       }
 
       state.time += 4;
@@ -439,7 +444,7 @@ function rcn_vm_worker_function(rcn) {
   const _sfx = sfx = function(n, channel = -1, offset = 0, length = 32) {
     if(channel < 0) {
       channel = _max(sfx_chans.findIndex(function(state) {
-        return state === undefined;
+        return state == null;
       }), 0);
     }
     sfx_chans[channel] = {

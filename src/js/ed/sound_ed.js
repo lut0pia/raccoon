@@ -24,7 +24,7 @@ function rcn_sound_ed() {
   period_select_label.innerText = 'Period: ';
   this.add_child(period_select_label);
   this.add_child(this.period_select = rcn_ui_select({
-    options: new Array(256).fill(0).map(function(v, i){ return (i + 4) / 4; }),
+    options: new Array(128).fill(0).map(function(v, i){ return (i + 4) / 4; }),
     onchange: function() {
       sound_ed.set_period(Number(this.value));
     },

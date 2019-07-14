@@ -79,9 +79,6 @@ rcn_vm.prototype.tick = function() {
 }
 
 rcn_vm.prototype.update = function() {
-  // Keep audio time at beginning of frame for later audio update
-  this.audio_frame_time = rcn_audio_context.currentTime;
-
   const gamepads = navigator.getGamepads();
   for(let i = 0; i < gamepads.length; i++) {
     let gamepad = gamepads[i];
@@ -163,7 +160,7 @@ rcn_vm.prototype.onmessage = function(e) {
       this.canvas.flush();
       break;
     case 'audio':
-      this.audio.update(this.audio_frame_time, e.data.bytes);
+      this.audio.update(e.data.bytes);
       break;
     case 'error':
       this.kill();

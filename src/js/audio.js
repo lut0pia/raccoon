@@ -3,93 +3,149 @@
 
 const rcn_audio_context = new AudioContext();
 const rcn_audio_channel_count = 4;
+const rcn_audio_sample_rate = 44100;
+const rcn_audio_buffer_size = rcn_audio_sample_rate / 30;
+const rcn_audio_latency = 1 / 30;
 
 function rcn_audio() {
   this.master_gain = rcn_audio_context.createGain();
   this.master_gain.connect(rcn_audio_context.destination);
 
-  // Map from channel to instrument node
-  this.channel_map = new Array(rcn_audio_channel_count);
-  this.register = new Array(rcn_audio_channel_count);
-  this.instrument_pool = [];
   this.volume = 1;
+  this.last_update = 0;
+
+  this.channels = new Array(rcn_audio_channel_count);
+  for(let i = 0; i < rcn_audio_channel_count; i++) {
+    this.channels[i] = {
+      phi: 0,
+    };
+  }
 }
 
 rcn_audio.prototype.kill = function() {
   this.master_gain.disconnect();
-
-  for(let instance of this.instrument_pool) {
-    instance.kill();
-  }
 }
 
 rcn_audio.prototype.set_volume = function(volume) {
   this.volume = volume;
 }
 
-rcn_audio.prototype.update = function(frame_time, bytes) {
-  const change_time = frame_time + (1.5 / 30);
-
-  for(let i = 0; i < rcn_audio_channel_count; i++) {
-    const register = bytes.slice(i * 4, (i + 1) * 4);
-    const offset = bytes[i * 3 + 1] >> 6;
-    const sub_change_time = change_time + offset / 120; // Divide by audio frames per second
-    this.update_channel(i, sub_change_time, {
-      period: register[0],
-      instrument: register[1],
-      pitch: register[2] & 0x3f,
-      volume: (register[3] & 0x7) / 7,
-      effect: (register[3] >> 3) & 0x7,
-    });
-  }
+rcn_audio.prototype.update = function(bytes) {
+  this.master_gain.gain.value = this.volume;
 
   // Suppress sound when updates are scarce (likely unfocused tab)
-  if(!this.last_update || this.last_update > rcn_audio_context.currentTime - (2 / 30)) {
-    this.master_gain.gain.cancelScheduledValues(rcn_audio_context.currentTime);
-    this.master_gain.gain.setValueAtTime(0.33 * this.volume, rcn_audio_context.currentTime);
+  if(this.last_update < rcn_audio_context.currentTime - (2 / 30)) {
+    this.play_time = rcn_audio_context.currentTime;
+    this.last_update = rcn_audio_context.currentTime;
+    return;
+  } else {
+    this.last_update = rcn_audio_context.currentTime;
   }
-  this.master_gain.gain.setTargetAtTime(0, change_time + (2 / 30), 0.001);
-  this.last_update = rcn_audio_context.currentTime;
-}
 
-rcn_audio.prototype.update_channel = function(i, change_time, register) {
-  const old_register = this.register[i];
-  this.register[i] = register;
+  // Make sure we're not trying to cheat latency
+  while(this.play_time < rcn_audio_context.currentTime + rcn_audio_latency) {
+    this.play_time = rcn_audio_context.currentTime + rcn_audio_latency;
+  }
 
-  const instrument_changed = !old_register || old_register.instrument != register.instrument;
-  if(instrument_changed) {
-    if(this.channel_map[i] !== undefined) {
-      let inst_node = this.instrument_pool[this.channel_map[i]];
-      inst_node.gain.gain.setTargetAtTime(0, change_time, 0.001); // Fade out previous node
-      inst_node.free_after = change_time;
+  // Update channels with new notes
+  for(let i = 0; i < rcn_audio_channel_count; i++) {
+    const register_bytes = bytes.slice(i * 4, (i + 1) * 4);
+
+    if((register_bytes[0] & 0x80) == 0) {
+      // Register is switched off
+      continue;
     }
-    const instrument = rcn_instruments[register.instrument];
-    this.channel_map[i] = this.find_or_create_instrument_node(instrument);
+
+    this.channels[i].previous_previous_note = this.channels[i].previous_note;
+    this.channels[i].previous_note = this.channels[i].current_note;
+
+    const period = register_bytes[0] & 0x7f;
+    const offset = register_bytes[2] >> 6;
+    const start_time = this.play_time + offset / 120; // Divide by audio frames per second
+    const end_time = start_time + period / 120;
+    this.channels[i].current_note = {
+      start_time: start_time,
+      end_time: end_time,
+      period: period,
+      offset: offset,
+      instrument: register_bytes[1],
+      pitch: register_bytes[2] & 0x3f,
+      volume: (register_bytes[3] & 0x7) / 7,
+      effect: (register_bytes[3] >> 3) & 0x7,
+    };
   }
 
-  this.instrument_pool[this.channel_map[i]].update(change_time, register);
-}
+  // Create audio buffer for current frame
+  const buffer = rcn_audio_context.createBuffer(1, rcn_audio_buffer_size, rcn_audio_sample_rate);
+  const samples = buffer.getChannelData(0);
+  for (let i = 0; i < rcn_audio_buffer_size; i++) {
+    samples[i] = 0;
+    const t = this.play_time + (i / rcn_audio_sample_rate);
 
-rcn_audio.prototype.find_or_create_instrument_node = function(instrument) {
-  for(let i = 0; i < this.instrument_pool.length; i++) {
-    let inst_node = this.instrument_pool[i];
-    if(inst_node.name == instrument.name &&
-      inst_node.free_after < rcn_audio_context.currentTime) {
-      return i;
+    for(let j = 0; j < rcn_audio_channel_count; j++) {
+      const channel = this.channels[j];
+      const previous_previous_note = channel.previous_previous_note;
+      const previous_note = channel.previous_note;
+      const current_note = channel.current_note;
+      let actual_previous_note = null;
+      let actual_note = null;
+      if(current_note && current_note.start_time <= t && t < current_note.end_time) {
+        actual_previous_note = previous_note;
+        actual_note = current_note;
+      } else if(previous_note && previous_note.start_time <= t && t < previous_note.end_time) {
+        actual_previous_note = previous_previous_note;
+        actual_note = previous_note;
+      }
+      if(actual_note) {
+        const offset = (t - actual_note.start_time) / (actual_note.end_time - actual_note.start_time);
+        let frequency = rcn_pitch_to_freq[actual_note.pitch];
+        let volume = actual_note.volume;
+
+        switch(actual_note.effect) {
+          case 1: // Slide
+            if(actual_previous_note) {
+              frequency *= offset;
+              frequency += (1.0 - offset) * rcn_pitch_to_freq[actual_previous_note.pitch];
+              volume = offset * actual_note.volume + (1.0 - offset) * actual_previous_note.volume;
+            }
+            break;
+          case 2: // Vibrato
+            frequency *= 1.0 + 0.04166 * (-Math.cos(offset * Math.PI * 2) / 2 + 0.5);
+            break;
+          case 3: // Drop
+            frequency *= 1.0 - offset;
+            break;
+          case 4: // Fadein
+            volume *= offset;
+            break;
+          case 5: // Fadeout
+            volume *= 1.0 - offset;
+            break;
+        }
+
+        const instrument = rcn_instruments[actual_note.instrument];
+        samples[i] += instrument.waveform(channel.phi % 1, channel.phi) * volume;
+        channel.phi += frequency / rcn_audio_sample_rate;
+      }
     }
   }
 
-  // We haven't found an instrument, create it
-  let instrument_instance = instrument.create();
-  instrument_instance.gain.connect(this.master_gain);
-  instrument_instance.name = instrument.name;
-  this.instrument_pool.push(instrument_instance);
-  return this.instrument_pool.length - 1;
+  // Play the buffer at some time in the future
+  const bsn = rcn_audio_context.createBufferSource();
+  bsn.buffer = buffer;
+  bsn.connect(this.master_gain);
+  bsn.start(this.play_time);
+
+  // Advance play time
+  this.play_time += rcn_audio_buffer_size / rcn_audio_sample_rate;
 }
 
-function rcn_pitch_to_freq(pitch) {
-  pitch -= 45; // Start at C1, but use A4 frequency as tuning
-  return 440 * Math.pow(2, pitch / 12);
+const rcn_max_pitch = 64;
+const rcn_pitch_to_freq = new Array(rcn_max_pitch);
+// Precompute array for performance
+for(let i = 0; i < rcn_max_pitch; i++) {
+  // Start at C1, but use A4 frequency as tuning
+  rcn_pitch_to_freq[i] =  440 * Math.pow(2, (i-45) / 12);
 }
 
 function rcn_pitch_to_name(pitch) {
@@ -98,202 +154,66 @@ function rcn_pitch_to_name(pitch) {
   return names[pitch % 12] + octave;
 }
 
-function rcn_oscillator(type) {
-  const osc = rcn_audio_context.createOscillator();
-  osc.type = type;
-  return osc;
-}
-
-function rcn_custom_oscillator(o) {
-  const count = o.count;
-  const real_fun = o.real_fun || function() { return 0; }
-  const imag_fun = o.imag_fun || function() { return 0; }
-  const real = new Float32Array(count);
-  const imag = new Float32Array(count);
-  real[0] = o.offset || 0;
-  for(let i = 1; i < count; i++) {
-    real[i] = real_fun(i);
-    imag[i] = imag_fun(i);
-  }
-  const constraints = {};
-  constraints.disableNormalization = o.disable_normalization;
-  const wave = rcn_audio_context.createPeriodicWave(real, imag, constraints);
-  const osc = rcn_audio_context.createOscillator();
-  osc.setPeriodicWave(wave);
-  return osc;
-}
-
-function rcn_instrument_oscillator_create(type) {
-  return function() {
-    const osc = rcn_oscillator(type);
-    return new rcn_instrument_instance({
-      oscillators: [osc],
-    });
-  }
-}
-function rcn_instrument_custom_oscillator_create(o) {
-  return function() {
-    const osc = rcn_custom_oscillator(o);
-    return new rcn_instrument_instance({
-      oscillators: [osc],
-    });
-  }
-}
-
-class rcn_instrument_instance {
-  constructor(o) {
-    this.free_after = 0;
-    this.oscillators = o.oscillators || [];
-    this.extra_update = o.update || function() {};
-    o.outputs = o.outputs || this.oscillators;
-
-    for(let osc of this.oscillators) {
-      osc.start(0);
-    }
-
-    let gain = rcn_audio_context.createGain();
-    gain.gain.value = 0;
-    this.gain = gain;
-
-    for(let output of o.outputs) {
-      output.connect(gain);
-    }
-
-    let nodes = new Set(o.nodes || []);
-    nodes.add(gain);
-    for(let osc of this.oscillators) {
-      nodes.add(osc);
-    }
-    this.nodes = nodes;
-  }
-
-  update(change_time, register) {
-    this.free_after = change_time + (register.period / 120);
-    this.gain.gain.setTargetAtTime(register.volume, change_time, 0.001);
-    for(let osc of this.oscillators) {
-      osc.frequency.setTargetAtTime(rcn_pitch_to_freq(register.pitch), change_time, 0.001);
-    }
-    this.extra_update(change_time, register);
-  }
-
-  kill() {
-    for(let node of this.nodes) {
-      node.disconnect();
-      if(node.stop) {
-        node.stop();
-      }
-    }
-  }
-}
-
 const rcn_instruments = [
   {
     name: 'Triangle',
-    create: rcn_instrument_custom_oscillator_create({
-      count: 8,
-      real_fun: function(i) { return (i % 2 == 1) ? (1 / (i * i)) : 0; },
-    }),
+    waveform: function(t) {
+      return Math.abs(4 * t - 2) - 1;
+    },
   },
   {
-    name: 'Round Saw',
-    create: rcn_instrument_custom_oscillator_create({
-      count: 4,
-      imag_fun: function(i) { return 1 / (i * 2); },
-    }),
+    name: 'Tilted Saw',
+    waveform: function(t) {
+      const a = 0.9;
+      return (t < a
+        ? 2 * t / a - 1
+        : 2 * (1 - t) / (1 - a) - 1) * 0.406;
+    },
   },
   {
     name: 'Saw',
-    create: rcn_instrument_custom_oscillator_create({
-      count: 8,
-      imag_fun: function(i) { return 1 / (i * 2); },
-    }),
+    waveform: function(t) {
+      return 0.653 * (t < 0.5 ? t : t - 1);
+    },
   },
   {
     name: 'Square',
-    create: rcn_instrument_custom_oscillator_create({
-      count: 8,
-      imag_fun: function(i) { return (i % 2 == 1) ? (1 / i) : 0; },
-    }),
+    waveform: function(t) {
+      return t < 0.5 ? 0.25 : -0.25;
+    },
   },
   {
     name: 'Pulse',
-    create: function() {
-      let saw1 = rcn_custom_oscillator({
-        count: 8,
-        imag_fun: function(i) { return 1 / (i * 2); },
-      });
-      let saw2 = rcn_custom_oscillator({
-        count: 8,
-        imag_fun: function(i) { return 1 / (i * 2); },
-      });
-      const inv_saw2 = rcn_audio_context.createGain();
-      inv_saw2.gain.setValueAtTime(-1, rcn_audio_context.currentTime);
-      const del_inv_saw2 = rcn_audio_context.createDelay();
-      saw2.connect(inv_saw2).connect(del_inv_saw2);
-      return new rcn_instrument_instance({
-        oscillators: [saw1, saw2],
-        outputs: [saw1, del_inv_saw2],
-        nodes: [inv_saw2],
-        update: function(change_time, register) {
-          const freq = rcn_pitch_to_freq(register.pitch);
-          del_inv_saw2.delayTime.setTargetAtTime((1/freq) * Math.PI, change_time, 0.001);
-        }
-      });
+    waveform: function(t) {
+      return t < 0.33333333 ? 0.25 : -0.25;
     },
   },
   {
     name: 'Organ',
-    create: rcn_instrument_custom_oscillator_create({
-      count: 3,
-      imag_fun: function(i) { return  i < 2 ? 1 : 0; },
-      real_fun: function(i) { return  i > 1 ? 2 : 0; },
-    }),
+    waveform: function(t) {
+      return (t < 0.5
+        ? 3 - Math.abs(24 * t - 6)
+        : 1 - Math.abs(16 * t - 12)) * 0.111111111;
+    },
   },
   {
     name: 'Noise',
-    create: function() {
-      const buffer_size = 2 * rcn_audio_context.sampleRate;
-      const noise_buffer = rcn_audio_context.createBuffer(1, buffer_size, rcn_audio_context.sampleRate);
-      const output = noise_buffer.getChannelData(0);
-      let last_out = 0;
-      for (let i = 0; i < buffer_size; i++) {
-        const white = Math.random() * 2 - 1;
-        output[i] = (last_out + (0.02 * white)) / 1.02;
-        last_out = output[i];
-        output[i] *= 3.5;
-      }
-
-      const brown_noise = rcn_audio_context.createBufferSource();
-      brown_noise.buffer = noise_buffer;
-      brown_noise.loop = true;
-      brown_noise.start(0);
-      return new rcn_instrument_instance({
-        outputs: [brown_noise],
-      });
+    waveform: function(t) {
+      return Math.random() * 2 - 1;
     },
   },
   {
     name: 'Phaser',
-    create: function() {
-      let tri = rcn_custom_oscillator({
-        count: 8,
-        real_fun: function(i) { return (i % 2 == 1) ? (1 / (i * i)) : 0; },
-      });
-      let sine = rcn_custom_oscillator({
-        count: 2,
-        real_fun: function(i) { return 0.25; },
-        disable_normalization: true,
-      });
-      sine.start();
-
-      return new rcn_instrument_instance({
-        oscillators: [tri],
-        outputs: [tri, sine],
-        update: function(change_time, register) {
-          const freq = rcn_pitch_to_freq(register.pitch);
-          sine.frequency.setTargetAtTime(freq * 128 / 129, change_time, 0.001);
-        }
-      });
+    waveform: function(t, adv) {
+      const k = Math.abs(2 * ((adv / 128) % 1) - 1);
+      const u = (t + 0.5 * k) % 1;
+      return (Math.abs(4 * u - 2) - Math.abs(8 * t - 4)) * 0.4;
+    },
+  },
+  {
+    name: 'Sine',
+    waveform: function(t) {
+      return Math.sin(t * Math.PI * 2);
     },
   },
 ];
