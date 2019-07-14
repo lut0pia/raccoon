@@ -33,6 +33,12 @@ rcn_audio.prototype.set_volume = function(volume) {
 rcn_audio.prototype.update = function(bytes) {
   this.master_gain.gain.value = this.volume;
 
+  // Make sure the audio context is running
+  if(rcn_audio_context.state != 'running') {
+    rcn_audio_context.resume();
+    return;
+  }
+
   // Suppress sound when updates are scarce (likely unfocused tab)
   if(this.last_update < rcn_audio_context.currentTime - (2 / 30)) {
     this.play_time = rcn_audio_context.currentTime;
