@@ -71,6 +71,14 @@ function rcn_bin_ed() {
     },
   }));
 
+  // Create push button
+  this.add_child(this.push_button = rcn_ui_button({
+    value: 'Push',
+    onclick: function() {
+      bin_ed.push_bin();
+    },
+  }));
+
   // Create pull button
   this.add_child(this.pull_button = rcn_ui_button({
     value: 'Pull',
@@ -203,6 +211,26 @@ rcn_bin_ed.prototype.sync_bin = async function() {
     this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
   } catch(e) {
     alert('Failed to sync bin ' + rcn_global_bin.name + ': ' + e);
+  } finally {
+    rcn_overlay_pop();
+  }
+}
+
+rcn_bin_ed.prototype.push_bin = async function() {
+  let host = this.check_host_for_bin(rcn_global_bin);
+  if(!host) return;
+
+  if(!confirm(
+  'Are you sure you want to push bin ' + rcn_global_bin.name + ' to ' + rcn_global_bin.link + '? '
+  +'This is a destructive action.')) {
+    return;
+  }
+  rcn_overlay_push();
+  try {
+    await host.push_bin(rcn_global_bin);
+    this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
+  } catch(e) {
+    alert('Failed to push bin ' + rcn_global_bin.name + ': ' + e);
   } finally {
     rcn_overlay_pop();
   }
