@@ -199,7 +199,7 @@ rcn_bin_ed.prototype.sync_bin = async function() {
 
   rcn_overlay_push();
   try {
-    await host.sync_bin_with_link(rcn_global_bin);
+    await host.sync_bin(rcn_global_bin);
     this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
   } catch(e) {
     alert('Failed to sync bin ' + rcn_global_bin.name + ': ' + e);
@@ -214,7 +214,7 @@ rcn_bin_ed.prototype.pull_bin = async function() {
 
   rcn_overlay_push();
   try {
-    await host.pull_bin_from_link(rcn_global_bin, rcn_global_bin.link);
+    await host.pull_bin(rcn_global_bin);
     this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
   } catch(e) {
     alert('Failed to pull bin ' + rcn_global_bin.name + ': ' + e);

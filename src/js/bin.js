@@ -100,7 +100,9 @@ async function rcn_bin_from_env() {
     const host = rcn_hosts[i];
     const link = rcn_get_parameters[host.get_param];
     if(link) {
-      return await host.pull_bin_from_link(new rcn_bin(), link);
+      const bin = new rcn_bin();
+      bin.link = link;
+      return await host.pull_bin(bin);
     }
   }
   return null;

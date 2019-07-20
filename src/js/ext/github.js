@@ -172,8 +172,8 @@ async function rcn_github_get_blob(owner, repo, sha) {
 
 rcn_hosts['github'] = {
   get_param: 'gh',
-  pull_bin_from_link: async function(bin, link) {
-    const pair = link.split('/');
+  pull_bin: async function(bin) {
+    const pair = bin.link.split('/');
     const owner = pair[0];
     const repo = pair[1];
     const ref = await rcn_github_get_ref(owner, repo, 'heads/master');
@@ -186,7 +186,7 @@ rcn_hosts['github'] = {
     bin.link = owner+'/'+repo+'/'+ref.object.sha;
     return bin;
   },
-  sync_bin_with_link: async function(bin) {
+  sync_bin: async function(bin) {
     const pair = bin.link.split('/');
     const owner = pair[0];
     const repo = pair[1];
