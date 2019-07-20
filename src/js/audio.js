@@ -16,9 +16,7 @@ function rcn_audio() {
 
   this.channels = new Array(rcn_audio_channel_count);
   for(let i = 0; i < rcn_audio_channel_count; i++) {
-    this.channels[i] = {
-      phi: 0,
-    };
+    this.channels[i] = {};
   }
 }
 
@@ -63,7 +61,7 @@ rcn_audio.prototype.update = function(bytes) {
     }
 
     this.channels[i].previous_previous_note = this.channels[i].previous_note;
-    this.channels[i].previous_note = this.channels[i].current_note;
+    const previous_note = this.channels[i].previous_note = this.channels[i].current_note;
 
     const period = register_bytes[0] & 0x7f;
     const offset = register_bytes[2] >> 6;
@@ -78,6 +76,7 @@ rcn_audio.prototype.update = function(bytes) {
       pitch: register_bytes[2] & 0x3f,
       volume: (register_bytes[3] & 0x7) / 7,
       effect: (register_bytes[3] >> 3) & 0x7,
+      phi: previous_note ? previous_note.phi : 0,
     };
   }
 
@@ -85,54 +84,13 @@ rcn_audio.prototype.update = function(bytes) {
   const buffer = rcn_audio_context.createBuffer(1, rcn_audio_buffer_size, rcn_audio_sample_rate);
   const samples = buffer.getChannelData(0);
   for (let i = 0; i < rcn_audio_buffer_size; i++) {
-    samples[i] = 0;
     const t = this.play_time + (i / rcn_audio_sample_rate);
 
+    samples[i] = 0;
     for(let j = 0; j < rcn_audio_channel_count; j++) {
       const channel = this.channels[j];
-      const previous_previous_note = channel.previous_previous_note;
-      const previous_note = channel.previous_note;
-      const current_note = channel.current_note;
-      let actual_previous_note = null;
-      let actual_note = null;
-      if(current_note && current_note.start_time <= t && t < current_note.end_time) {
-        actual_previous_note = previous_note;
-        actual_note = current_note;
-      } else if(previous_note && previous_note.start_time <= t && t < previous_note.end_time) {
-        actual_previous_note = previous_previous_note;
-        actual_note = previous_note;
-      }
-      if(actual_note) {
-        const offset = (t - actual_note.start_time) / (actual_note.end_time - actual_note.start_time);
-        let frequency = rcn_pitch_to_freq[actual_note.pitch];
-        let volume = actual_note.volume;
-
-        switch(actual_note.effect) {
-          case 1: // Slide
-            if(actual_previous_note) {
-              frequency *= offset;
-              frequency += (1.0 - offset) * rcn_pitch_to_freq[actual_previous_note.pitch];
-              volume = offset * actual_note.volume + (1.0 - offset) * actual_previous_note.volume;
-            }
-            break;
-          case 2: // Vibrato
-            frequency *= 1.0 + 0.04166 * (-Math.cos(offset * Math.PI * 2) / 2 + 0.5);
-            break;
-          case 3: // Drop
-            frequency *= 1.0 - offset;
-            break;
-          case 4: // Fadein
-            volume *= offset;
-            break;
-          case 5: // Fadeout
-            volume *= 1.0 - offset;
-            break;
-        }
-
-        const instrument = rcn_instruments[actual_note.instrument];
-        samples[i] += instrument.waveform(channel.phi % 1, channel.phi) * volume;
-        channel.phi += frequency / rcn_audio_sample_rate;
-      }
+      samples[i] += rcn_note_waveform(t, channel.current_note, channel.previous_note);
+      samples[i] += rcn_note_waveform(t, channel.previous_note, channel.previous_previous_note);
     }
 
     // Avoid saturation
@@ -161,6 +119,58 @@ function rcn_pitch_to_name(pitch) {
   const octave = Math.floor(pitch / 12) + 1;
   const names = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-'];
   return names[pitch % 12] + octave;
+}
+
+function rcn_note_waveform(t, note, previous_note) {
+  if(!note) {
+    return 0;
+  }
+
+  const attack = 5 / 1000;
+  const release = 5 / 1000;
+
+  const offset_t = t - note.start_time;
+  const duration = (note.end_time - note.start_time);
+  const offset = offset_t / duration;
+
+  if(offset_t < 0 || offset_t > duration + release) {
+    return 0;
+  }
+
+  let frequency = rcn_pitch_to_freq[note.pitch];
+  let volume = note.volume;
+
+  switch(note.effect) {
+    case 1: // Slide
+      if(previous_note) {
+        frequency *= offset;
+        frequency += (1.0 - offset) * rcn_pitch_to_freq[previous_note.pitch];
+        volume = offset * note.volume + (1.0 - offset) * previous_note.volume;
+      }
+      break;
+    case 2: // Vibrato
+      frequency *= 1.0 + 0.04166 * (-Math.cos(offset * Math.PI * 2) / 2 + 0.5);
+      break;
+    case 3: // Drop
+      frequency *= 1.0 - offset;
+      break;
+    case 4: // Fadein
+      volume *= offset;
+      break;
+    case 5: // Fadeout
+      volume *= 1.0 - offset;
+      break;
+  }
+
+  volume = Math.max(volume, 0);
+  volume *= Math.min(offset_t / attack, 1);
+  volume *= Math.min(1 - ((offset_t - duration)) / release, 1);
+  volume = Math.max(volume, 0);
+
+  const instrument = rcn_instruments[note.instrument];
+  const waveform = instrument.waveform(note.phi % 1, note.phi) * volume;
+  note.phi += frequency / rcn_audio_sample_rate;
+  return waveform;
 }
 
 const rcn_instruments = [
