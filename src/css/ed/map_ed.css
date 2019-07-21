@@ -4,6 +4,7 @@
 }
 
 .window.map_ed .map_coords {
+  font-family: monospace;
   border: inset 2px lightgray;
   padding: 2px;
   margin: auto;
