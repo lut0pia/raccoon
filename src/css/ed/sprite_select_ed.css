@@ -4,6 +4,7 @@
 }
 
 .window.sprite_select_ed .sprite_index {
+  font-family: monospace;
   border: inset 2px lightgray;
   padding: 2px;
   margin: auto;
