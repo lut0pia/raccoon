@@ -15,14 +15,22 @@ function rcn_sprite_ed() {
   this.panel_div.classList.add('panel');
   this.add_child(this.panel_div);
 
+  // Create color selection
+  this.color_select_div = document.createElement('div');
+  this.color_select_div.classList.add('color_select');
+  this.panel_div.appendChild(this.color_select_div);
+
   // Create color inputs
   this.color_inputs = [];
   this.color_radios = [];
-  for(let i = 0; i < 8; i++) {
+  this.color_labels = [];
+  for(let i = 0; i < 16; i++) {
     const color_wrapper = document.createElement('div');
+    const radio_id = 'radio_' + Math.random().toString().substr(2);
     const color_radio = document.createElement('input');
     color_radio.type = 'radio';
     color_radio.name = 'sprite_ed_color_radio';
+    color_radio.id = radio_id;
     color_radio.color_index = i;
     color_radio.checked = (this.current_color == i);
     color_radio.onchange = function() {
@@ -31,16 +39,26 @@ function rcn_sprite_ed() {
     this.color_radios.push(color_radio);
     color_wrapper.appendChild(color_radio);
 
-    const color_input_id = 'color_input_'+i;
     const color_label = document.createElement('label');
     color_label.innerText = i;
-    color_label.htmlFor = color_input_id;
+    color_label.htmlFor = radio_id;
+    color_label.addEventListener('mousedown', function(e) {
+      // Avoid selecting text
+      e.preventDefault();
+    });
+    color_label.addEventListener('click', function(e) {
+      if(e.shiftKey) {
+        // Shift click to edit color
+        e.preventDefault();
+        sprite_ed.color_inputs[i].click();
+      }
+    })
+    this.color_labels.push(color_label);
     color_wrapper.appendChild(color_label);
 
     const color_input = document.createElement('input');
     color_input.type = 'color';
-    color_input.id = color_input_id;
-    color_input.onchange = function() {
+    color_input.oninput = function() {
       // Update bin's palette with UI palette
       rcn_global_bin.rom.set(sprite_ed.get_palette_bytes(), rcn.mem_palette_offset);
       rcn_dispatch_ed_event('rcn_bin_change', {
@@ -51,7 +69,7 @@ function rcn_sprite_ed() {
     this.color_inputs.push(color_input);
     color_wrapper.appendChild(color_input);
 
-    this.panel_div.appendChild(color_wrapper);
+    this.color_select_div.appendChild(color_wrapper);
   }
 
   // Create sprite flags inputs
@@ -126,7 +144,11 @@ function rcn_sprite_ed() {
     } else if(ctrl && e.key == 'v') {
       sprite_ed.paste_selection();
     } else if (e.keyCode >= 49 && e.keyCode <= 56) {
-      sprite_ed.set_current_color(e.keyCode - 49);
+      let new_color = e.keyCode - 49;
+      if(e.shiftKey) {
+        new_color += 8;
+      }
+      sprite_ed.set_current_color(new_color);
       e.preventDefault();
     }
   });
@@ -298,18 +320,23 @@ rcn_sprite_ed.prototype.paste_selection = function() {
 
 rcn_sprite_ed.prototype.update_color_inputs = function() {
   const palette_bytes = rcn_global_bin.rom.slice(rcn.mem_palette_offset, rcn.mem_palette_offset + rcn.mem_palette_size);
-  for(let i = 0; i < 8; i++) {
+  for(let i = 0; i < this.color_inputs.length; i++) {
     let rgb_str = '#';
+    let max = 0;
     for(let j = 0; j < 3; j++) {
-      rgb_str += ('00'+palette_bytes[i*3+j].toString(16)).slice(-2);
+      const component = palette_bytes[i*3+j];
+      max = Math.max(max, component);
+      rgb_str += ('00'+component.toString(16)).slice(-2);
     }
     this.color_inputs[i].value = rgb_str;
+    this.color_labels[i].style.backgroundColor = rgb_str;
+    this.color_labels[i].style.color = max >= 128 ? 'black' : 'lightgrey';
   }
 }
 
 rcn_sprite_ed.prototype.get_palette_bytes = function() {
-  const palette_bytes = new Uint8Array(rcn.mem_palette_size); // 8 RGB values
-  for(let i = 0; i < 8; i++) {
+  const palette_bytes = new Uint8Array(rcn.mem_palette_size); // 16 RGB values
+  for(let i = 0; i < this.color_inputs.length; i++) {
     const rgb_int = parseInt(this.color_inputs[i].value.slice(1), 16);
     palette_bytes[i*3+0] = (rgb_int>>16);
     palette_bytes[i*3+1] = (rgb_int>>8) & 0xff;

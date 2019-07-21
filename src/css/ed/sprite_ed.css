@@ -9,18 +9,34 @@
 
 
 .window.sprite_ed canvas.draw {
-  width: calc(100% - 70px);
+  width: calc(100% - 48px);
   max-height: calc(100% - 24px);
 }
 
-.window.sprite_ed content input[type=color] {
+/* Color selection and edition */
+
+.window.sprite_ed .color_select {
+  column-count: 2;
+  column-gap: 0px;
+}
+
+.window.sprite_ed .color_select input[type=radio] {
+  display: none;
+}
+
+.window.sprite_ed .color_select input[type=color] {
+  display: none;
+}
+
+.window.sprite_ed .color_select input[type=radio] + label {
+  display: block;
   width: 20px;
   height: 20px;
   padding: 0px;
-  border: none;
+  text-align: center;
+  border: 2px inset transparent;
 }
 
-/* Style rule for numbers inside color inputs */
-.window.sprite_ed content label {
-  padding: 4px;
+.window.sprite_ed .color_select input[type=radio]:checked + label {
+  border-color: lightgrey;
 }
