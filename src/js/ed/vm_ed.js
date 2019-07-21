@@ -12,8 +12,7 @@ function rcn_vm_ed() {
     const key_code = e.keyCode || e.which;
 
     if(key_code == 32) { // Space key
-      vm_ed.vm.paused = !vm_ed.vm.paused;
-      vm_ed.paused_checkbox.checkbox.checked = vm_ed.vm.paused;
+      vm_ed.set_paused(!vm_ed.vm.paused)
     }
   });
   this.add_child(this.vm.canvas.node);
@@ -27,7 +26,7 @@ function rcn_vm_ed() {
   }));
 
   // Create step button
-  this.add_child(this.reboot_button = rcn_ui_button({
+  this.add_child(this.step_button = rcn_ui_button({
     value: 'Step',
     onclick: function() {
       vm_ed.vm.update();
@@ -38,7 +37,7 @@ function rcn_vm_ed() {
   this.add_child(this.paused_checkbox = rcn_ui_checkbox({
     label: 'Paused',
     onchange: function(e) {
-      vm_ed.vm.paused = this.checked;
+      vm_ed.set_paused(this.checked);
     },
   }));
 
@@ -81,11 +80,22 @@ function rcn_vm_ed() {
   });
 
   this.vm.load_bin(rcn_global_bin);
+  this.set_paused(false);
 }
 
 rcn_vm_ed.prototype.title = 'Virtual Machine';
 rcn_vm_ed.prototype.docs_link = 'virtual-machine';
 rcn_vm_ed.prototype.type = 'vm_ed';
+
+rcn_vm_ed.prototype.set_paused = function(paused) {
+  this.vm.paused = paused;
+  this.paused_checkbox.checkbox.checked = paused;
+  if(paused) {
+    this.step_button.removeAttribute('disabled');
+  } else {
+    this.step_button.setAttribute('disabled', '');
+  }
+}
 
 rcn_vm_ed.prototype.update_volume = function() {
   this.vm.set_volume(this.muted_checkbox.checkbox.checked ? 0 : 1);
