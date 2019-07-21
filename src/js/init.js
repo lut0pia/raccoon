@@ -13,14 +13,14 @@ const rcn = {
   mem_map_offset: 0x1800,
   mem_map_size: 0x2000, // 8KiB = 128x64x8bits
   mem_palette_offset: 0x3800,
-  mem_palette_size: 0x0018, // 24B = 8x24bits
-  mem_spriteflags_offset: 0x3818,
+  mem_palette_size: 0x0030, // 48B = 16x24bits
+  mem_spriteflags_offset: 0x3830,
   mem_spriteflags_size: 0x00c0, // 192B = 192x8bits
-  mem_sound_offset: 0x38d8,
+  mem_sound_offset: 0x38f0,
   mem_sound_size: 0x1080, // 4224B = 64x(8+8+(32x16))bits
-  mem_music_offset: 0x4958,
+  mem_music_offset: 0x4970,
   mem_music_size: 0x0100, // 256B = 64x(4x6+2+6)bits
-  // ... 0x05a8
+  // ... 0x0590
   // RAM/ROM limit
   // ... 0x0fd2
   mem_cam_offset: 0x5fce,
