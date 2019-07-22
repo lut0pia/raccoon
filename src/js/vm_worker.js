@@ -17,10 +17,10 @@ function rcn_vm_worker_function(rcn) {
   let ram = new Uint8Array(rcn_ram_size);
 
   // Keep parts of the API local
-  let _Function = Function;
-  let _Math = Math;
-  let _postMessage = postMessage;
-  let _self = self;
+  const _Function = Function;
+  const _Math = Math;
+  const _postMessage = postMessage;
+  const _self = self;
 
   // Remove parts of the API
   Object.getOwnPropertyNames(_self).forEach(function(key) {
