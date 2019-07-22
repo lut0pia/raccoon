@@ -132,6 +132,8 @@ Screen data is 128x128 pixels.
 
 Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), which is the bottom-down pixel.
 
+🎥: Affected by `cam` calls
+
 - `cls(c=0)`: Clears the whole screen to the `c` color
 - `cam(x, y)`: Offsets all further rendering by (`-x`;`-y`)
 - `palset(c, r, g, b)`: Sets the `c` palette color to have the RGB values `r`, `g` and `b` (0-255)
@@ -139,18 +141,18 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `pget(x, y)`: Returns the color of the pixel at coordinates (`x`;`y`)
 - `palm(c0, c1)`: Sets the palette permutation for color `c0` to `c1`
 - `palt(c, t)`: Sets the color `c` as transparent if `t`
-- `spr(n, x, y, w=1.0, h=1.0, fx=false, fy=false)`: Draws the `n`th sprite at screen coordinates (`x`;`y`) where `w` and `h` are the width and height of the drawing in sprite length (8 pixels per unit), and `fx` and `fy` indicate whether to flip the drawing horizontally and vertically
 - `fget(n, f?)`: Returns whether the flag `f` is set to true for the sprite `n`; if `f` is undefined, returns the flags for the sprite `n` as a bitfield
 - `fset(n, f?, v)`: Sets the flag `f` to `v` (boolean) for the sprite `n`; if `f` is undefined, uses `v` as a bitfield to set the flags for the sprite `n`
 - `mget(celx, cely)`: Returns the sprite index at map coordinates (`celx`;`cely`)
 - `mset(celx, cely, n)`: Set the sprite index at map coordinates (`celx`;`cely`) to `n`
-- `map(celx, cely, sx, sy, celw, celh)`: Draws a rectangle of the map starting at (`celx`;`cely`) with an extent of (`celw`;`celh`) at the pixel (`sx`;`sy`)
-- `print(x, y, text, c)`: Prints the `text` in color `c` starting at screen coordinates (`x`;`y`)
-- `line(x0, y0, x1, y1, c)`: Draws straight line in color `c` between screen coordinates (`x0`;`y0`) and (`x1`;`y1`)
-- `rect(x, y, w, h, c)`: Draws a hollow rectangle at screen coordinates (`x`;`y`) of width `w`, height `h`, and color `c`
-- `rectfill(x, y, w, h, c)`: Draws a filled rectangle at screen coordinates (`x`;`y`) of width `w`, height `h`, and color `c`
-- `circ(x, y, r, c)`: Draws a hollow circle of radius `r` with its center at screen coordinates (`x`;`y`) in color `c`
-- `circfill(x, y, r, c)`: Draws a filled circle (disk) of radius `r` with its center at screen coordinates (`x`;`y`) in color `c`
+- 🎥 `spr(n, x, y, w=1.0, h=1.0, fx=false, fy=false)`: Draws the `n`th sprite at screen coordinates (`x`;`y`) where `w` and `h` are the width and height of the drawing in sprite length (8 pixels per unit), and `fx` and `fy` indicate whether to flip the drawing horizontally and vertically
+- 🎥 `map(celx, cely, sx, sy, celw, celh)`: Draws a rectangle of the map starting at (`celx`;`cely`) with an extent of (`celw`;`celh`) at the pixel (`sx`;`sy`)
+- 🎥 `print(x, y, text, c)`: Prints the `text` in color `c` starting at screen coordinates (`x`;`y`)
+- 🎥 `line(x0, y0, x1, y1, c)`: Draws straight line in color `c` between screen coordinates (`x0`;`y0`) and (`x1`;`y1`)
+- 🎥 `rect(x, y, w, h, c)`: Draws a hollow rectangle at screen coordinates (`x`;`y`) of width `w`, height `h`, and color `c`
+- 🎥 `rectfill(x, y, w, h, c)`: Draws a filled rectangle at screen coordinates (`x`;`y`) of width `w`, height `h`, and color `c`
+- 🎥 `circ(x, y, r, c)`: Draws a hollow circle of radius `r` with its center at screen coordinates (`x`;`y`) in color `c`
+- 🎥 `circfill(x, y, r, c)`: Draws a filled circle (disk) of radius `r` with its center at screen coordinates (`x`;`y`) in color `c`
 
 ## Math Functions
 
