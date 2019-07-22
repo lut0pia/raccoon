@@ -120,10 +120,10 @@ function rcn_vm_worker_function(rcn) {
     ram[rcn.mem_cam_offset + 2] = y & 0xff;
     ram[rcn.mem_cam_offset + 3] = y >> 8;
   }
-  const _spr = spr = function(n, x, y, w, h, flip_x, flip_y) {
+  const _spr = spr = function(n, x, y, ow, oh, fx, fy) {
     // Default width and height
-    w = w || 1.0;
-    h = h || 1.0;
+    ow = ow || 1.0;
+    oh = oh || 1.0;
 
     // Camera
     x -= cam_x();
@@ -132,8 +132,8 @@ function rcn_vm_worker_function(rcn) {
     // Clip
     const iw = _max(0, -x / 8);
     const ih = _max(0, -y / 8);
-    w = _min(w, (128 - x) / 8);
-    h = _min(h, (128 - y) / 8);
+    const w = _min(ow, (128 - x) / 8);
+    const h = _min(oh, (128 - y) / 8);
 
     // Early exit if nothing to draw
     if(w <= iw || h <= ih) {
@@ -141,15 +141,17 @@ function rcn_vm_worker_function(rcn) {
     }
 
     const first_texel_index = ((n & 0xf) << 2) + ((n >> 4) << 9);
+    const owp = ow * 8;
+    const ohp = oh * 8;
     const iwp = iw * 8;
     const ihp = ih * 8;
     const wp = w * 8;
     const hp = h * 8;
-    for(let i=iwp; i < wp; i++) {
-      for(let j=ihp; j < hp; j++) {
+    for(let i = iwp; i < wp; i++) {
+      for(let j = ihp; j < hp; j++) {
         // Fetch sprite color
-        const ti = flip_x ? (wp - i - 1) : i;
-        const tj = flip_y ? (hp - j - 1) : j;
+        const ti = fx ? (owp - i - 1) : i;
+        const tj = fy ? (ohp - j - 1) : j;
         const tex_index = first_texel_index + sprite_pixel_index(ti, tj);
         const c = ((ti % 2) < 1)
           ? (ram[tex_index] & 0xf)
