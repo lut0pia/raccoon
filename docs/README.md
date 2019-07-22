@@ -139,7 +139,7 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `pget(x, y)`: Returns the color of the pixel at coordinates (`x`;`y`)
 - `palm(c0, c1)`: Sets the palette permutation for color `c0` to `c1`
 - `palt(c, t)`: Sets the color `c` as transparent if `t`
-- `spr(n, x, y, w=1.0, h=1.0)`: Draws the `n`th sprite at screen coordinates (`x`;`y`) `w` and `h` are the width and height of the drawing in sprite length (8 pixels per unit)
+- `spr(n, x, y, w=1.0, h=1.0, fx=false, fy=false)`: Draws the `n`th sprite at screen coordinates (`x`;`y`) where `w` and `h` are the width and height of the drawing in sprite length (8 pixels per unit), and `fx` and `fy` indicate whether to flip the drawing horizontally and vertically
 - `fget(n, f?)`: Returns whether the flag `f` is set to true for the sprite `n`; if `f` is undefined, returns the flags for the sprite `n` as a bitfield
 - `fset(n, f?, v)`: Sets the flag `f` to `v` (boolean) for the sprite `n`; if `f` is undefined, uses `v` as a bitfield to set the flags for the sprite `n`
 - `mget(celx, cely)`: Returns the sprite index at map coordinates (`celx`;`cely`)
