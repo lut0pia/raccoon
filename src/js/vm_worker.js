@@ -14,7 +14,9 @@ function rcn_vm_worker_function(rcn) {
   const rcn_mem_screen_offset = rcn.mem_screen_offset;
   const rcn_mem_screen_size = rcn.mem_screen_size;
 
-  let ram = new Uint8Array(rcn_ram_size);
+  const ram_buffer = new ArrayBuffer(rcn_ram_size);
+  const ram_view = new DataView(ram_buffer);
+  const ram = new Uint8Array(ram_buffer);
 
   // Keep parts of the API local
   const _Function = Function;
@@ -49,10 +51,10 @@ function rcn_vm_worker_function(rcn) {
           : ((ram[index] & 0x0f) | (c << 4));
   }
   const cam_x = function() {
-    return ram[rcn.mem_cam_offset + 0] + (ram[rcn.mem_cam_offset + 1] << 8);
+    return ram_view.getInt16(rcn.mem_cam_offset + 0);
   }
   const cam_y = function() {
-    return ram[rcn.mem_cam_offset + 2] + (ram[rcn.mem_cam_offset + 3] << 8);
+    return ram_view.getInt16(rcn.mem_cam_offset + 2);
   }
 
   // Raccoon math API
@@ -115,10 +117,8 @@ function rcn_vm_worker_function(rcn) {
     ram.fill(c, rcn_mem_screen_offset, rcn_mem_screen_offset + rcn_mem_screen_size);
   }
   cam = function(x, y) {
-    ram[rcn.mem_cam_offset + 0] = x & 0xff;
-    ram[rcn.mem_cam_offset + 1] = x >> 8;
-    ram[rcn.mem_cam_offset + 2] = y & 0xff;
-    ram[rcn.mem_cam_offset + 3] = y >> 8;
+    ram_view.setInt16(rcn.mem_cam_offset + 0, x);
+    ram_view.setInt16(rcn.mem_cam_offset + 2, y);
   }
   const _spr = spr = function(n, x, y, ow, oh, fx, fy) {
     // Default width and height
