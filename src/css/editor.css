@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap');
+
+* {
+  font-family: Roboto;
+}
+
 body {
   background-color: white;
 }
@@ -17,6 +24,34 @@ main {
 }
 
 /*
+  Input button
+*/
+
+input[type=button] {
+  margin: 2px;
+  padding: 0px 2px 0px 2px;
+  border: 2px lightgrey outset;
+  background-color: lightgrey;
+}
+
+input[type=button]:hover {
+  background-color: whitesmoke;
+}
+
+input[type=button]:active, input[type=button]:disabled {
+  border-style: inset;
+  background-color: grey;
+}
+
+/*
+  Input select
+*/
+
+select:disabled {
+  background-color: grey;
+}
+
+/*
   Toolbox
 */
 
@@ -32,6 +67,7 @@ main {
 }
 
 #toolbox article {
+  height: 17px;
   padding: 4px;
   margin: 2px;
   background-color: rgb(236, 236, 236);

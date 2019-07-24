@@ -12,8 +12,8 @@
   width: 100%;
 }
 
-.window.sound_ed tr {
-  font-family: monospace;
+.window.sound_ed th {
+  font-family: 'Roboto Mono';
 }
 .window.sound_ed td {
   min-width: 10px;
