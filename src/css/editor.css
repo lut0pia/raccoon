@@ -28,9 +28,8 @@ main {
 */
 
 input[type=button] {
-  margin: 2px;
   padding: 0px 2px 0px 2px;
-  border: 2px lightgrey outset;
+  border: 1px grey outset;
   background-color: lightgrey;
 }
 
@@ -47,8 +46,21 @@ input[type=button]:active, input[type=button]:disabled {
   Input select
 */
 
+select {
+  border: 1px grey inset;
+}
+
 select:disabled {
   background-color: grey;
+}
+
+/*
+  Input text
+*/
+
+input[type=text] {
+  padding: 0px 2px 0px 2px;
+  border: 1px grey inset;
 }
 
 /*
