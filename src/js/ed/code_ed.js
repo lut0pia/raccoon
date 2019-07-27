@@ -58,6 +58,7 @@ function rcn_code_ed() {
   this.textarea.oninput = function() {
     rcn_global_bin.code = this.value;
     rcn_dispatch_ed_event('rcn_bin_change', {code: true});
+    code_ed.update_token_count_text();
   };
   this.add_child(this.textarea);
 
@@ -68,10 +69,15 @@ function rcn_code_ed() {
     },
   }));
 
+  // Create token count text
+  this.token_count_text = document.createElement('div');
+  this.token_count_text.classList.add('token_count');
+  this.add_child(this.token_count_text);
+
   this.addEventListener('rcn_bin_change', function(e) {
     if(e.detail.code) {
-      code_ed.textarea.value = rcn_global_bin.code;
-      code_ed.update_mirror();
+      code_ed.update_textarea();
+      code_ed.update_token_count_text();
     }
   });
 
@@ -83,6 +89,7 @@ function rcn_code_ed() {
   });
 
   this.update_textarea();
+  this.update_token_count_text();
 }
 
 rcn_code_ed.prototype.title = 'Code Editor';
@@ -98,6 +105,10 @@ rcn_code_ed.prototype.apply = function() {
 rcn_code_ed.prototype.update_textarea = function() {
   this.textarea.value = rcn_global_bin.code;
   this.update_mirror();
+}
+
+rcn_code_ed.prototype.update_token_count_text = function() {
+  this.token_count_text.innerText = rcn_global_bin.token_count() + ' / ' + rcn_bin_token_limit;
 }
 
 rcn_code_ed.prototype.update_mirror = function() {

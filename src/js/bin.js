@@ -2,6 +2,12 @@
 // They can be saved, shared, and loaded into a raccoon VM
 'use strict';
 
+const rcn_bin_token_regexp = /(\/\/.+|"((?:\\.|[^\\"])*)"|(\w+))/gm;
+const rcn_bin_non_tokens = {
+  const: true, let: true,
+};
+const rcn_bin_token_limit = 4096;
+
 function rcn_bin() {
   this.name = 'Untitled';
   this.code = '';
@@ -12,6 +18,13 @@ rcn_bin.prototype.clone = function() {
   const bin_clone = new rcn_bin();
   bin_clone.from_json(this.to_json());
   return bin_clone;
+}
+
+rcn_bin.prototype.token_count = function() {
+  return [...this.code.matchAll(rcn_bin_token_regexp)]
+  .filter(function(m) {
+    return !m[0].startsWith('//') && !rcn_bin_non_tokens[m[0]];
+  }).length;
 }
 
 rcn_bin.prototype.from_json = function(bin) {
