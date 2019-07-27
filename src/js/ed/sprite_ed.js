@@ -173,17 +173,6 @@ function rcn_sprite_ed() {
   }
   this.add_child(this.draw_canvas.node);
 
-  // Create apply button
-  this.add_child(this.apply_button = rcn_ui_button({
-    value: 'Apply',
-    onclick: function() {
-      // Update VM spritesheet with bin spritesheet
-      rcn_dispatch_ed_event('rcn_bin_apply', {offset: rcn.mem_spritesheet_offset, size: rcn.mem_spritesheet_size});
-      // Update VM palette with bin palette
-      rcn_dispatch_ed_event('rcn_bin_apply', {offset: rcn.mem_palette_offset, size: rcn.mem_palette_size});
-    },
-  }));
-
   this.addEventListener('rcn_bin_change', function(e) {
     // Palette update
     const mem_palette_begin = rcn.mem_palette_offset;

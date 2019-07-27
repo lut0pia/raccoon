@@ -18,11 +18,6 @@ function rcn_map_ed() {
   this.map_coords_text.classList.add('map_coords');
   this.add_child(this.map_coords_text);
 
-  // Create map wrapper
-  this.map_wrapper = document.createElement('div');
-  this.map_wrapper.classList.add('wrapper');
-  this.add_child(this.map_wrapper);
-
   // Create map canvas
   this.map_canvas = new rcn_canvas();
   this.map_canvas.node.classList.add('map');
@@ -73,16 +68,7 @@ function rcn_map_ed() {
     this.draw_quad(x, y - 2, w, 2, 1, 1, 1, 1);
     this.draw_quad(x, y + h, w, 2, 1, 1, 1, 1);
   };
-  this.map_wrapper.appendChild(this.map_canvas.node);
-
-  // Create apply button
-  this.add_child(this.apply_button = rcn_ui_button({
-    value:'Apply',
-    onclick: function() {
-      // Update VM map with bin map
-      rcn_dispatch_ed_event('rcn_bin_apply', {offset: rcn.mem_map_offset, size: rcn.mem_map_size});
-    },
-  }));
+  this.add_child(this.map_canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
     // Map data update
