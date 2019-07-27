@@ -15,11 +15,11 @@
 .window.code_ed .textmirror line,
 .window.code_ed .textmirror span {
   font-family: 'Roboto Mono';
-  font-size: 14px;
+  font-size: 15px;
   background: none;
   overflow-wrap: normal;
   word-break: initial;
-  line-height: 19px;
+  line-height: 20px;
 }
 
 .window.code_ed textarea {
@@ -44,7 +44,7 @@
 .window.code_ed .textmirror line {
   display: block;
   margin: 0px;
-  height: 19px;
+  height: 20px;
 }
 
 /* Syntax highlighting */
