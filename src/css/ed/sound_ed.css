@@ -40,6 +40,15 @@
   border-right-width: 2px;
 }
 
+/* Octave markers */
+
+.window.sound_ed tr:nth-last-child(12n) td {
+  border-top-color: black;
+}
+
+.window.sound_ed tr:nth-last-child(12n+1) td {
+  border-bottom-color: black;
+}
 
 /* Sound effects */
 .window.sound_ed td.active.effect_none {
