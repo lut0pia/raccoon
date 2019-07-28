@@ -20,6 +20,9 @@
   border: 1px grey solid;
   text-align: center;
 }
+.window.sound_ed tr {
+  height: 20px;
+}
 
 /* Tone markers */
 
