@@ -21,6 +21,12 @@
   text-align: center;
 }
 
+/* Tone markers */
+
+.window.sound_ed tr:nth-child(2n) {
+  background-color: #bbb;
+}
+
 /* Beat markers */
 
 .window.sound_ed td:nth-child(8n+2) {
