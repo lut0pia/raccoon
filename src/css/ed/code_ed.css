@@ -56,6 +56,10 @@
   color: #727272;
 }
 
+.window.code_ed .textmirror .string {
+  color: #af5836;
+}
+
 .window.code_ed .textmirror .number.dec {
   color: #579030;
 }

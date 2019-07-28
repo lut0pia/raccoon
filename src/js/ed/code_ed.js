@@ -117,6 +117,12 @@ rcn_code_ed.prototype.update_mirror = function() {
     'in', 'let', 'new', 'null', 'return', 'super', 'this', 'true', 'var', 'while',
   ];
   const keyword_regexp = new RegExp('\\b('+keywords.join('|')+')\\b', 'g');
+  const classify = function(class_name) {
+    return function(text) {
+      text = text.replace(/\<.*?\>/gi, ''); // Remove html
+      return '<span class="' + class_name + '">' + text + '</span>';
+    };
+  }
 
   const lines = this.textarea.value.split('\n');
 
@@ -138,15 +144,13 @@ rcn_code_ed.prototype.update_mirror = function() {
     const regen = line_content_changed || line_error_changed;
 
     if(regen) {
-      let line_html = html_encode(lines[i])
+      const line_html = html_encode(lines[i])
         .replace(/ /gi, '&nbsp;')
-        .replace(keyword_regexp, '<span class="keyword">$1</span>')
-        .replace(/\b(0x[\da-f]+)\b/gi, '<span class="number hex">$1</span>')
-        .replace(/\b(\d[\d.]*)\b/gi, '<span class="number dec">$1</span>')
-        .replace(/\/\/.*$/, function(text) {
-          text = text.replace(/\<.*?\>/gi, ''); // Remove html
-          return '<span class="comment">' + text + '</span>';
-        });
+        .replace(keyword_regexp, classify('keyword'))
+        .replace(/\b0x[\da-f]+\b/gi, classify('number hex'))
+        .replace(/\b\d[\d.]*\b/gi, classify('number dec'))
+        .replace(/&quot;(\\&quot;|.)*?&quot;/gi, classify('string'))
+        .replace(/\/\/.*$/, classify('comment'));
 
       if(is_error_line) {
         line_node.classList.add('error');
