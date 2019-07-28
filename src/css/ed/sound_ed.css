@@ -21,6 +21,17 @@
   text-align: center;
 }
 
+/* Beat markers */
+
+.window.sound_ed td:nth-child(8n+2) {
+  border-left-width: 2px;
+}
+
+.window.sound_ed td:nth-child(8n+1) {
+  border-right-width: 2px;
+}
+
+
 /* Sound effects */
 .window.sound_ed td.active.effect_none {
   background-color: lightblue;
