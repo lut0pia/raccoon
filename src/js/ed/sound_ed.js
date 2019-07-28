@@ -62,40 +62,29 @@ function rcn_sound_ed() {
     row_header.innerText = rcn_pitch_to_name(pitch);
     this.note_cells[pitch] = new Array(32);
 
-    for(let note = 0; note < 32; note++) {
+    for(let note_index = 0; note_index < 32; note_index++) {
       const cell = document.createElement('td');
       row.appendChild(cell);
       cell.onmousedown = function(e) {
         e.preventDefault();
-        const sound_offset = sound_ed.get_current_sound_offset();
-        const note_offset = sound_offset + 2 + note * 2;
-        const note_pitch = rcn_global_bin.rom[note_offset + 0] & 0x3f;
-        if(note_pitch == pitch) { // Already a note
+        const note = sound_ed.get_current_sound_note(note_index);
+        if(note.pitch == pitch) { // Already a note
           if(e.buttons == 1) { // Remove note
-            rcn_global_bin.rom[note_offset + 0] = 0;
-            rcn_global_bin.rom[note_offset + 1] = 0;
+            note.pitch = note.volume = note.effect = 0
           } else if(e.buttons == 2) { // Decrease volume
-            let volume = rcn_global_bin.rom[note_offset + 1] & 0x7;
-            volume = volume > 1 ? volume - 1 : 7;
-            rcn_global_bin.rom[note_offset + 1] &= 0xf8; // Reset volume
-            rcn_global_bin.rom[note_offset + 1] |= volume;
+            note.volume = note.volume > 1 ? note.volume - 1 : 7;
           } else if(e.buttons == 4) { // Change effect
-            let effect = (rcn_global_bin.rom[note_offset + 1] >> 3) & 0x7;
-            effect = (effect + 1) % 6;
-            rcn_global_bin.rom[note_offset + 1] &= 0xc7; // Reset effect
-            rcn_global_bin.rom[note_offset + 1] |= effect << 3;
+            note.effect = (note.effect + 1) % 6;
           }
         } else { // New note
-          rcn_global_bin.rom[note_offset + 0] = pitch;
-          rcn_global_bin.rom[note_offset + 1] = 7; // Set volume to 7 and effect to 0
+          note.pitch = pitch;
+          note.volume = 7;
+          note.effect = 0;
         }
-        rcn_dispatch_ed_event('rcn_bin_change', {
-          begin: note_offset,
-          end: note_offset + 2,
-        });
+        sound_ed.set_current_sound_note(note_index, note)
       }
       cell.oncontextmenu = function(e) { e.preventDefault(); }
-      this.note_cells[pitch][note] = cell;
+      this.note_cells[pitch][note_index] = cell;
     }
   }
 
@@ -152,23 +141,37 @@ rcn_sound_ed.prototype.update_instrument = function() {
   this.instrument_select.value = rcn_global_bin.rom[sound_offset + 1];
 }
 
-rcn_sound_ed.prototype.update_notes = function() {
+rcn_sound_ed.prototype.get_current_sound_note = function(index) {
   const sound_offset = this.get_current_sound_offset();
+  const note_offset = sound_offset + 2 + index * 2;
+  return {
+    pitch: rcn_global_bin.rom[note_offset + 0] & 0x3f,
+    volume: rcn_global_bin.rom[note_offset + 1] & 0x7,
+    effect: (rcn_global_bin.rom[note_offset + 1] >> 3) & 0x7,
+  };
+}
 
-  for(let note = 0; note < 32; note++) {
-    const note_offset = sound_offset + 2 + note * 2;
-    const note_1 = rcn_global_bin.rom[note_offset + 0];
-    const note_2 = rcn_global_bin.rom[note_offset + 1];
-    const current_pitch = note_1 & 0x3f;
-    const effect = note_2 >> 3;
-    const volume = note_2 & 0x7;
+rcn_sound_ed.prototype.set_current_sound_note = function(index, note) {
+  const sound_offset = this.get_current_sound_offset();
+  const note_offset = sound_offset + 2 + index * 2;
+  rcn_global_bin.rom[note_offset + 0] = note.pitch;
+  rcn_global_bin.rom[note_offset + 1] = (note.effect << 3) | note.volume;
+  rcn_dispatch_ed_event('rcn_bin_change', {
+    begin: note_offset,
+    end: note_offset + 2,
+  });
+}
+
+rcn_sound_ed.prototype.update_notes = function() {
+  for(let note_index = 0; note_index < 32; note_index++) {
+    const note = this.get_current_sound_note(note_index)
     for(let pitch = 0; pitch < 64; pitch++) {
-      const cell = this.note_cells[pitch][note];
-      const is_active = pitch == current_pitch && volume > 0;
+      const cell = this.note_cells[pitch][note_index];
+      const is_active = pitch == note.pitch && note.volume > 0;
       cell.classList.toggle('active', is_active);
       if(is_active) {
-        cell.setAttribute('effect', ['none', 'slide', 'vibrato', 'drop', 'fadein', 'fadeout'][effect]);
-        cell.setAttribute('volume', volume);
+        cell.setAttribute('effect', ['none', 'slide', 'vibrato', 'drop', 'fadein', 'fadeout'][note.effect]);
+        cell.setAttribute('volume', note.volume);
       }
     }
   }
