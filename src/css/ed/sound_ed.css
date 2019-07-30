@@ -3,7 +3,7 @@
 }
 
 .window.sound_ed .wrapper {
-  height: calc(100% - 64px);
+  height: calc(100% - 68px);
   margin-top: 4px;
   overflow: auto;
 }
