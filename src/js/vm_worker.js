@@ -23,6 +23,7 @@ function rcn_vm_worker_function(rcn) {
   const _Math = Math;
   const _postMessage = postMessage;
   const _self = self;
+  const _String = String;
 
   // Remove parts of the API
   Object.getOwnPropertyNames(_self).forEach(function(key) {
@@ -191,6 +192,8 @@ function rcn_vm_worker_function(rcn) {
     // Camera
     x -= cam_x();
     y -= cam_y();
+
+    text = _String(text);
 
     const ox = x;
 
