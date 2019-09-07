@@ -21,10 +21,13 @@ function rcn_sound_ed() {
 
   // Create speed select
   let period_select_label = document.createElement('label');
-  period_select_label.innerText = 'Period: ';
+  period_select_label.innerText = 'Period / Tempo: ';
   this.add_child(period_select_label);
   this.add_child(this.period_select = rcn_ui_select({
-    options: new Array(128).fill(0).map(function(v, i){ return (i + 4) / 4; }),
+    options: new Array(128).fill(0).map(function(v, i) {
+      const audio_frames = i + rcn_audio_frames_per_frame;
+      return `${audio_frames} / ${Math.round(rcn_audio_bpm_per_period / audio_frames)} BPM`;
+    }),
     onchange: function() {
       sound_ed.set_period(Number(this.value));
     },
