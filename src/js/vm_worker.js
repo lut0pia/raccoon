@@ -192,6 +192,8 @@ function rcn_vm_worker_function(rcn) {
     x -= cam_x();
     y -= cam_y();
 
+    text = String(text);
+
     const ox = x;
 
     for(let i = 0; i < text.length; i++) {
