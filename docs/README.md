@@ -92,8 +92,8 @@ N.B. Ranges in memory are expressed with their end excluded.
 | --- | --- | --- | ---
 | `0x0000-0x1800` | [Spritesheet](#spritesheet-memory) | ROM | 128x96x4bits
 | `0x1800-0x3800` | [Map](#map-memory) | ROM | 128x64x8bits
-| `0x3800-0x3818` | [Palette](#palette-memory) | ROM | 8x24bits
-| `0x3818-0x38d8` | [Sprite flags](#sprite-flags-memory) | ROM | 192x8bits
+| `0x3800-0x3830` | [Palette](#palette-memory) | ROM | 16x24bits
+| `0x3830-0x38f0` | [Sprite flags](#sprite-flags-memory) | ROM | 192x8bits
 | `0x5fe2-0x5ff8` | [Palette mod](#palette-mod-memory) | RAM | 16x(4+3+1)bits
 | `0x5ff8-0x6000` | [Gamepad state](#gamepad-state-memory) | RAM | 2x4x(4+4)bits
 | `0x6000-0x8000` | [Screen](#screen-memory) | RAM | 128x128x4bits
