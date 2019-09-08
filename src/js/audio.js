@@ -197,7 +197,6 @@ function rcn_note_waveform(t, note, previous_note) {
     } else {
       adsr = ((note.release - offset_t + note.duration) / note.release) * note.sustain;
     }
-    adsr /= note.sustain;
     volume *= adsr;
     volume = Math.max(volume, 0);
   }
