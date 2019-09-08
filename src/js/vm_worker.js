@@ -435,7 +435,7 @@ function rcn_vm_worker_function(rcn) {
           const note_1 = ram[note_offset + 0];
           const note_2 = ram[note_offset + 1];
           ram[sreg_offset + 0] = 0x80 | period; // Switch on and period
-          ram[sreg_offset + 1] = ram[snd_offset + 1]; // Instrument
+          ram[sreg_offset + 1] = ram[snd_offset + 1]; // Envelope and instrument
           ram[sreg_offset + 2] = (offset << 6) | (note_1 & 0x3f); // Offset and pitch
           ram[sreg_offset + 3] = note_2; // Volume and effect
         }

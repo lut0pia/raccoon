@@ -21,7 +21,9 @@ function rcn_audio() {
 
   this.channels = new Array(rcn_audio_channel_count);
   for(let i = 0; i < rcn_audio_channel_count; i++) {
-    this.channels[i] = {};
+    this.channels[i] = {
+      notes: [],
+    };
   }
 }
 
@@ -59,30 +61,50 @@ rcn_audio.prototype.update = function(bytes) {
   // Update channels with new notes
   for(let i = 0; i < rcn_audio_channel_count; i++) {
     const register_bytes = bytes.slice(i * 4, (i + 1) * 4);
+    const channel = this.channels[i];
 
     if((register_bytes[0] & 0x80) == 0) {
       // Register is switched off
       continue;
     }
 
-    this.channels[i].previous_previous_note = this.channels[i].previous_note;
-    const previous_note = this.channels[i].previous_note = this.channels[i].current_note;
+    const current_note = channel.notes.length > 0 ? channel.notes[0] : null;
 
-    const period = register_bytes[0] & 0x7f;
-    const offset = register_bytes[2] >> 6;
-    const start_time = this.play_time + offset / 120; // Divide by audio frames per second
-    const end_time = start_time + period / 120;
-    this.channels[i].current_note = {
-      start_time: start_time,
-      end_time: end_time,
-      period: period,
-      offset: offset,
-      instrument: register_bytes[1],
+    const note = {
+      period: register_bytes[0] & 0x7f,
+      offset: register_bytes[2] >> 6,
+      envelope: register_bytes[1] >> 6,
+      instrument: register_bytes[1] & 0x3f,
       pitch: register_bytes[2] & 0x3f,
       volume: (register_bytes[3] & 0x7) / 7,
       effect: (register_bytes[3] >> 3) & 0x7,
-      phi: previous_note ? previous_note.phi : 0,
     };
+
+    note.attack = [5, 5, 200, 200][note.envelope] / 1000;
+    note.decay = [0, 200, 0, 200][note.envelope] / 1000;
+    note.sustain = [1, 0.5, 1, 0.5][note.envelope];
+    note.release = [5, 50, 200, 200][note.envelope] / 1000;
+    note.start_time = this.play_time + note.offset / 120; // Divide by audio frames per second
+    note.duration = Math.max(note.period / 120, note.attack + note.decay)
+    note.end_time = note.start_time + note.duration + note.release;
+    note.phi = current_note ? current_note.phi : 0;
+
+    if(current_note &&
+      current_note.envelope == note.envelope &&
+      current_note.instrument == note.instrument &&
+      current_note.pitch == note.pitch &&
+      current_note.volume == note.volume &&
+      current_note.effect == note.effect) {
+      current_note.end_time = note.end_time;
+      current_note.duration = (current_note.end_time - current_note.start_time) - current_note.release;
+    } else {
+      channel.notes.unshift(note);
+    }
+
+    const play_time = this.play_time;
+    channel.notes = channel.notes.filter(function(note) {
+      return play_time < note.end_time + note.release;
+    });
   }
 
   // Create audio buffer for current frame
@@ -94,8 +116,9 @@ rcn_audio.prototype.update = function(bytes) {
     samples[i] = 0;
     for(let j = 0; j < rcn_audio_channel_count; j++) {
       const channel = this.channels[j];
-      samples[i] += rcn_note_waveform(t, channel.current_note, channel.previous_note);
-      samples[i] += rcn_note_waveform(t, channel.previous_note, channel.previous_previous_note);
+      for(let k = 0; k < channel.notes.length; k++) {
+        samples[i] += rcn_note_waveform(t, channel.notes[k], channel.notes.length > k+1 ? channel.notes[k+1] : null);
+      }
     }
 
     // Avoid saturation
@@ -131,17 +154,13 @@ function rcn_note_waveform(t, note, previous_note) {
     return 0;
   }
 
-  const attack = 5 / 1000;
-  const release = 5 / 1000;
-
   const offset_t = t - note.start_time;
-  const duration = (note.end_time - note.start_time);
-  const offset = offset_t / duration;
 
-  if(offset_t < 0 || offset_t > duration + release) {
+  if(offset_t < 0 || offset_t > note.duration + note.release) {
     return 0;
   }
 
+  const offset = offset_t / note.duration;
   let frequency = rcn_pitch_to_freq[note.pitch];
   let volume = note.volume;
 
@@ -167,10 +186,21 @@ function rcn_note_waveform(t, note, previous_note) {
       break;
   }
 
-  volume = Math.max(volume, 0);
-  volume *= Math.min(offset_t / attack, 1);
-  volume *= Math.min(1 - ((offset_t - duration)) / release, 1);
-  volume = Math.max(volume, 0);
+  { // Compute envelope
+    let adsr;
+    if(offset_t < note.attack) {
+      adsr = offset_t / note.attack;
+    } else if(offset_t < note.attack + note.decay) {
+      adsr = (((note.sustain - 1) / note.decay) * (offset_t - note.attack) + 1);
+    } else if(offset_t < note.duration) {
+      adsr = note.sustain;
+    } else {
+      adsr = ((note.release - offset_t + note.duration) / note.release) * note.sustain;
+    }
+    adsr /= note.sustain;
+    volume *= adsr;
+    volume = Math.max(volume, 0);
+  }
 
   const instrument = rcn_instruments[note.instrument];
   const waveform = instrument.waveform(note.phi % 1, note.phi) * volume;
