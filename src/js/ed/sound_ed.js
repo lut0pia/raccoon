@@ -46,6 +46,20 @@ function rcn_sound_ed() {
       sound_ed.set_instrument(Number(this.value));
     },
   }));
+  this.add_child(document.createTextNode(' '));
+
+  // Create envelope select
+  let envelope_select_label = document.createElement('label');
+  envelope_select_label.innerText = 'Envelope: ';
+  this.add_child(envelope_select_label);
+  this.add_child(this.envelope_select = rcn_ui_select({
+    options: {
+      0: 'Beep', 1: 'Pluck', 2: 'Pad', 3: 'Plucked Pad?',
+    },
+    onchange: function() {
+      sound_ed.set_envelope(Number(this.value));
+    },
+  }));
   this.add_child(document.createElement('br'));
 
   // Create note table wrapper
@@ -97,6 +111,7 @@ function rcn_sound_ed() {
     const mem_sound_end = rcn.mem_sound_offset + rcn.mem_sound_size;
     if(e.detail.begin < mem_sound_end && e.detail.end > mem_sound_begin) {
       sound_ed.update_period();
+      sound_ed.update_envelope();
       sound_ed.update_instrument();
       sound_ed.update_notes();
     }
@@ -108,6 +123,7 @@ function rcn_sound_ed() {
 rcn_sound_ed.prototype.set_current_sound = function(i) {
   this.current_sound = i;
   this.update_period();
+  this.update_envelope();
   this.update_instrument();
   this.update_notes();
 }
@@ -130,9 +146,25 @@ rcn_sound_ed.prototype.update_period = function() {
   this.period_select.value = rcn_global_bin.rom[sound_offset];
 }
 
+rcn_sound_ed.prototype.set_envelope = function(envelope) {
+  const sound_offset = this.get_current_sound_offset();
+  rcn_global_bin.rom[sound_offset + 1] &= 0x3f;
+  rcn_global_bin.rom[sound_offset + 1] |= envelope << 6;
+  rcn_dispatch_ed_event('rcn_bin_change', {
+    begin: sound_offset + 1,
+    end: sound_offset + 2,
+  });
+}
+
+rcn_sound_ed.prototype.update_envelope = function() {
+  const sound_offset = this.get_current_sound_offset();
+  this.envelope_select.value = rcn_global_bin.rom[sound_offset + 1] >> 6;
+}
+
 rcn_sound_ed.prototype.set_instrument = function(instrument) {
   const sound_offset = this.get_current_sound_offset();
-  rcn_global_bin.rom[sound_offset + 1] = instrument;
+  rcn_global_bin.rom[sound_offset + 1] &= 0xc0;
+  rcn_global_bin.rom[sound_offset + 1] |= instrument;
   rcn_dispatch_ed_event('rcn_bin_change', {
     begin: sound_offset + 1,
     end: sound_offset + 2,
@@ -141,7 +173,7 @@ rcn_sound_ed.prototype.set_instrument = function(instrument) {
 
 rcn_sound_ed.prototype.update_instrument = function() {
   const sound_offset = this.get_current_sound_offset();
-  this.instrument_select.value = rcn_global_bin.rom[sound_offset + 1];
+  this.instrument_select.value = rcn_global_bin.rom[sound_offset + 1] & 0x3f;
 }
 
 rcn_sound_ed.prototype.get_current_sound_note = function(index) {
