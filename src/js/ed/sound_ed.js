@@ -213,6 +213,21 @@ rcn_sound_ed.prototype.update_notes = function() {
   }
 }
 
+rcn_sound_ed.prototype.transpose = function(delta) {
+  const sound_offset = this.get_current_sound_offset();
+  for(let i = 0; i < rcn_audio_ticks_per_measure; i++) {
+    const note_offset = sound_offset + 2 + i * 2;
+    let pitch = rcn_global_bin.rom[note_offset + 0] & 0x3f;
+    pitch += delta;
+    pitch = Math.max(0, Math.min(63, pitch));
+    rcn_global_bin.rom[note_offset + 0] = pitch;
+  }
+  rcn_dispatch_ed_event('rcn_bin_change', {
+    begin: sound_offset + 2,
+    end: sound_offset + 2 + rcn_audio_ticks_per_measure * 2,
+  });
+}
+
 rcn_sound_ed.prototype.title = 'Sound Editor';
 rcn_sound_ed.prototype.docs_link = 'sound-editor';
 rcn_sound_ed.prototype.type = 'sound_ed';
