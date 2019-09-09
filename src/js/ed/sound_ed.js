@@ -82,7 +82,10 @@ function rcn_sound_ed() {
     for(let note_index = 0; note_index < 32; note_index++) {
       const cell = document.createElement('td');
       row.appendChild(cell);
-      cell.onmousedown = function(e) {
+      cell.onmousedown = cell.onmouseover = function(e) {
+        if(e.buttons == 0) {
+          return;
+        }
         rcn_window_focus(e.target);
         e.preventDefault();
         const note = sound_ed.get_current_sound_note(note_index);
