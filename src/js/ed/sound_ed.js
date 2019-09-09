@@ -118,6 +118,20 @@ function rcn_sound_ed() {
     }
   });
 
+  this.section.addEventListener('keydown', function(e) {
+    if(!e.target.rcn_window) {
+      return;
+    }
+    const transpose_factor = e.ctrlKey ? 12 : 1;
+    if(e.key == 'ArrowUp') {
+      sound_ed.transpose(transpose_factor);
+      e.preventDefault();
+    } else if(e.key == 'ArrowDown') {
+      sound_ed.transpose(-transpose_factor);
+      e.preventDefault();
+    }
+  });
+
   this.set_current_sound(0);
 }
 
