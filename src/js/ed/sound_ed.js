@@ -5,10 +5,10 @@ function rcn_sound_ed() {
   rcn_sound_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
-  let sound_ed = this;
+  const sound_ed = this;
 
   // Create sound select
-  let sound_select_label = document.createElement('label');
+  const sound_select_label = document.createElement('label');
   sound_select_label.innerText = 'Track: ';
   this.add_child(sound_select_label);
   this.add_child(this.sound_select = rcn_ui_select({
@@ -20,7 +20,7 @@ function rcn_sound_ed() {
   this.add_child(document.createElement('br'));
 
   // Create speed select
-  let period_select_label = document.createElement('label');
+  const period_select_label = document.createElement('label');
   period_select_label.innerText = 'Period / Tempo: ';
   this.add_child(period_select_label);
   this.add_child(this.period_select = rcn_ui_select({
@@ -35,7 +35,7 @@ function rcn_sound_ed() {
   this.add_child(document.createElement('br'));
 
   // Create instrument select
-  let instrument_select_label = document.createElement('label');
+  const instrument_select_label = document.createElement('label');
   instrument_select_label.innerText = 'Instrument: ';
   this.add_child(instrument_select_label);
   this.add_child(this.instrument_select = rcn_ui_select({
@@ -49,7 +49,7 @@ function rcn_sound_ed() {
   this.add_child(document.createTextNode(' '));
 
   // Create envelope select
-  let envelope_select_label = document.createElement('label');
+  const envelope_select_label = document.createElement('label');
   envelope_select_label.innerText = 'Envelope: ';
   this.add_child(envelope_select_label);
   this.add_child(this.envelope_select = rcn_ui_select({
@@ -63,7 +63,7 @@ function rcn_sound_ed() {
   this.add_child(document.createElement('br'));
 
   // Create note table wrapper
-  let note_table_wrapper = document.createElement('div');
+  const note_table_wrapper = document.createElement('div');
   note_table_wrapper.classList.add('wrapper');
   this.add_child(note_table_wrapper);
 
