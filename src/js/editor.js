@@ -117,9 +117,9 @@ function rcn_start_editor_mode(params) {
     if(event.after.join() === event.before.join()) return; // Nothing changed
 
     event_stack.splice(event_index);
-    let prev_event = event_index > 0 && event_stack[event_index - 1];
+    const prev_event = event_index > 0 && event_stack[event_index - 1];
 
-    if(prev_event && prev_event.last_time > now - 1000) {
+    if(prev_event && prev_event.last_time > now - 500 && prev_event.first_time > now - 5000) {
       // Extend previous event
       let new_begin = Math.min(prev_event.offset, mem_begin);
       let new_end = Math.max(prev_event.offset + prev_event.before.length, mem_end)
