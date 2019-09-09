@@ -76,6 +76,14 @@ rcn_window.prototype.addEventListener = function(type, listener, options) {
   this.section.addEventListener(type, listener, options);
 }
 
+rcn_window.prototype.add_child = function(node) {
+  this.content.appendChild(node);
+}
+
+rcn_window.prototype.kill = function() {
+  this.section.parentElement.removeChild(this.section);
+}
+
 function rcn_window_onmousedown(e) {
   // Set window's z-index greater than any other
   this.style.zIndex = rcn_window_container.childElementCount+1;
@@ -98,14 +106,6 @@ function rcn_window_header_onmousedown(e) {
   };
 
   document.body.classList.add('window_dragging')
-}
-
-rcn_window.prototype.add_child = function(node) {
-  this.content.appendChild(node);
-}
-
-rcn_window.prototype.kill = function() {
-  this.section.parentElement.removeChild(this.section);
 }
 
 function rcn_window_save_layout() {
