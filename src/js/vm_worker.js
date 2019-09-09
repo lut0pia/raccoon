@@ -81,7 +81,6 @@ function rcn_vm_worker_function(rcn) {
     if(x < 0 || x >= 128 || y < 0 || y >= 128) {
       return;
     }
-    c = _palmget(c);
     pset_internal(x, y, _palmget(c));
   }
   pget = function(x, y) {
