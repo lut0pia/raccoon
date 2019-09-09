@@ -83,6 +83,7 @@ function rcn_sound_ed() {
       const cell = document.createElement('td');
       row.appendChild(cell);
       cell.onmousedown = function(e) {
+        rcn_window_focus(e.target);
         e.preventDefault();
         const note = sound_ed.get_current_sound_note(note_index);
         if(note.pitch == pitch) { // Already a note

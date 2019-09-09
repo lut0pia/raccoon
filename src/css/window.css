@@ -11,6 +11,10 @@
   cursor: move;
 }
 
+.window:focus header {
+  background-color: white;
+}
+
 .window header icon {
   float: right;
   cursor: default;

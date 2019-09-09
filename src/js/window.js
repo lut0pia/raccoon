@@ -8,6 +8,7 @@ function rcn_window() {
 
   this.section = document.createElement('section');
   this.section.id = ((Math.random() * 0x10000000) >>> 0).toString(16);
+  this.section.tabIndex = 0;
   this.section.classList.add('window');
   this.section.classList.add(this.type);
   this.section.rcn_window = this;
@@ -84,7 +85,9 @@ rcn_window.prototype.kill = function() {
   this.section.parentElement.removeChild(this.section);
 }
 
-function rcn_window_onmousedown(e) {
+function rcn_window_onmousedown() {
+  // Focus clicked window
+  this.focus();
   // Set window's z-index greater than any other
   this.style.zIndex = rcn_window_container.childElementCount+1;
   let z_index = 0;
@@ -154,6 +157,15 @@ function rcn_window_load_layout(layout) {
       rcn_storage.window_layout = rcn_window_save_layout();
     });
     rcn_has_loaded_window_layout_once = true;
+  }
+}
+
+function rcn_window_focus(e) {
+  while(e) {
+    if(e.rcn_window) {
+      return e.focus();
+    }
+    e = e.parentElement;
   }
 }
 

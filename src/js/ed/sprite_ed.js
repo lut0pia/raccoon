@@ -96,7 +96,6 @@ function rcn_sprite_ed() {
 
   // Create draw canvas
   this.draw_canvas = new rcn_canvas();
-  this.draw_canvas.node.tabIndex = 0;
   this.draw_canvas.node.classList.add('draw');
   this.draw_canvas.interaction(function(e, tex_coords) {
     let mode = 'normal';
@@ -129,32 +128,7 @@ function rcn_sprite_ed() {
         break;
     }
   });
-  this.draw_canvas.node.addEventListener('keydown', function(e) {
-    const ctrl = e.ctrlKey || e.metaKey;
-    if(e.key == 'ArrowLeft') {
-      sprite_ed.move_selection(-1, 0);
-    } else if(e.key == 'ArrowRight') {
-      sprite_ed.move_selection(1, 0);
-    } else if(e.key == 'ArrowUp') {
-      sprite_ed.move_selection(0, -1);
-    } else if(e.key == 'ArrowDown') {
-      sprite_ed.move_selection(0, 1);
-    } else if(ctrl && e.key == 'c') {
-      sprite_ed.copy_selection();
-    } else if(ctrl && e.key == 'v') {
-      sprite_ed.paste_selection();
-    } else if (e.keyCode >= 49 && e.keyCode <= 56) {
-      let new_color = e.keyCode - 49;
-      if(e.shiftKey) {
-        new_color += 8;
-      }
-      sprite_ed.set_current_color(new_color);
-      e.preventDefault();
-    }
-  });
-  this.draw_canvas.node.addEventListener('blur', function(e) {
-    sprite_ed.reset_selection();
-  });
+
   // Always keep space for selection outline
   this.draw_canvas.padding_x = this.draw_canvas.padding_y = 2;
   this.draw_canvas.onpostflush = function() {
@@ -204,6 +178,33 @@ function rcn_sprite_ed() {
 
   this.addEventListener('rcn_window_resize', function() {
     sprite_ed.draw_canvas.flush();
+  });
+
+  this.addEventListener('keydown', function(e) {
+    const ctrl = e.ctrlKey || e.metaKey;
+    if(e.key == 'ArrowLeft') {
+      sprite_ed.move_selection(-1, 0);
+    } else if(e.key == 'ArrowRight') {
+      sprite_ed.move_selection(1, 0);
+    } else if(e.key == 'ArrowUp') {
+      sprite_ed.move_selection(0, -1);
+    } else if(e.key == 'ArrowDown') {
+      sprite_ed.move_selection(0, 1);
+    } else if(ctrl && e.key == 'c') {
+      sprite_ed.copy_selection();
+    } else if(ctrl && e.key == 'v') {
+      sprite_ed.paste_selection();
+    } else if (e.keyCode >= 49 && e.keyCode <= 56) {
+      let new_color = e.keyCode - 49;
+      if(e.shiftKey) {
+        new_color += 8;
+      }
+      sprite_ed.set_current_color(new_color);
+      e.preventDefault();
+    }
+  });
+  this.addEventListener('blur', function(e) {
+    sprite_ed.reset_selection();
   });
 
   this.update_color_inputs();

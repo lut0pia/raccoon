@@ -24,28 +24,6 @@ function rcn_sprite_select_ed() {
   // Create spritesheet canvas
   this.spritesheet_canvas = new rcn_canvas();
   this.spritesheet_canvas.node.classList.add('spritesheet');
-  this.spritesheet_canvas.node.tabIndex = 0;
-  this.spritesheet_canvas.node.addEventListener('keydown', function(e) {
-    // Copy/paste functionality
-    if(!(e.ctrlKey || e.metaKey)) return;
-    if(e.key == 'c') { // Copy
-      e.preventDefault();
-      rcn_copy_sprite_region(
-        (rcn_current_sprite & 0xf) << 3,
-        (rcn_current_sprite >> 4) << 3,
-        rcn_current_sprite_columns << 3,
-        rcn_current_sprite_rows << 3,
-      );
-    } else if(e.key == 'v') { // Paste
-      e.preventDefault();
-      rcn_paste_sprite_region(
-        (rcn_current_sprite & 0xf) << 3,
-        (rcn_current_sprite >> 4) << 3,
-        rcn_current_sprite_columns << 3,
-        rcn_current_sprite_rows << 3,
-      );
-    }
-  });
   this.spritesheet_canvas.interaction(function(e, tex_coords) {
     const spr_x = tex_coords.x >> 3;
     const spr_y = tex_coords.y >> 3;
@@ -97,6 +75,31 @@ function rcn_sprite_select_ed() {
 
   this.addEventListener('rcn_window_resize', function() {
     sprite_sel_ed.spritesheet_canvas.flush();
+  });
+
+  this.addEventListener('keydown', function(e) {
+    if(!e.target.rcn_window) {
+      return;
+    }
+    // Copy/paste functionality
+    if(!(e.ctrlKey || e.metaKey)) return;
+    if(e.key == 'c') { // Copy
+      e.preventDefault();
+      rcn_copy_sprite_region(
+        (rcn_current_sprite & 0xf) << 3,
+        (rcn_current_sprite >> 4) << 3,
+        rcn_current_sprite_columns << 3,
+        rcn_current_sprite_rows << 3,
+      );
+    } else if(e.key == 'v') { // Paste
+      e.preventDefault();
+      rcn_paste_sprite_region(
+        (rcn_current_sprite & 0xf) << 3,
+        (rcn_current_sprite >> 4) << 3,
+        rcn_current_sprite_columns << 3,
+        rcn_current_sprite_rows << 3,
+      );
+    }
   });
 
   this.update_sprite_index_text();
