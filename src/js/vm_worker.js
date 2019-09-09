@@ -331,10 +331,6 @@ function rcn_vm_worker_function(rcn) {
     }
   }
   circ = function(x, y, r, c) {
-    if(_paltget(c)) {
-      return; // Don't draw transparent colors
-    }
-
     // Camera
     x -= cam_x();
     y -= cam_y();
@@ -368,10 +364,6 @@ function rcn_vm_worker_function(rcn) {
     }
   }
   circfill = function(x, y, r, c) {
-    if(_paltget(c)) {
-      return; // Don't draw transparent colors
-    }
-
     // Camera
     x -= cam_x();
     y -= cam_y();
