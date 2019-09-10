@@ -317,3 +317,17 @@ function rcn_clear_sprite_region(x, y, w, h, c) {
     end: ((y + h) << 6) + ((x + w) >> 1) + 1,
   });
 }
+
+function rcn_find_editor(ed, create = false) {
+  for(let i = 0; i < rcn_window_container.childElementCount; i++) {
+    const section = rcn_window_container.children[i];
+    const window = section.rcn_window;
+    if(window.constructor == ed) {
+      return window;
+    }
+  }
+  if(create) {
+    return new ed();
+  }
+  return null;
+}
