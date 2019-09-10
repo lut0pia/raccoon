@@ -39,7 +39,7 @@ function rcn_window() {
       codepoint: '2139',
       type: 'doc',
       onclick: function() {
-        rcn_dispatch_ed_event('rcndoclookup', {key: window.docs_link});
+        rcn_find_editor(rcn_docs_ed, true).lookup(window.docs_link);
       },
     });
   }
