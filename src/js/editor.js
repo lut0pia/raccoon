@@ -15,6 +15,7 @@ function rcn_start_editor_mode(params) {
   for(let ed of rcn_editors) {
     const tool = document.createElement('article');
     tool.innerText = ed.prototype.title;
+    tool.ed = ed;
     tool.addEventListener('click', function() {
       const existing_ed = rcn_find_editor(ed);
       if(existing_ed) {
@@ -22,8 +23,9 @@ function rcn_start_editor_mode(params) {
       } else {
         new ed();
       }
+      rcn_update_toolbox();
     });
-    toolbox_div.appendChild(tool);
+    rcn_toolbox.appendChild(tool);
   }
 
   // Fill layout box
@@ -52,6 +54,7 @@ function rcn_start_editor_mode(params) {
       width: (window.innerWidth-512)+'px', height: (window.innerHeight-64)+'px',
     },
   });
+  rcn_update_toolbox();
 
   // Flush all canvases
   // Need to wait a bit because we just created the DOM elements
@@ -164,9 +167,9 @@ function rcn_overlay_pop() {
 const rcn_side_panel = document.createElement('aside');
 document.body.appendChild(rcn_side_panel);
 
-const toolbox_div = document.createElement('div');
-toolbox_div.id = 'toolbox';
-rcn_side_panel.appendChild(toolbox_div);
+const rcn_toolbox = document.createElement('div');
+rcn_toolbox.id = 'toolbox';
+rcn_side_panel.appendChild(rcn_toolbox);
 
 const rcn_layoutbox = document.createElement('div');
 rcn_layoutbox.id = 'layoutbox';
@@ -174,6 +177,13 @@ rcn_side_panel.appendChild(rcn_layoutbox);
 
 const rcn_window_container = document.createElement('main');
 document.body.appendChild(rcn_window_container);
+
+function rcn_update_toolbox() {
+  for(let i = 0; i < rcn_toolbox.childElementCount; i++) {
+    const child = rcn_toolbox.children[i];
+    child.classList.toggle('active', !!rcn_find_editor(child.ed));
+  }
+}
 
 function rcn_update_layoutbox() {
   // Clear
@@ -190,6 +200,7 @@ function rcn_update_layoutbox() {
       value: 'Load',
       onclick: function() {
         rcn_window_load_layout(rcn_storage.window_layouts[layout_name]);
+        rcn_update_toolbox();
       },
     }));
 

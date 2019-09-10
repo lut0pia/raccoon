@@ -87,6 +87,10 @@ input[type=text] {
   cursor: pointer;
 }
 
+#toolbox article.active {
+  background-color: rgb(137, 184, 216);
+}
+
 #toolbox article:hover {
   background-color: lightslategrey;
 }
