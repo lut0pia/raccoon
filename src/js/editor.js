@@ -15,11 +15,14 @@ function rcn_start_editor_mode(params) {
   for(let ed of rcn_editors) {
     const tool = document.createElement('article');
     tool.innerText = ed.prototype.title;
-    tool.onclick = function() {
-      if(!rcn_find_editor(ed)) {
+    tool.addEventListener('click', function() {
+      const existing_ed = rcn_find_editor(ed);
+      if(existing_ed) {
+        existing_ed.foreground();
+      } else {
         new ed();
       }
-    }
+    });
     toolbox_div.appendChild(tool);
   }
 
