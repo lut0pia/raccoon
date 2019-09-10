@@ -46,12 +46,9 @@ function rcn_sprite_ed() {
       // Avoid selecting text
       e.preventDefault();
     });
-    color_label.addEventListener('click', function(e) {
-      if(e.shiftKey) {
-        // Shift click to edit color
-        e.preventDefault();
-        sprite_ed.color_inputs[i].click();
-      }
+    color_label.addEventListener('dblclick', function(e) {
+      e.preventDefault();
+      sprite_ed.color_inputs[i].click();
     })
     this.color_labels.push(color_label);
     color_wrapper.appendChild(color_label);
