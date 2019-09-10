@@ -248,6 +248,5 @@ rcn_sound_ed.prototype.transpose = function(delta) {
 rcn_sound_ed.prototype.title = 'Sound Editor';
 rcn_sound_ed.prototype.docs_link = 'sound-editor';
 rcn_sound_ed.prototype.type = 'sound_ed';
-rcn_sound_ed.prototype.unique = true;
 
 rcn_editors.push(rcn_sound_ed);

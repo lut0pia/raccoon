@@ -165,6 +165,5 @@ rcn_music_ed.prototype.update_next = function() {
 
 rcn_music_ed.prototype.title = 'Music Editor';
 rcn_music_ed.prototype.type = 'music_ed';
-rcn_music_ed.prototype.unique = true;
 
 rcn_editors.push(rcn_music_ed);

@@ -16,7 +16,9 @@ function rcn_start_editor_mode(params) {
     const tool = document.createElement('article');
     tool.innerText = ed.prototype.title;
     tool.onclick = function() {
-      new ed();
+      if(!rcn_find_editor(ed)) {
+        new ed();
+      }
     }
     toolbox_div.appendChild(tool);
   }

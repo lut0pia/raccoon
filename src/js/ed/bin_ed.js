@@ -152,7 +152,6 @@ function rcn_bin_ed() {
 rcn_bin_ed.prototype.title = 'Bin Browser';
 rcn_bin_ed.prototype.docs_link = 'bin-browser';
 rcn_bin_ed.prototype.type = 'bin_ed';
-rcn_bin_ed.prototype.unique = true;
 
 rcn_bin_ed.prototype.save_bin = function() {
   rcn_log('Saving bin: '+rcn_global_bin.name);

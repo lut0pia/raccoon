@@ -72,7 +72,6 @@ rcn_github_ed.prototype.login = async function() {
 
 rcn_github_ed.prototype.title = 'GitHub';
 rcn_github_ed.prototype.type = 'github_ed';
-rcn_github_ed.prototype.unique = true;
 
 rcn_editors.push(rcn_github_ed);
 
