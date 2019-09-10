@@ -85,17 +85,21 @@ rcn_window.prototype.kill = function() {
   this.section.parentElement.removeChild(this.section);
 }
 
-function rcn_window_onmousedown() {
-  // Focus clicked window
-  this.focus();
+rcn_window.prototype.foreground = function() {
   // Set window's z-index greater than any other
-  this.style.zIndex = rcn_window_container.childElementCount+1;
+  this.section.style.zIndex = rcn_window_container.childElementCount+1;
   let z_index = 0;
   Array.from(rcn_window_container.children).sort(function(a, b) { // Sort windows by z-index
     return a.style.zIndex - b.style.zIndex;
   }).forEach(function(window) { // Assign incrementally greater z-indices starting from 0
     window.style.zIndex = z_index++;
   });
+}
+
+function rcn_window_onmousedown() {
+  // Focus clicked window
+  this.focus();
+  this.rcn_window.foreground();
 }
 
 function rcn_window_header_onmousedown(e) {
