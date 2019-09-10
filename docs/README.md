@@ -7,7 +7,9 @@
     1. [Virtual Machine](#virtual-machine)
     1. [Code Editor](#code-editor)
     1. [Sprite Editor](#sprite-editor)
+    1. [Sprite Selector](#sprite-selector)
     1. [Map Editor](#map-editor)
+    1. [Sound Editor](#sound-editor)
 1. [Memory](#memory)
     1. [Spritesheet Memory](#spritesheet-memory)
     1. [Map Memory](#map-memory)
@@ -54,7 +56,7 @@ The `Reboot` button will wipe everything and load the current bin again, useful 
 
 The `Step` button triggers a single frame update. It is useful when paused, to see what happens frame after frame.
 
-The `Paused` checkbox controls whether the virtual machine is currently paused. You can toggle it by pressince `Space` while focusing the virtual machine.
+The `Paused` checkbox controls whether the virtual machine is currently paused. You can toggle it by pressing `Space` while focusing the virtual machine.
 
 The `Autoapply` checkbox indicates whether or not data changes made to the current bin should be replicated directly inside the virtual machine. You may want to disable it if your game code modifies sprite or map data in realtime.
 
@@ -62,25 +64,52 @@ The `Autoapply` checkbox indicates whether or not data changes made to the curre
 
 The code editor is a text editor with syntax highlighting.
 
-Pressing the `Apply` button or `CTRL+Enter` (while focusing the text input) will send the current code to the virtual machine, so you can see changes happen right away.
+Pressing the `Apply` button or `Control+Enter` (while focusing the text input) will send the current code to the virtual machine, so you can see changes happen right away.
 
 ## Sprite Editor
 
-The sprite editor allows you to draw small images that you will then be able to draw into your game.
+The sprite editor allows you to draw small images that you will then be able to render into your game.
 
-The draw canvas displays the currently selected sprite. By left-clicking, it will set the texel color to the current color. By right-clicking, it will change the current color to be the color of the clicked texel (color picking).
+The canvas displays the currently selected sprites (see [Sprite Selector](#sprite-selector) for more information).
 
-The sheet canvas displays the current spritesheet page. By left-clicking, you can select the sprite you want to edit.
+To select a drawing color, either use `Left-Click` on the palette on the right or use `1-8` to select the first 8 colors and `Shift+1-8` to select the last 8 colors.
 
-The `Apply` button is only useful if the virtual machine's `Autoapply` is deactivated, in which case it will apply the current sprite data to the virtual machine.
+- Use `Left-Click` to set the texel color to the current color.
+- Use `Right-Click` to change the current color to be the color of the clicked texel (color picking).
+- Use `Control+Left-Click` to fill with the current color.
+- Use `Shift+Left-Click` to select texels
+- Use `Control+C` to copy selected texels
+- Use `Control+V` to paste copied texels
+
+## Sprite Selector
+
+The canvas displays the spritesheet. The index of the currently selected sprite is displayed above.
+
+- Use `Left-Click` to select the sprites you want to edit in the [Sprite Editor](#sprite-editor) or draw in the [Map Editor](#map-editor).
 
 ## Map Editor
 
 The map editor allows you to edit a 128x64 tilemap for your game. We'll be using the word tile in this document, any 1x1 sprite is a tile, there is no separate memory for either tiles or sprites.
 
-The map canvas displays a view of the map. By left-clicking, it will set the tile under your cursor to the current tile. By right-clicking, it will change the current tile to be the tile under your cursor. By middle-clicking and moving your mouse, you will be able to drag your view of the map to edit different parts of the map.
+The canvas displays a view of the map. The coordinates of the current tile is displayed above.
 
-The `Apply` button is only useful if the virtual machine's `Autoapply` is deactivated, in which case it will apply the current map data to the virtual machine.
+- Use `Left-Click` to set the tile under your cursor to the current tile.
+- Use `Right-Click` to change the current tile to be the tile under your cursor.
+- Use `Middle-Click` to drag your view of the map to edit different parts of the map.
+
+## Sound Editor
+
+The sound editor allows you to create sound effects and music patterns for your game.
+
+The tempo determines how fast the sound track will play, the instrument determines the basic sound it will make, and the envelope determines an ADSR volume envelope.
+
+The table represents time on the x-axis and note pitches on the y-axis. You can only have one note at a time on a single sound track.
+
+- Use `Left-Click` to either place notes or remove them.
+- Use `Right-Click` to change a note's volume.
+- Use `Middle-Click` to change a note's effect.
+- Use `Up/Down-Arrow` to transpose one semitone.
+- Use `Control+Up/Down-Arrow` to transpose one octave.
 
 # Memory
 
