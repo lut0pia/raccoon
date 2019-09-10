@@ -39,6 +39,7 @@ let rcn_global_bin;
 const rcn_editors = []; // This gets filled with the constructors of each type of editor
 const rcn_hosts = {};
 const rcn_resources = {}; // This can be used to redirect URLs to ObjectURLs
+let rcn_clipboard;
 
 // Raccoon storage
 let rcn_storage = {}
