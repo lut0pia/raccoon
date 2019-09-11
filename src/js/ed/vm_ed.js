@@ -67,18 +67,6 @@ function rcn_vm_ed() {
     }
   });
 
-  this.addEventListener('rcn_bin_apply', function(e) {
-    if(!vm_ed.vm.worker) { // VM crashed earlier
-      vm_ed.reboot();
-    } else {
-      if(e.detail.code) {
-        vm_ed.vm.load_code_from_bin();
-      } else {
-        vm_ed.vm.load_memory_from_bin(e.detail.offset, e.detail.size);
-      }
-    }
-  });
-
   this.vm.load_bin(rcn_global_bin);
   this.set_paused(false);
 }

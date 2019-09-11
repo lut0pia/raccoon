@@ -99,7 +99,10 @@ rcn_code_ed.prototype.type = 'code_ed';
 rcn_code_ed.prototype.apply = function() {
   this.set_error(null); // Reset error because it may have been fixed
 
-  rcn_dispatch_ed_event('rcn_bin_apply', {code: true});
+  const vm_ed = rcn_find_editor(rcn_vm_ed);
+  if(vm_ed) {
+    vm_ed.vm.load_code_from_bin();
+  }
 }
 
 rcn_code_ed.prototype.update_textarea = function() {
