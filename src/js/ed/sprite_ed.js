@@ -105,8 +105,10 @@ function rcn_sprite_ed() {
       case 'normal':
         if(e.buttons == 1) { // Left button: draw
           sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
+          sprite_ed.reset_selection();
         } else if(e.buttons == 2) { // Right button: color pick
           sprite_ed.set_current_color(sprite_ed.get_pixel(tex_coords.x, tex_coords.y))
+          sprite_ed.reset_selection();
         }
         break;
       case 'selection':
@@ -121,6 +123,7 @@ function rcn_sprite_ed() {
       case 'fill':
         if(e.buttons == 1) { // Left button: select
           sprite_ed.fill_pixel(tex_coords.x, tex_coords.y);
+          sprite_ed.reset_selection();
         }
         break;
     }
@@ -289,6 +292,7 @@ rcn_sprite_ed.prototype.copy_selection = function() {
       this.selection.w,
       this.selection.h,
     );
+    this.reset_selection();
   }
 }
 
