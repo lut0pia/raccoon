@@ -90,6 +90,13 @@ rcn_canvas.prototype.draw_quad = function(x, y, width, height, r, g, b, a) {
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
+rcn_canvas.prototype.draw_outline = function(x, y, w, h, t, r, g, b, a) {
+  this.draw_quad(x - t, y - t, t, h + t * 2, r, g, b, a);
+  this.draw_quad(x + w, y - t, t, h + t * 2, r, g, b, a);
+  this.draw_quad(x, y - t, w, t, r, g, b, a);
+  this.draw_quad(x, y + h, w, t, r, g, b, a);
+}
+
 rcn_canvas.prototype.flush = function() {
   if(this.img) {
     const gl = this.gl;
