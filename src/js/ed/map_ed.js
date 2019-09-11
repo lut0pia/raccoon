@@ -53,6 +53,9 @@ function rcn_map_ed() {
     const tex_coords = map_ed.map_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
     map_ed.update_hovering(tex_coords);
   });
+  this.map_canvas.node.addEventListener('mouseout', function(e) {
+    map_ed.update_hovering(null);
+  });
   this.map_canvas.onpostflush = function() {
     if(map_ed.current_hover_x === null) {
       return;

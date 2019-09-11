@@ -137,6 +137,10 @@ function rcn_sprite_ed() {
     sprite_ed.update_hovering(tex_coords);
   });
 
+  this.draw_canvas.node.addEventListener('mouseout', function(e) {
+    sprite_ed.update_hovering(null);
+  });
+
   // Always keep space for outlines
   this.draw_canvas.padding_x = this.draw_canvas.padding_y = 2;
   this.draw_canvas.onpostflush = function() {
