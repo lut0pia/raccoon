@@ -39,16 +39,13 @@ function rcn_sprite_select_ed() {
     // Draw selection outline
     const vp = this.compute_viewport();
     const cur_spr = rcn_current_sprite;
-    const spr_x = cur_spr & 0xf;
-    const spr_y = cur_spr >> 4;
-    const x = vp.x + spr_x * vp.mul * 8;
-    const y = vp.y + spr_y * vp.mul * 8;
-    const width = rcn_current_sprite_columns * vp.mul * 8;
-    const height = rcn_current_sprite_rows * vp.mul * 8;
-    this.draw_quad(x - 2, y - 2, 2, height + 4, 1, 1, 1, 1);
-    this.draw_quad(x + width, y - 2, 2, height + 4, 1, 1, 1, 1);
-    this.draw_quad(x, y - 2, width, 2, 1, 1, 1, 1);
-    this.draw_quad(x, y + height, width, 2, 1, 1, 1, 1);
+    this.draw_outline(
+      vp.x + (cur_spr & 0xf) * vp.mul * 8,
+      vp.y + (cur_spr >> 4) * vp.mul * 8,
+      rcn_current_sprite_columns * vp.mul * 8,
+      rcn_current_sprite_rows * vp.mul * 8,
+      2, 1, 1, 1, 1,
+    );
   }
   this.spritesheet_wrapper.appendChild(this.spritesheet_canvas.node);
 

@@ -59,14 +59,12 @@ function rcn_map_ed() {
     }
     // Draw hover outline
     const vp = this.compute_viewport();
-    const x = vp.x + map_ed.current_hover_x * vp.mul * 8;
-    const y = vp.y + map_ed.current_hover_y * vp.mul * 8;
-    const w = 1 * vp.mul * 8;
-    const h = 1 * vp.mul * 8;
-    this.draw_quad(x - 2, y - 2, 2, h + 4, 1, 1, 1, 1);
-    this.draw_quad(x + w, y - 2, 2, h + 4, 1, 1, 1, 1);
-    this.draw_quad(x, y - 2, w, 2, 1, 1, 1, 1);
-    this.draw_quad(x, y + h, w, 2, 1, 1, 1, 1);
+    this.draw_outline(
+      vp.x + map_ed.current_hover_x * vp.mul * 8,
+      vp.y + map_ed.current_hover_y * vp.mul * 8,
+      vp.mul * 8, vp.mul * 8,
+      2, 1, 1, 1, 1,
+    );
   };
   this.add_child(this.map_canvas.node);
 
