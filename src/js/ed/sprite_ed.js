@@ -240,42 +240,24 @@ rcn_sprite_ed.prototype.extend_selection = function(x, y) {
   this.update_draw_canvas();
 }
 
-rcn_sprite_ed.prototype.move_selection = function(x, y) {
+rcn_sprite_ed.prototype.move_selection = function(dx, dy) {
   if(!this.selection) return;
 
   const spr_w = rcn_current_sprite_columns << 3;
   const spr_h = rcn_current_sprite_rows << 3;
-  const new_x = Math.min(Math.max(this.selection.x + x, 0), spr_w - this.selection.w);
-  const new_y = Math.min(Math.max(this.selection.y + y, 0), spr_h - this.selection.h);
+  const new_x = Math.min(Math.max(this.selection.x + dx, 0), spr_w - this.selection.w);
+  const new_y = Math.min(Math.max(this.selection.y + dy, 0), spr_h - this.selection.h);
 
   if(this.selection.x == new_x && this.selection.y == new_y) return;
 
-  // Hijack the clipboard to move the sprite region
-  // This is temporary anyway
-
-  const old_clipboard = rcn_clipboard;
   const spr_x = (rcn_current_sprite & 0xf) << 3;
   const spr_y = (rcn_current_sprite >> 4) << 3;
-  rcn_copy_sprite_region(
-    spr_x + this.selection.x,
-    spr_y + this.selection.y,
-    this.selection.w,
-    this.selection.h,
+
+  rcn_move_sprite_region(
+    spr_x + this.selection.x, spr_y + this.selection.y,
+    this.selection.w, this.selection.h,
+    spr_x + new_x, spr_y + new_y,
   );
-  rcn_clear_sprite_region(
-    spr_x + this.selection.x,
-    spr_y + this.selection.y,
-    this.selection.w,
-    this.selection.h,
-    0,
-  )
-  rcn_paste_sprite_region(
-    spr_x + new_x,
-    spr_y + new_y,
-    this.selection.w,
-    this.selection.h,
-  );
-  rcn_clipboard = old_clipboard;
 
   this.selection.x = new_x;
   this.selection.y = new_y;
@@ -512,6 +494,29 @@ function rcn_clear_sprite_region(x, y, w, h, c) {
   rcn_dispatch_ed_event('rcn_bin_change', {
     begin: (y << 6) + (x >> 1),
     end: ((y + h) << 6) + ((x + w) >> 1) + 1,
+  });
+}
+
+function rcn_move_sprite_region(x, y, w, h, nx, ny) {
+  const dx = nx - x;
+  const dy = ny - y;
+  const si = dx < 0 ? x : x + w - 1;
+  const sj = dy < 0 ? y : y + h - 1;
+  const ei = dx < 0 ? x + w : x - 1;
+  const ej = dy < 0 ? y + h : y - 1;
+  const di = dx < 0 ? 1 : -1;
+  const dj = dy < 0 ? 1 : -1;
+  for(let i = si; i != ei; i += di) {
+    for(let j = sj; j != ej; j += dj) {
+      rcn_set_sprite_texel(i + dx, j + dy, rcn_get_sprite_texel(i, j));
+      if(i < nx || i >= nx + w || j < ny || j >= ny + h) {
+        rcn_set_sprite_texel(i, j, 0);
+      }
+    }
+  }
+  rcn_dispatch_ed_event('rcn_bin_change', {
+    begin: Math.min((y << 6) + (x >> 1), (ny << 6) + (nx >> 1)),
+    end: Math.max(((y + h) << 6) + ((x + w) >> 1), ((ny + h) << 6) + ((nx + w) >> 1)) + 1,
   });
 }
 
