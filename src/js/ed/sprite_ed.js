@@ -163,7 +163,7 @@ function rcn_sprite_ed() {
         vp.x + sprite_ed.current_hover_x * vp.mul,
         vp.y + sprite_ed.current_hover_y * vp.mul,
         vp.mul, vp.mul,
-        2, 1, 1, 1, 1,
+        1, 1, 1, 1, 0.7,
       );
     }
   }
