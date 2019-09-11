@@ -7,6 +7,8 @@ function rcn_sprite_ed() {
 
   this.current_color = 0;
   this.selection = null;
+  this.current_hover_x = null;
+  this.current_hover_y = null;
 
   const sprite_ed = this;
 
@@ -129,20 +131,36 @@ function rcn_sprite_ed() {
     }
   });
 
-  // Always keep space for selection outline
+  this.draw_canvas.node.addEventListener('mousemove', function(e) {
+    const canvas_coords = this.getBoundingClientRect();
+    const tex_coords = sprite_ed.draw_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
+    sprite_ed.update_hovering(tex_coords);
+  });
+
+  // Always keep space for outlines
   this.draw_canvas.padding_x = this.draw_canvas.padding_y = 2;
   this.draw_canvas.onpostflush = function() {
     if(sprite_ed.selection) {
       // Draw selection outline
       const vp = this.compute_viewport();
-      const x = vp.x + sprite_ed.selection.x * vp.mul;
-      const y = vp.y + sprite_ed.selection.y * vp.mul;
-      const w = sprite_ed.selection.w * vp.mul;
-      const h = sprite_ed.selection.h * vp.mul;
-      this.draw_quad(x - 2, y - 2, 2, h + 4, 1, 1, 1, 1);
-      this.draw_quad(x + w, y - 2, 2, h + 4, 1, 1, 1, 1);
-      this.draw_quad(x, y - 2, w, 2, 1, 1, 1, 1);
-      this.draw_quad(x, y + h, w, 2, 1, 1, 1, 1);
+      this.draw_outline(
+        vp.x + sprite_ed.selection.x * vp.mul,
+        vp.y + sprite_ed.selection.y * vp.mul,
+        sprite_ed.selection.w * vp.mul,
+        sprite_ed.selection.h * vp.mul,
+        2, 1, 1, 1, 1,
+      );
+    }
+
+    if(sprite_ed.current_hover_x !== null) {
+      // Draw hover outline
+      const vp = this.compute_viewport();
+      this.draw_outline(
+        vp.x + sprite_ed.current_hover_x * vp.mul,
+        vp.y + sprite_ed.current_hover_y * vp.mul,
+        vp.mul, vp.mul,
+        2, 1, 1, 1, 1,
+      );
     }
   }
   this.add_child(this.draw_canvas.node);
@@ -434,6 +452,20 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
   this.draw_canvas.set_size(spr_w, spr_h);
   this.draw_canvas.blit(0, 0, spr_w, spr_h, pixels);
   this.draw_canvas.flush();
+}
+
+rcn_sprite_ed.prototype.update_hovering = function(tex_coords) {
+  if(tex_coords) {
+    if(tex_coords.x !== this.current_hover_x || tex_coords.y !== this.current_hover_y) {
+      this.current_hover_x = tex_coords.x;
+      this.current_hover_y = tex_coords.y;
+      this.update_draw_canvas();
+    }
+  } else if(this.current_hover_x !== null) {
+    this.current_hover_x = null;
+    this.current_hover_y = null;
+    this.update_draw_canvas();
+  }
 }
 
 function rcn_copy_sprite_region(x, y, w, h) {
