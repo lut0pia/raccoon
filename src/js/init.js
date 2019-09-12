@@ -130,6 +130,7 @@ async function rcn_bootstrap_editor_mode(params) {
       'ed/bin_ed',
       'ed/code_ed',
       'ed/docs_ed',
+      'ed/hover',
       'ed/map_ed',
       'ed/music_ed',
       'ed/sound_ed',

@@ -7,8 +7,6 @@ function rcn_sprite_ed() {
 
   this.current_color = 0;
   this.selection = null;
-  this.current_hover_x = null;
-  this.current_hover_y = null;
 
   const sprite_ed = this;
 
@@ -131,16 +129,6 @@ function rcn_sprite_ed() {
     }
   });
 
-  this.draw_canvas.node.addEventListener('mousemove', function(e) {
-    const canvas_coords = this.getBoundingClientRect();
-    const tex_coords = sprite_ed.draw_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
-    sprite_ed.update_hovering(tex_coords);
-  });
-
-  this.draw_canvas.node.addEventListener('mouseout', function(e) {
-    sprite_ed.update_hovering(null);
-  });
-
   // Always keep space for outlines
   this.draw_canvas.padding_x = this.draw_canvas.padding_y = 2;
   this.draw_canvas.onpostflush = function() {
@@ -156,17 +144,10 @@ function rcn_sprite_ed() {
       );
     }
 
-    if(sprite_ed.current_hover_x !== null) {
-      // Draw hover outline
-      const vp = this.compute_viewport();
-      this.draw_outline(
-        vp.x + sprite_ed.current_hover_x * vp.mul,
-        vp.y + sprite_ed.current_hover_y * vp.mul,
-        vp.mul, vp.mul,
-        1, 1, 1, 1, 0.7,
-      );
-    }
+    // Draw hover outline
+    sprite_ed.hover.draw();
   }
+  this.hover = new rcn_hover(this.draw_canvas);
   this.add_child(this.draw_canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
@@ -456,20 +437,6 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
   this.draw_canvas.set_size(spr_w, spr_h);
   this.draw_canvas.blit(0, 0, spr_w, spr_h, pixels);
   this.draw_canvas.flush();
-}
-
-rcn_sprite_ed.prototype.update_hovering = function(tex_coords) {
-  if(tex_coords) {
-    if(tex_coords.x !== this.current_hover_x || tex_coords.y !== this.current_hover_y) {
-      this.current_hover_x = tex_coords.x;
-      this.current_hover_y = tex_coords.y;
-      this.update_draw_canvas();
-    }
-  } else if(this.current_hover_x !== null) {
-    this.current_hover_x = null;
-    this.current_hover_y = null;
-    this.update_draw_canvas();
-  }
 }
 
 function rcn_copy_sprite_region(x, y, w, h) {

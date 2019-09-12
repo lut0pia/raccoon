@@ -8,8 +8,6 @@ function rcn_map_ed() {
   // Init map editing state
   this.current_offset_x = 0;
   this.current_offset_y = 0;
-  this.current_hover_x = null;
-  this.current_hover_y = null;
 
   const map_ed = this;
 
@@ -28,6 +26,7 @@ function rcn_map_ed() {
     } else if(e.buttons == 2) { // Right button: tile pick
       rcn_current_sprite = map_ed.get_tile(tex_coords.x >> 3, tex_coords.y >> 3);
       rcn_current_sprite_columns = rcn_current_sprite_rows = 1;
+      map_ed.update_map_canvas();
       rcn_dispatch_ed_event('rcn_current_sprite_change');
     } else if(e.buttons == 4) { // Middle button: shift map
       if(e.type == 'mousedown') {
@@ -48,27 +47,24 @@ function rcn_map_ed() {
       }
     }
   });
-  this.map_canvas.node.addEventListener('mousemove', function(e) {
-    const canvas_coords = this.getBoundingClientRect();
-    const tex_coords = map_ed.map_canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
-    map_ed.update_hovering(tex_coords);
-  });
-  this.map_canvas.node.addEventListener('mouseout', function(e) {
-    map_ed.update_hovering(null);
-  });
   this.map_canvas.onpostflush = function() {
-    if(map_ed.current_hover_x === null) {
-      return;
-    }
-    // Draw hover outline
-    const vp = this.compute_viewport();
-    this.draw_outline(
-      vp.x + map_ed.current_hover_x * vp.mul * 8,
-      vp.y + map_ed.current_hover_y * vp.mul * 8,
-      vp.mul * 8, vp.mul * 8,
-      2, 1, 1, 1, 1,
-    );
+    map_ed.hover.draw();
   };
+  this.hover = new rcn_hover(this.map_canvas);
+  this.hover.tile_size = 8;
+  this.hover.onchange = function() {
+    if(this.is_hovering()) {
+      const abs_tile_x = this.current_x + map_ed.current_offset_x;
+      const abs_tile_y = this.current_y + map_ed.current_offset_y;
+
+      map_ed.map_coords_text.innerText =
+        abs_tile_x.toString().padStart(3, '0') + ';' +
+        abs_tile_y.toString().padStart(3, '0');
+    } else {
+      map_ed.map_coords_text.innerText = '???;???';
+    }
+    map_ed.update_map_canvas();
+  }
   this.add_child(this.map_canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
@@ -98,11 +94,7 @@ function rcn_map_ed() {
     map_ed.map_canvas.flush();
   });
 
-  this.addEventListener('rcn_current_sprite_change', function() {
-    map_ed.update_map_canvas();
-  });
-
-  this.update_hovering();
+  this.hover.onchange();
   this.update_map_canvas();
 }
 
@@ -131,30 +123,6 @@ rcn_map_ed.prototype.get_tile = function(map_x, map_y) {
   return rcn_global_bin.rom[tile_index];
 }
 
-rcn_map_ed.prototype.update_hovering = function(tex_coords) {
-  if(tex_coords) {
-    const rel_tile_x = tex_coords.x >> 3;
-    const rel_tile_y = tex_coords.y >> 3;
-    const abs_tile_x = rel_tile_x + this.current_offset_x;
-    const abs_tile_y = rel_tile_y + this.current_offset_y;
-
-    this.map_coords_text.innerText =
-    abs_tile_x.toString().padStart(3, '0') + ';' +
-    abs_tile_y.toString().padStart(3, '0');
-
-    if(rel_tile_x !== this.current_hover_x || rel_tile_y !== this.current_hover_y) {
-      this.current_hover_x = rel_tile_x;
-      this.current_hover_y = rel_tile_y;
-      this.update_map_canvas();
-    }
-  } else if(this.current_hover_x !== null) {
-    this.current_hover_x = null;
-    this.current_hover_y = null;
-    this.map_coords_text.innerText = '???;???';
-    this.update_map_canvas();
-  }
-}
-
 rcn_map_ed.prototype.update_map_canvas = function() {
   const map_w = 16;
   const map_h = 16;
@@ -181,8 +149,8 @@ rcn_map_ed.prototype.update_map_canvas = function() {
   }
 
   // Draw hovered tile with stamp
-  if(this.current_hover_x !== null) {
-    draw_tile(pixels, this.current_hover_x, this.current_hover_y, rcn_current_sprite);
+  if(this.hover.is_hovering()) {
+    draw_tile(pixels, this.hover.current_x, this.hover.current_y, rcn_current_sprite);
   }
 
   this.map_canvas.set_size(map_w << 3, map_h << 3);
