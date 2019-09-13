@@ -8,6 +8,8 @@ function rcn_canvas() {
   this.padding_x = 0;
   this.padding_y = 0;
 
+  this.onpostflush = [];
+
   const gl = this.gl = this.node.getContext('webgl');
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -133,8 +135,8 @@ rcn_canvas.prototype.flush = function() {
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
-  if(this.onpostflush) {
-    this.onpostflush();
+  for(let ops of this.onpostflush) {
+    ops.apply(this);
   }
 }
 

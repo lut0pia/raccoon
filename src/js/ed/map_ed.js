@@ -47,9 +47,6 @@ function rcn_map_ed() {
       }
     }
   });
-  this.map_canvas.onpostflush = function() {
-    map_ed.hover.draw();
-  };
   this.hover = new rcn_hover(this.map_canvas);
   this.hover.tile_size = 8;
   this.hover.onchange = function() {

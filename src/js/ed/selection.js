@@ -7,6 +7,11 @@ function rcn_selection(canvas) {
   this.x = null;
   this.y = null;
   this.tile_size = 1;
+
+  const selection = this;
+  canvas.onpostflush.push(function() {
+    selection.draw();
+  });
 }
 
 rcn_selection.prototype.is_selecting = function() {

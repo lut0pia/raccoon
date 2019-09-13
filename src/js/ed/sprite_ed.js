@@ -122,13 +122,6 @@ function rcn_sprite_ed() {
 
   // Always keep space for outlines
   this.draw_canvas.padding_x = this.draw_canvas.padding_y = 2;
-  this.draw_canvas.onpostflush = function() {
-    // Draw selection outline
-    sprite_ed.selection.draw();
-
-    // Draw hover outline
-    sprite_ed.hover.draw();
-  }
   this.selection = new rcn_selection(this.draw_canvas);
   this.selection.requires_shift = true;
   this.hover = new rcn_hover(this.draw_canvas);

@@ -31,13 +31,6 @@ function rcn_sprite_select_ed() {
   });
   // Always keep space for selection outline
   this.spritesheet_canvas.padding_x = this.spritesheet_canvas.padding_y = 2;
-  this.spritesheet_canvas.onpostflush = function() {
-    // Draw selection outline
-    sprite_sel_ed.selection.draw();
-
-    // Draw hover outline
-    sprite_sel_ed.hover.draw();
-  }
   this.selection = new rcn_selection(this.spritesheet_canvas);
   this.selection.tile_size = 8;
   this.selection.onchange = function() {

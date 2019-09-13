@@ -16,6 +16,9 @@ function rcn_hover(canvas) {
   canvas.node.addEventListener('mouseout', function(e) {
     hover.update_hovering(null);
   });
+  canvas.onpostflush.push(function() {
+    hover.draw();
+  });
 }
 
 rcn_hover.prototype.is_hovering = function() {
