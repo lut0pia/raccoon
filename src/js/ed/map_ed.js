@@ -21,6 +21,9 @@ function rcn_map_ed() {
   this.map_canvas.node.classList.add('map');
   let shift_start_client_x, shift_start_client_y, shift_start_offset_x, shift_start_offset_y;
   this.map_canvas.interaction(function(e, tex_coords) {
+    if(map_ed.selection.event(e, tex_coords)) {
+      return;
+    }
     if(e.buttons == 1) { // Left button: draw
       map_ed.set_tile(tex_coords.x >> 3, tex_coords.y >> 3);
     } else if(e.buttons == 2) { // Right button: tile pick
@@ -43,10 +46,14 @@ function rcn_map_ed() {
         map_ed.current_offset_x = Math.max(0, Math.min(128 - 16, map_ed.current_offset_x)) << 0;
         map_ed.current_offset_y = Math.max(0, Math.min(64 - 16, map_ed.current_offset_y)) << 0;
         map_ed.update_map_canvas();
+        map_ed.selection.reset();
         e.preventDefault();
       }
     }
   });
+  this.selection = new rcn_selection(this.map_canvas);
+  this.selection.requires_shift = true;
+  this.selection.tile_size = 8;
   this.hover = new rcn_hover(this.map_canvas);
   this.hover.tile_size = 8;
   this.hover.onchange = function() {
@@ -89,6 +96,25 @@ function rcn_map_ed() {
 
   this.addEventListener('rcn_window_resize', function() {
     map_ed.map_canvas.flush();
+  });
+  this.addEventListener('keydown', function(e) {
+    const ctrl = e.ctrlKey || e.metaKey;
+    if(e.key == 'ArrowLeft') {
+      map_ed.move_selection(-1, 0);
+    } else if(e.key == 'ArrowRight') {
+      map_ed.move_selection(1, 0);
+    } else if(e.key == 'ArrowUp') {
+      map_ed.move_selection(0, -1);
+    } else if(e.key == 'ArrowDown') {
+      map_ed.move_selection(0, 1);
+    } else if(ctrl && e.key == 'c') {
+      map_ed.copy_selection();
+    } else if(ctrl && e.key == 'v') {
+      map_ed.paste_selection();
+    }
+  });
+  this.addEventListener('blur', function(e) {
+    map_ed.selection.reset();
   });
 
   this.hover.onchange();
@@ -153,6 +179,115 @@ rcn_map_ed.prototype.update_map_canvas = function() {
   this.map_canvas.set_size(map_w << 3, map_h << 3);
   this.map_canvas.blit(0, 0, map_w << 3, map_h << 3, pixels);
   this.map_canvas.flush();
+}
+
+rcn_map_ed.prototype.move_selection = function(dx, dy) {
+  if(!this.selection.is_selecting()) return;
+
+  const new_x = Math.min(Math.max(this.selection.x + dx, 0), 16 - this.selection.w);
+  const new_y = Math.min(Math.max(this.selection.y + dy, 0), 16 - this.selection.h);
+
+  if(this.selection.x == new_x && this.selection.y == new_y) return;
+
+  rcn_move_map_region(
+    this.current_offset_x + this.selection.x,
+    this.current_offset_y + this.selection.y,
+    this.selection.w, this.selection.h,
+    this.current_offset_x + new_x,
+    this.current_offset_y + new_y,
+  );
+
+  this.selection.x = new_x;
+  this.selection.y = new_y;
+  this.update_map_canvas();
+}
+
+rcn_map_ed.prototype.copy_selection = function() {
+  if(this.selection.is_selecting()) {
+    rcn_copy_map_region(
+      this.current_offset_x + this.selection.x,
+      this.current_offset_y + this.selection.y,
+      this.selection.w,
+      this.selection.h,
+    );
+    this.selection.reset();
+  }
+}
+
+rcn_map_ed.prototype.paste_selection = function() {
+  if(this.hover.is_hovering()) {
+    rcn_paste_map_region(
+      this.current_offset_x + this.hover.current_x,
+      this.current_offset_y + this.hover.current_y,
+      128, 128,
+    );
+  }
+}
+
+function rcn_copy_map_region(x, y, w, h) {
+  const tile_count = w * h;
+  let tiles = new Uint8Array(tile_count);
+  for(let i = 0; i < w; i++) {
+    for(let j = 0; j < h; j++) {
+      tiles[i + j * w] = rcn_get_map_tile(x + i, y + j);
+    }
+  }
+  rcn_clipboard = {
+    type: 'tiles',
+    width: w,
+    height: h,
+    tiles: tiles,
+  };
+}
+
+function rcn_paste_map_region(x, y, w, h) {
+  if(!rcn_clipboard || rcn_clipboard.type != 'tiles') return;
+  // Clamp copy sizes to map size
+  w = Math.min(w, rcn_clipboard.width, 128 - x);
+  h = Math.min(h, rcn_clipboard.height, 64 - y);
+  for(let i = 0; i < w; i++) {
+    for(let j = 0; j < h; j++) {
+      rcn_set_map_tile(
+        x + i, y + j,
+        rcn_clipboard.tiles[i + j * rcn_clipboard.width],
+      );
+    }
+  }
+  rcn_dispatch_ed_event('rcn_bin_change', {
+    begin: rcn.mem_map_offset + (y << 7) + (x << 0),
+    end: rcn.mem_map_offset + ((y + h) << 7) + ((x + w) << 0) + 1,
+  });
+}
+
+function rcn_set_map_tile(x, y, t) {
+  rcn_global_bin.rom[rcn.mem_map_offset + (y << 7) + (x << 0)] = t;
+}
+
+function rcn_get_map_tile(x, y) {
+  return rcn_global_bin.rom[rcn.mem_map_offset + (y << 7) + (x << 0)];
+}
+
+function rcn_move_map_region(x, y, w, h, nx, ny) {
+  const dx = nx - x;
+  const dy = ny - y;
+  const si = dx < 0 ? x : x + w - 1;
+  const sj = dy < 0 ? y : y + h - 1;
+  const ei = dx < 0 ? x + w : x - 1;
+  const ej = dy < 0 ? y + h : y - 1;
+  const di = dx < 0 ? 1 : -1;
+  const dj = dy < 0 ? 1 : -1;
+  for(let i = si; i != ei; i += di) {
+    for(let j = sj; j != ej; j += dj) {
+      rcn_set_map_tile(i + dx, j + dy, rcn_get_map_tile(i, j));
+      if(i < nx || i >= nx + w || j < ny || j >= ny + h) {
+        rcn_set_map_tile(i, j, 0);
+      }
+    }
+  }
+  rcn_dispatch_ed_event('rcn_bin_change', {
+    begin: rcn.mem_map_offset + Math.min((y << 7) + (x << 0), (ny << 7) + (nx << 0)),
+    end: rcn.mem_map_offset + Math.max(((y + h) << 7) + ((x + w) << 0), ((ny + h) << 7) + ((nx + w) << 0)) + 1,
+  });
 }
 
 rcn_editors.push(rcn_map_ed);
