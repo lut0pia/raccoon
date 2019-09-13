@@ -34,6 +34,9 @@ function rcn_sprite_select_ed() {
   this.spritesheet_canvas.onpostflush = function() {
     // Draw selection outline
     sprite_sel_ed.selection.draw();
+
+    // Draw hover outline
+    sprite_sel_ed.hover.draw();
   }
   this.selection = new rcn_selection(this.spritesheet_canvas);
   this.selection.tile_size = 8;
@@ -43,6 +46,8 @@ function rcn_sprite_select_ed() {
     rcn_current_sprite_rows = this.h;
     rcn_dispatch_ed_event('rcn_current_sprite_change');
   }
+  this.hover = new rcn_hover(this.spritesheet_canvas);
+  this.hover.tile_size = 8;
   this.spritesheet_wrapper.appendChild(this.spritesheet_canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
