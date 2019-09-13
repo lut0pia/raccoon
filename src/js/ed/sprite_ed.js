@@ -6,7 +6,6 @@ function rcn_sprite_ed() {
   rcn_window.call(this);
 
   this.current_color = 0;
-  this.selection = null;
 
   const sprite_ed = this;
 
@@ -95,35 +94,27 @@ function rcn_sprite_ed() {
   this.draw_canvas = new rcn_canvas();
   this.draw_canvas.node.classList.add('draw');
   this.draw_canvas.interaction(function(e, tex_coords) {
+    if(sprite_ed.selection.event(e, tex_coords)) {
+      return;
+    }
     let mode = 'normal';
-    if(e.shiftKey) {
-      mode = 'selection';
-    } else if(e.ctrlKey) {
+    if(e.ctrlKey) {
       mode = 'fill';
     }
     switch(mode) {
       case 'normal':
         if(e.buttons == 1) { // Left button: draw
           sprite_ed.set_pixel(tex_coords.x, tex_coords.y);
-          sprite_ed.reset_selection();
+          sprite_ed.selection.reset();
         } else if(e.buttons == 2) { // Right button: color pick
           sprite_ed.set_current_color(sprite_ed.get_pixel(tex_coords.x, tex_coords.y))
-          sprite_ed.reset_selection();
-        }
-        break;
-      case 'selection':
-        if(e.buttons == 1) { // Left button: select
-          if(e.type === 'mousedown') {
-            sprite_ed.reset_selection();
-          } else {
-            sprite_ed.extend_selection(tex_coords.x, tex_coords.y);
-          }
+          sprite_ed.selection.reset();
         }
         break;
       case 'fill':
         if(e.buttons == 1) { // Left button: select
           sprite_ed.fill_pixel(tex_coords.x, tex_coords.y);
-          sprite_ed.reset_selection();
+          sprite_ed.selection.reset();
         }
         break;
     }
@@ -132,21 +123,14 @@ function rcn_sprite_ed() {
   // Always keep space for outlines
   this.draw_canvas.padding_x = this.draw_canvas.padding_y = 2;
   this.draw_canvas.onpostflush = function() {
-    if(sprite_ed.selection) {
-      // Draw selection outline
-      const vp = this.compute_viewport();
-      this.draw_outline(
-        vp.x + sprite_ed.selection.x * vp.mul,
-        vp.y + sprite_ed.selection.y * vp.mul,
-        sprite_ed.selection.w * vp.mul,
-        sprite_ed.selection.h * vp.mul,
-        2, 1, 1, 1, 1,
-      );
-    }
+    // Draw selection outline
+    sprite_ed.selection.draw();
 
     // Draw hover outline
     sprite_ed.hover.draw();
   }
+  this.selection = new rcn_selection(this.draw_canvas);
+  this.selection.requires_shift = true;
   this.hover = new rcn_hover(this.draw_canvas);
   this.add_child(this.draw_canvas.node);
 
@@ -207,7 +191,7 @@ function rcn_sprite_ed() {
     }
   });
   this.addEventListener('blur', function(e) {
-    sprite_ed.reset_selection();
+    sprite_ed.selection.reset();
   });
 
   this.update_color_inputs();
@@ -219,32 +203,8 @@ rcn_sprite_ed.prototype.title = 'Sprite Editor';
 rcn_sprite_ed.prototype.docs_link = 'sprite-editor';
 rcn_sprite_ed.prototype.type = 'sprite_ed';
 
-rcn_sprite_ed.prototype.reset_selection = function() {
-  this.selection = null;
-  this.update_draw_canvas();
-}
-
-rcn_sprite_ed.prototype.extend_selection = function(x, y) {
-  if(this.selection) {
-    const old_x = this.selection.x;
-    const old_y = this.selection.y;
-    this.selection.x = Math.min(x, old_x);
-    this.selection.y = Math.min(y, old_y);
-    this.selection.w = Math.max(x + 1, old_x + this.selection.w) - this.selection.x;
-    this.selection.h = Math.max(y + 1, old_y + this.selection.h) - this.selection.y;
-  } else {
-    this.selection = {
-      x: x,
-      y: y,
-      w: 1,
-      h: 1,
-    };
-  }
-  this.update_draw_canvas();
-}
-
 rcn_sprite_ed.prototype.move_selection = function(dx, dy) {
-  if(!this.selection) return;
+  if(!this.selection.is_selecting()) return;
 
   const spr_w = rcn_current_sprite_columns << 3;
   const spr_h = rcn_current_sprite_rows << 3;
@@ -268,7 +228,7 @@ rcn_sprite_ed.prototype.move_selection = function(dx, dy) {
 }
 
 rcn_sprite_ed.prototype.copy_selection = function() {
-  if(this.selection) {
+  if(this.selection.is_selecting()) {
     const spr_x = (rcn_current_sprite & 0xf) << 3;
     const spr_y = (rcn_current_sprite >> 4) << 3;
     rcn_copy_sprite_region(
@@ -277,18 +237,18 @@ rcn_sprite_ed.prototype.copy_selection = function() {
       this.selection.w,
       this.selection.h,
     );
-    this.reset_selection();
+    this.selection.reset();
   }
 }
 
 rcn_sprite_ed.prototype.paste_selection = function() {
-  let dst_x = (rcn_current_sprite & 0xf) << 3;
-  let dst_y = (rcn_current_sprite >> 4) << 3;
-  if(this.selection) {
-    dst_x += this.selection.x;
-    dst_y += this.selection.y;
+  if(this.hover.is_hovering()) {
+    let dst_x = (rcn_current_sprite & 0xf) << 3;
+    let dst_y = (rcn_current_sprite >> 4) << 3;
+    dst_x += this.hover.current_x;
+    dst_y += this.hover.current_y;
+    rcn_paste_sprite_region(dst_x, dst_y, 128, 128);
   }
-  rcn_paste_sprite_region(dst_x, dst_y, 128, 128);
 }
 
 rcn_sprite_ed.prototype.update_color_inputs = function() {

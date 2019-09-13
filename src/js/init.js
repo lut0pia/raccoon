@@ -133,6 +133,7 @@ async function rcn_bootstrap_editor_mode(params) {
       'ed/hover',
       'ed/map_ed',
       'ed/music_ed',
+      'ed/selection',
       'ed/sound_ed',
       'ed/sprite_ed',
       'ed/sprite_select_ed',

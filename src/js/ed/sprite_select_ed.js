@@ -25,27 +25,23 @@ function rcn_sprite_select_ed() {
   this.spritesheet_canvas = new rcn_canvas();
   this.spritesheet_canvas.node.classList.add('spritesheet');
   this.spritesheet_canvas.interaction(function(e, tex_coords) {
-    const spr_x = tex_coords.x >> 3;
-    const spr_y = tex_coords.y >> 3;
-    if(e.type === 'mousedown') {
-      sprite_sel_ed.set_current_sprite(spr_x, spr_y);
-    } else {
-      sprite_sel_ed.extend_current_sprite(spr_x, spr_y);
+    if(sprite_sel_ed.selection.event(e, tex_coords)) {
+      return;
     }
   });
   // Always keep space for selection outline
   this.spritesheet_canvas.padding_x = this.spritesheet_canvas.padding_y = 2;
   this.spritesheet_canvas.onpostflush = function() {
     // Draw selection outline
-    const vp = this.compute_viewport();
-    const cur_spr = rcn_current_sprite;
-    this.draw_outline(
-      vp.x + (cur_spr & 0xf) * vp.mul * 8,
-      vp.y + (cur_spr >> 4) * vp.mul * 8,
-      rcn_current_sprite_columns * vp.mul * 8,
-      rcn_current_sprite_rows * vp.mul * 8,
-      2, 1, 1, 1, 1,
-    );
+    sprite_sel_ed.selection.draw();
+  }
+  this.selection = new rcn_selection(this.spritesheet_canvas);
+  this.selection.tile_size = 8;
+  this.selection.onchange = function() {
+    rcn_current_sprite = this.x + (this.y << 4);
+    rcn_current_sprite_columns = this.w;
+    rcn_current_sprite_rows = this.h;
+    rcn_dispatch_ed_event('rcn_current_sprite_change');
   }
   this.spritesheet_wrapper.appendChild(this.spritesheet_canvas.node);
 
@@ -99,32 +95,12 @@ function rcn_sprite_select_ed() {
     }
   });
 
-  this.update_sprite_index_text();
-  this.update_spritesheet_canvas();
+  this.selection.set(0, 0, 0, 0);
 }
 
 rcn_sprite_select_ed.prototype.title = 'Sprite Selector';
 rcn_sprite_select_ed.prototype.docs_link = 'sprite-selector';
 rcn_sprite_select_ed.prototype.type = 'sprite_select_ed';
-
-rcn_sprite_select_ed.prototype.set_current_sprite = function(x, y) {
-  rcn_current_sprite = x + (y << 4);
-  rcn_current_sprite_columns = rcn_current_sprite_rows = 1;
-  rcn_dispatch_ed_event('rcn_current_sprite_change');
-}
-
-rcn_sprite_select_ed.prototype.extend_current_sprite = function(x, y) {
-  const old_x0 = rcn_current_sprite & 0xf;
-  const old_y0 = rcn_current_sprite >> 4;
-  const new_x0 = Math.min(x, old_x0);
-  const new_y0 = Math.min(y, old_y0);
-  const new_x1 = Math.max(x + 1, old_x0 + rcn_current_sprite_columns);
-  const new_y1 = Math.max(y + 1, old_y0 + rcn_current_sprite_rows);
-  rcn_current_sprite = new_x0 + (new_y0 << 4);
-  rcn_current_sprite_columns = new_x1 - new_x0;
-  rcn_current_sprite_rows = new_y1 - new_y0;
-  rcn_dispatch_ed_event('rcn_current_sprite_change');
-}
 
 rcn_sprite_select_ed.prototype.update_sprite_index_text = function() {
   this.sprite_index_text.innerText = rcn_current_sprite.toString().padStart(3, '0');
