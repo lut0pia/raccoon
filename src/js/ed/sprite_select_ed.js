@@ -84,18 +84,17 @@ function rcn_sprite_select_ed() {
     if(e.key == 'c') { // Copy
       e.preventDefault();
       rcn_copy_sprite_region(
-        (rcn_current_sprite & 0xf) << 3,
-        (rcn_current_sprite >> 4) << 3,
-        rcn_current_sprite_columns << 3,
-        rcn_current_sprite_rows << 3,
+        sprite_sel_ed.selection.x << 3,
+        sprite_sel_ed.selection.y << 3,
+        sprite_sel_ed.selection.w << 3,
+        sprite_sel_ed.selection.h << 3,
       );
-    } else if(e.key == 'v') { // Paste
+    } else if(e.key == 'v' && sprite_sel_ed.hover.is_hovering()) { // Paste
       e.preventDefault();
       rcn_paste_sprite_region(
-        (rcn_current_sprite & 0xf) << 3,
-        (rcn_current_sprite >> 4) << 3,
-        rcn_current_sprite_columns << 3,
-        rcn_current_sprite_rows << 3,
+        sprite_sel_ed.hover.current_x << 3,
+        sprite_sel_ed.hover.current_y << 3,
+        256, 256,
       );
     }
   });
