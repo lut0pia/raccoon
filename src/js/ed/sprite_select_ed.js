@@ -26,6 +26,10 @@ function rcn_sprite_select_ed() {
   this.spritesheet_canvas.node.classList.add('spritesheet');
   this.spritesheet_canvas.interaction(function(e, tex_coords) {
     if(sprite_sel_ed.selection.event(e, tex_coords)) {
+      rcn_current_sprite = sprite_sel_ed.selection.x + (sprite_sel_ed.selection.y << 4);
+      rcn_current_sprite_columns = sprite_sel_ed.selection.w;
+      rcn_current_sprite_rows = sprite_sel_ed.selection.h;
+      rcn_dispatch_ed_event('rcn_current_sprite_change');
       return;
     }
   });
@@ -33,12 +37,6 @@ function rcn_sprite_select_ed() {
   this.spritesheet_canvas.padding_x = this.spritesheet_canvas.padding_y = 2;
   this.selection = new rcn_selection(this.spritesheet_canvas);
   this.selection.tile_size = 8;
-  this.selection.onchange = function() {
-    rcn_current_sprite = this.x + (this.y << 4);
-    rcn_current_sprite_columns = this.w;
-    rcn_current_sprite_rows = this.h;
-    rcn_dispatch_ed_event('rcn_current_sprite_change');
-  }
   this.hover = new rcn_hover(this.spritesheet_canvas);
   this.hover.tile_size = 8;
   this.spritesheet_wrapper.appendChild(this.spritesheet_canvas.node);
@@ -60,6 +58,7 @@ function rcn_sprite_select_ed() {
   });
 
   this.addEventListener('rcn_current_sprite_change', function() {
+    sprite_sel_ed.update_selection();
     sprite_sel_ed.update_sprite_index_text();
     sprite_sel_ed.update_spritesheet_canvas();
   })
@@ -92,12 +91,24 @@ function rcn_sprite_select_ed() {
     }
   });
 
-  this.selection.set(0, 0, 0, 0);
+  this.update_selection();
+  this.update_sprite_index_text();
+  this.update_spritesheet_canvas();
 }
 
 rcn_sprite_select_ed.prototype.title = 'Sprite Selector';
 rcn_sprite_select_ed.prototype.docs_link = 'sprite-selector';
 rcn_sprite_select_ed.prototype.type = 'sprite_select_ed';
+
+rcn_sprite_select_ed.prototype.update_selection = function() {
+  const spr_x = rcn_current_sprite & 0xf;
+  const spr_y = rcn_current_sprite >> 4;
+  this.selection.set(
+    spr_x, spr_y,
+    spr_x + rcn_current_sprite_columns - 1,
+    spr_y + rcn_current_sprite_rows - 1,
+  );
+}
 
 rcn_sprite_select_ed.prototype.update_sprite_index_text = function() {
   this.sprite_index_text.innerText = rcn_current_sprite.toString().padStart(3, '0');
