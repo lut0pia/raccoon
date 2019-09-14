@@ -145,6 +145,15 @@ function rcn_start_editor_mode(params) {
 
     event_mirror.set(event.after, event.offset);
   });
+
+  // Global keyboard shortcuts
+  document.body.addEventListener('keydown', function(e) {
+    if((e.ctrlKey || e.metaKey) && e.altKey && e.key == 'Enter') {
+      const vm_ed = rcn_find_editor(rcn_vm_ed);
+      vm_ed && vm_ed.reboot();
+      e.preventDefault();
+    }
+  });
 }
 
 const rcn_overlay = document.createElement('div');
