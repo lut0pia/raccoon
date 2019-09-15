@@ -19,6 +19,7 @@
     1. [Screen Memory](#screen-memory)
 1. [Functions](#functions)
     1. [Rendering Functions](#rendering-functions)
+    1. [Sound Functions](#sound-functions)
     1. [Math Functions](#math-functions)
     1. [Input Functions](#input-functions)
     1. [Memory Functions](#memory-functions)
@@ -182,6 +183,11 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - 🎥 `rectfill(x, y, w, h, c)`: Draws a filled rectangle at screen coordinates (`x`;`y`) of width `w`, height `h`, and color `c`
 - 🎥 `circ(x, y, r, c)`: Draws a hollow circle of radius `r` with its center at screen coordinates (`x`;`y`) in color `c`
 - 🎥 `circfill(x, y, r, c)`: Draws a filled circle (disk) of radius `r` with its center at screen coordinates (`x`;`y`) in color `c`
+
+## Sound Functions
+
+- `sfx(n, chan=-1, off=0, len=32)`: Plays sfx `n` in channel `chan` (first free if `-1`) from note `off` for `len` notes
+- `mus(n)`: Start playing music at index `n`
 
 ## Math Functions
 
