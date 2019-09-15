@@ -12,7 +12,7 @@ function rcn_sound_ed() {
   sound_select_label.innerText = 'Track: ';
   this.add_child(sound_select_label);
   this.add_child(this.sound_select = rcn_ui_select({
-    options: new Array(64).fill(0).map(function(v, i){ return i; }),
+    options: new Array(rcn.sound_count).fill(0).map(function(v, i){ return i; }),
     onchange: function() {
       sound_ed.set_current_sound(Number(this.value));
     },
@@ -70,8 +70,8 @@ function rcn_sound_ed() {
   // Create note table
   this.note_table = document.createElement('table');
   note_table_wrapper.appendChild(this.note_table);
-  this.note_cells = new Array(64);
-  for(let pitch = 63; pitch >= 0; pitch--) {
+  this.note_cells = new Array(rcn.sound_pitch_count);
+  for(let pitch = rcn.sound_pitch_count - 1; pitch >= 0; pitch--) {
     const row = document.createElement('tr');
     this.note_table.appendChild(row);
     const row_header = document.createElement('th');
@@ -218,7 +218,7 @@ rcn_sound_ed.prototype.set_current_sound_note = function(index, note) {
 rcn_sound_ed.prototype.update_notes = function() {
   for(let note_index = 0; note_index < 32; note_index++) {
     const note = this.get_current_sound_note(note_index)
-    for(let pitch = 0; pitch < 64; pitch++) {
+    for(let pitch = 0; pitch < rcn.sound_pitch_count; pitch++) {
       const cell = this.note_cells[pitch][note_index];
       const is_active = pitch == note.pitch && note.volume > 0;
       cell.classList.toggle('active', is_active);
