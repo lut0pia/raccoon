@@ -86,6 +86,7 @@ function rcn_music_ed() {
 }
 
 rcn_music_ed.prototype.title = 'Music Editor';
+rcn_music_ed.prototype.docs_link = 'music-editor';
 rcn_music_ed.prototype.type = 'music_ed';
 rcn_editors.push(rcn_music_ed);
 

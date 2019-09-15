@@ -10,6 +10,7 @@
     1. [Sprite Selector](#sprite-selector)
     1. [Map Editor](#map-editor)
     1. [Sound Editor](#sound-editor)
+    1. [Music Editor](#music-editor)
 1. [Memory](#memory)
     1. [Spritesheet Memory](#spritesheet-memory)
     1. [Map Memory](#map-memory)
@@ -111,6 +112,14 @@ The table represents time on the x-axis and note pitches on the y-axis. You can 
 - Use `Middle-Click` to change a note's effect.
 - Use `Up/Down-Arrow` to transpose one semitone.
 - Use `Control+Up/Down-Arrow` to transpose one octave.
+
+## Music Editor
+
+The music editor allows you to orchestrate multiple sound tracks at once and in sequence.
+
+Each row is a list of 4 optional sound effect indices which will be played simultaneously.
+
+When a row is done playing, the subsequent row is played, unless 🛑 is set, in which case playback stops, or ⤴️ is set, in which case we go back up to the closest ⤵️.
 
 # Memory
 
