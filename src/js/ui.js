@@ -29,15 +29,20 @@ function rcn_ui_select(o) {
 
 function rcn_ui_checkbox(o) {
   const checkbox_id = 'checkbox_' + Math.random().toString().substr(2);
-  let checkbox = document.createElement('input');
-  checkbox.id = checkbox_id;
-  checkbox.type = 'checkbox';
-  checkbox.onchange = o.onchange;
-  checkbox.checked = o.checked;
-  let checkbox_label = document.createElement('label');
+  const checkbox_input = document.createElement('input');
+  checkbox_input.id = checkbox_id;
+  checkbox_input.type = 'checkbox';
+  checkbox_input.onchange = o.onchange;
+  checkbox_input.checked = o.checked;
+
+  const checkbox_label = document.createElement('label');
   checkbox_label.htmlFor = checkbox_id;
   checkbox_label.innerText = o.label;
-  checkbox_label.prepend(checkbox);
-  checkbox_label.checkbox = checkbox;
-  return checkbox_label;
+
+  const checkbox = document.createElement('checkbox');
+  checkbox.classList.toggle('text', o.label && o.label.length > 2);
+  checkbox.checkbox = checkbox_input;
+  checkbox.appendChild(checkbox_input);
+  checkbox.appendChild(checkbox_label);
+  return checkbox;
 }

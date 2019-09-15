@@ -44,6 +44,28 @@ input[type=button]:active, input[type=button]:disabled {
 }
 
 /*
+  Input checkbox
+*/
+
+checkbox.text {
+  padding: 0px 2px 0px 2px;
+  border: 1px grey outset;
+  background-color: lightgrey;
+}
+
+input[type=checkbox] {
+  display: none;
+}
+
+input[type=checkbox] + label {
+  opacity: 0.5;
+}
+
+input[type=checkbox]:hover + label, input[type=checkbox]:checked + label {
+  opacity: 1;
+}
+
+/*
   Input select
 */
 
