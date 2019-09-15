@@ -450,40 +450,49 @@ function rcn_vm_worker_function(rcn) {
       time: 0, // In audio frames (120 per second)
     };
   }
-  let mus_state = null;
-  const mus_update = function() {
-    if(mus_state == null) return;
+  let _mus_state = null;
+  const _mus_update = function() {
+    if(_mus_state == null) return;
 
-    if(mus_state.max_time && mus_state.time >= mus_state.max_time) {
-      const mus_index = rcn.mem_music_offset + mus_state.n * 4;
-      let next_n = 0;
-      next_n += (ram[mus_index + 1] >> 6) << 4;
-      next_n += (ram[mus_index + 2] >> 6) << 2;
-      next_n += (ram[mus_index + 3] >> 6) << 0;
-      mus_state.n = next_n;
-      mus_state.time = 0;
+    if(_mus_state.max_time && _mus_state.time >= _mus_state.max_time) {
+      const mus_index = rcn.mem_music_offset + _mus_state.n * 4;
+      if(ram[mus_index + 1] & 0x80) { // End flag
+        for(let i = _mus_state.n - 1; i >= 0; i--) {
+          if(ram[rcn.mem_music_offset + i * 4 + 0] & 0x80) { // Begin flag
+            _mus_state.n = i;
+            break;
+          }
+        }
+      } else if(ram[mus_index + 2] & 0x80) { // Stop flag
+        _mus_state = null;
+        return;
+      } else {
+        _mus_state.n = (_mus_state.n + 1) % rcn.music_count;
+      }
+      _mus_state.time = 0;
     }
 
-    if(mus_state.time == 0) {
-      const mus_index = rcn.mem_music_offset + mus_state.n * 4;
-      const track_count = (ram[mus_index] >> 6) + 1;
-      mus_state.max_time = 0;
-      for(let i = 0; i < track_count; i++) {
-        const sound_n = ram[mus_index + i] & 0x3f;
-        _sfx(sound_n, i);
-        const sound_offset = rcn_mem_sound_offset + sound_n * 66;
-        const period = ram[sound_offset + 0] + 4;
-        mus_state.max_time = _max(mus_state.max_time, period * 32);
+    if(_mus_state.time == 0) {
+      const mus_index = rcn.mem_music_offset + _mus_state.n * 4;
+      _mus_state.max_time = 0;
+      for(let track = 0; track < rcn.music_track_count; track++) {
+        if(ram[mus_index + track] & 0x40) {
+          const track_sound = ram[mus_index + track] & 0x3f;
+          _sfx(track_sound, track);
+          const sound_offset = rcn_mem_sound_offset + track_sound * 66;
+          const period = ram[sound_offset + 0] + 4;
+          _mus_state.max_time = _max(_mus_state.max_time, period * 32);
+        }
       }
     }
 
-    mus_state.time += 4;
+    _mus_state.time += 4;
   }
   mus = function(n) {
     if(n < 0) {
-      mus_state = null;
+      _mus_state = null;
     } else {
-      mus_state = {
+      _mus_state = {
         n: n,
         time: 0,
       };
@@ -535,7 +544,7 @@ function rcn_vm_worker_function(rcn) {
         if(typeof update !== 'undefined') {
           update(); // This is user-defined
         }
-        mus_update();
+        _mus_update();
         sfx_update();
         break;
       case 'draw':

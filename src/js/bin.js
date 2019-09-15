@@ -28,7 +28,7 @@ rcn_bin.prototype.token_count = function() {
 }
 
 rcn_bin.prototype.from_json = function(bin) {
-  if(bin.version == 2) {
+  if(bin.version > 1 && bin.version <= 3) {
     this.name = bin.name;
 
     let code = '';
@@ -52,6 +52,29 @@ rcn_bin.prototype.from_json = function(bin) {
     hex_to_rom(this.rom, rcn.mem_spriteflags_offset, bin.rom.spf);
     hex_to_rom(this.rom, rcn.mem_sound_offset, bin.rom.snd);
     hex_to_rom(this.rom, rcn.mem_music_offset, bin.rom.mus);
+
+    // Change from music track count and next to used bit and flags
+    if(bin.version < 3) {
+      for(let music = 0; music < rcn.music_count; music++) {
+        const music_offset = rcn.mem_music_offset + music * 4;
+        const track_count = (this.rom[music_offset] >> 6) + 1;
+        const next =
+            ((this.rom[music_offset + 1] >> 6) << 4)
+          + ((this.rom[music_offset + 2] >> 6) << 2)
+          + ((this.rom[music_offset + 3] >> 6) << 0);
+        for(let track = 0; track < rcn.music_track_count; track++) {
+          this.rom[music_offset + track] &= 0x3f;
+          if(track < track_count) {
+            this.rom[music_offset + track] |= 0x40; // Mark used
+          }
+        }
+        if(next <= music) {
+          const next_offset = rcn.mem_music_offset + next * 4;
+          this.rom[music_offset + 1] |= 0x80; // End loop
+          this.rom[next_offset + 0] |= 0x80; // Begin loop
+        }
+      }
+    }
 
     this.host = bin.host;
     this.link = bin.link;
@@ -86,7 +109,7 @@ rcn_bin.prototype.to_json = function() {
 
   return {
     name: this.name,
-    version: 2,
+    version: 3,
     code: code_lines,
     rom: {
       spr: rom_to_hex(this.rom, rcn.mem_spritesheet_offset, rcn.mem_spritesheet_size),

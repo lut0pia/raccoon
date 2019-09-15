@@ -1,3 +1,15 @@
-.window.music_ed content {
-  min-width: 400px;
+.music_ed content {
+  min-width: 280px;
+}
+
+.music_ed td, .music_ed select {
+  font-family: 'Roboto Mono';
+}
+
+.music_ed td:first-child {
+  padding-right: 8px;
+}
+
+.music_ed td select {
+  width: 100%;
 }
