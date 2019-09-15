@@ -1,5 +1,6 @@
 .music_ed content {
   min-width: 280px;
+  height: 256px;
 }
 
 .music_ed td, .music_ed select {
