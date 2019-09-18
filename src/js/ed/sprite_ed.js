@@ -71,23 +71,16 @@ function rcn_sprite_ed() {
   // Create sprite flags inputs
   this.flag_inputs = [];
   for(let i = 0; i < 8; i++) {
-    const flag_wrapper = document.createElement('div');
-    const flag_checkbox = document.createElement('input');
-    flag_checkbox.id = this.id+'_flag_'+i;
-    flag_checkbox.type = 'checkbox';
-    flag_checkbox.flag_index = i;
-    flag_checkbox.onchange = function() {
-      sprite_ed.set_flag(this.flag_index, this.checked);
-    }
-    this.flag_inputs.push(flag_checkbox);
-    flag_wrapper.appendChild(flag_checkbox);
+    const flag = rcn_ui_checkbox({
+      label: i,
+      onchange: function() {
+        sprite_ed.set_flag(i, this.checked);
+      },
+    });
+    this.flag_inputs.push(flag.checkbox);
 
-    const flag_label = document.createElement('label');
-    flag_label.innerText = i;
-    flag_label.htmlFor = flag_checkbox.id;
-    flag_wrapper.appendChild(flag_label);
-
-    this.panel_div.appendChild(flag_wrapper);
+    this.panel_div.appendChild(flag);
+    this.panel_div.appendChild(document.createElement('br'));
   }
 
   // Create draw canvas
