@@ -65,6 +65,19 @@ input[type=checkbox]:hover + label, input[type=checkbox]:checked + label {
   opacity: 1;
 }
 
+checkbox.text input[type=checkbox] + label::before {
+  content: "❌";
+  width: 18px;
+  display: inline-block;
+  text-align: center;
+}
+checkbox.text input[type=checkbox]:indeterminate + label::before {
+  content: "❓";
+}
+checkbox.text input[type=checkbox]:checked + label::before {
+  content: "✔️";
+}
+
 /*
   Input select
 */
