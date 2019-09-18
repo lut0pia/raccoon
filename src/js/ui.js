@@ -27,6 +27,7 @@ function rcn_ui_select(o) {
   return select;
 }
 
+const rcn_ui_checkbox_text_regex = /[a-z0-9]+/i;
 function rcn_ui_checkbox(o) {
   const checkbox_id = 'checkbox_' + Math.random().toString().substr(2);
   const checkbox_input = document.createElement('input');
@@ -40,7 +41,7 @@ function rcn_ui_checkbox(o) {
   checkbox_label.innerText = o.label;
 
   const checkbox = document.createElement('checkbox');
-  checkbox.classList.toggle('text', o.label && o.label.length > 2);
+  checkbox.classList.toggle('text', o.label !== undefined && rcn_ui_checkbox_text_regex.test(o.label));
   checkbox.checkbox = checkbox_input;
   checkbox.appendChild(checkbox_input);
   checkbox.appendChild(checkbox_label);
