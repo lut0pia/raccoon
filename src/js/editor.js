@@ -54,7 +54,6 @@ function rcn_start_editor_mode(params) {
       width: (window.innerWidth-512)+'px', height: (window.innerHeight-64)+'px',
     },
   });
-  rcn_update_toolbox();
 
   // Flush all canvases
   // Need to wait a bit because we just created the DOM elements
@@ -209,7 +208,6 @@ function rcn_update_layoutbox() {
       value: 'Load',
       onclick: function() {
         rcn_window_load_layout(rcn_storage.window_layouts[layout_name]);
-        rcn_update_toolbox();
       },
     }));
 

@@ -83,6 +83,7 @@ rcn_window.prototype.add_child = function(node) {
 
 rcn_window.prototype.kill = function() {
   this.section.parentElement.removeChild(this.section);
+  rcn_update_toolbox();
 }
 
 rcn_window.prototype.foreground = function() {
@@ -162,6 +163,8 @@ function rcn_window_load_layout(layout) {
     });
     rcn_has_loaded_window_layout_once = true;
   }
+
+  rcn_update_toolbox();
 }
 
 function rcn_window_focus(e) {
