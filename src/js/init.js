@@ -67,41 +67,29 @@ function rcn_resource(url) {
   return rcn_resources[url] || url;
 }
 
-function rcn_add_head_node(name) {
-  const new_node = document.createElement(name);
-  document.head.appendChild(new_node);
-  return new_node;
-}
-function rcn_load_script(script) {
-  const path = 'src/js/'+script+'.js';
-  const script_node = rcn_add_head_node('script');
-  script_node.type = 'text/javascript';
-  script_node.src = path;
-  return new Promise(function(resolve) {
-    script_node.onload = resolve;
-  });
-}
 function rcn_load_scripts(scripts) {
-  const script_promises = [];
-  scripts.forEach(function(script) {
-    script_promises.push(rcn_load_script(script));
-  });
-  return Promise.all(script_promises);
-}
-function rcn_load_style(style) {
-  const path = 'src/css/'+style+'.css';
-  const style_node = rcn_add_head_node('link');
-  style_node.rel = 'stylesheet';
-  style_node.media = 'screen';
-  style_node.type = 'text/css';
-  style_node.href = path;
+  return Promise.all(scripts.map(function(script) {
+    const script_node = document.createElement('script');
+    script_node.type = 'text/javascript';
+    script_node.src = 'src/js/'+script+'.js';
+    document.head.appendChild(script_node);
+    return new Promise(function(resolve) {
+      script_node.onload = resolve;
+    });
+  }));
 }
 function rcn_load_styles(styles) {
-  const style_promises = [];
-  styles.forEach(function(style) {
-    style_promises.push(rcn_load_style(style));
-  });
-  return Promise.all(style_promises);
+  return Promise.all(styles.map(function(style) {
+    const style_node = document.createElement('link');
+    style_node.rel = 'stylesheet';
+    style_node.media = 'screen';
+    style_node.type = 'text/css';
+    style_node.href = 'src/css/'+style+'.css';
+    document.head.appendChild(style_node);
+    return new Promise(function(resolve) {
+      style_node.onload = resolve;
+    });
+  }));
 }
 
 async function rcn_bootstrap_game_mode(params) {
