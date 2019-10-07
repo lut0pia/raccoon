@@ -437,6 +437,9 @@ function rcn_vm_worker_function(rcn) {
       state.time += 4;
     }
   }
+  const _sfx_stop = function(channel) {
+    sfx_chans[channel] = null;
+  }
   const _sfx = sfx = function(n, channel = -1, offset = 0, length = 32) {
     if(channel < 0) {
       channel = _max(sfx_chans.findIndex(function(state) {
@@ -488,7 +491,18 @@ function rcn_vm_worker_function(rcn) {
 
     _mus_state.time += 4;
   }
+  const _mus_stop = function() {
+    const mus_index = rcn.mem_music_offset + _mus_state.n * 4;
+    for(let track = 0; track < rcn.music_track_count; track++) {
+      if(ram[mus_index + track] & 0x40) {
+        _sfx_stop(track);
+      }
+    }
+  }
   mus = function(n) {
+    if(_mus_state) {
+      _mus_stop();
+    }
     if(n < 0) {
       _mus_state = null;
     } else {
