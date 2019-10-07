@@ -8,9 +8,10 @@ function rcn_start_game_mode(params) {
   document.body.classList.toggle('touch', rcn_is_touch_device);
   document.body.classList.toggle('export', !!params.export);
 
-  const viewport_meta = rcn_add_head_node('meta');
+  const viewport_meta = document.createElement('meta');
   viewport_meta.setAttribute('name', 'viewport');
   viewport_meta.setAttribute('content', 'user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi');
+  document.head.appendChild(viewport_meta);
 
   const vm = new rcn_vm();
   vm.load_bin(params.bin);
