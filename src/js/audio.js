@@ -1,7 +1,7 @@
 // Raccoon audio context
 'use strict';
 
-const rcn_audio_context = new (AudioContext || webkitAudioContext)();
+const rcn_audio_context = new (window.AudioContext || window.webkitAudioContext)();
 const rcn_audio_channel_count = 4;
 const rcn_audio_sample_rate = 44100;
 const rcn_audio_buffer_size = rcn_audio_sample_rate / 30;
