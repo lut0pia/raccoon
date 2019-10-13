@@ -174,7 +174,7 @@ rcn_code_ed.prototype.set_error = function(e) {
 
   if(this.error) {
     // Scroll the textarea to the error
-    let target = (this.error.line - 1) * 15;
+    let target = (this.error.line - 1) * 20;
     target -= this.textarea.clientHeight >> 1;
 
     this.textarea.scrollBy({
