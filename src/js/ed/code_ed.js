@@ -101,7 +101,11 @@ rcn_code_ed.prototype.apply = function() {
 
   const vm_ed = rcn_find_editor(rcn_vm_ed);
   if(vm_ed) {
-    vm_ed.vm.load_code_from_bin();
+    if(!vm_ed.vm.worker) {
+      vm_ed.vm.load_bin(rcn_global_bin);
+    } else {
+      vm_ed.vm.load_code(rcn_global_bin.code);
+    }
   }
 }
 
