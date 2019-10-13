@@ -125,10 +125,6 @@ rcn_vm.prototype.load_code = function(code) {
   this.worker.postMessage({type:'code', code:code});
 }
 
-rcn_vm.prototype.load_code_from_bin = function() {
-  this.load_code(rcn_global_bin.code);
-}
-
 rcn_vm.prototype.load_memory = function(bytes, offset) {
   offset = offset || 0;
   this.worker.postMessage({type: 'write', offset:offset, bytes:bytes});
