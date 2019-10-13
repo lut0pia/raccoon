@@ -17,3 +17,7 @@
   padding: 0px 2px 0px 2px;
   border: 1px grey solid;
 }
+
+.window.music_ed tr:nth-child(2n) {
+  background-color: #bbb;
+}
