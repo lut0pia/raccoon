@@ -18,6 +18,12 @@
   border: 1px grey solid;
 }
 
-.window.music_ed tr:nth-child(2n) {
+/* Rows */
+
+.music_ed tr:nth-child(2n) {
   background-color: #bbb;
+}
+
+.music_ed tr.playing {
+  background-color: lightblue;
 }

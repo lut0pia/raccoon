@@ -6,8 +6,10 @@ function rcn_music_ed() {
   rcn_music_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
+  this.music_row = [];
   this.track_input = [];
   this.flag_checkbox = [];
+  this.play_index = -1;
 
   const music_ed = this;
 
@@ -24,6 +26,7 @@ function rcn_music_ed() {
   // Create music rows
   for(let music = 0; music < rcn.music_count; music++) {
     const music_row = document.createElement('tr');
+    this.music_row.push(music_row);
     music_table.appendChild(music_row);
 
     // Create music index
@@ -98,6 +101,16 @@ rcn_music_ed.prototype.title = 'Music Editor';
 rcn_music_ed.prototype.docs_link = 'music-editor';
 rcn_music_ed.prototype.type = 'music_ed';
 rcn_editors.push(rcn_music_ed);
+
+rcn_music_ed.prototype.set_play_index = function(index) {
+  if(this.play_index >= 0) {
+    this.music_row[this.play_index].classList.remove('playing');
+  }
+  this.play_index = index;
+  if(this.play_index >= 0) {
+    this.music_row[this.play_index].classList.add('playing');
+  }
+}
 
 rcn_music_ed.prototype.get_music_offset = function(music) {
   return rcn.mem_music_offset + music * 4;
