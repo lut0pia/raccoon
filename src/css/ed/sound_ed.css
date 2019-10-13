@@ -29,7 +29,11 @@
 
 /* Tone markers */
 
-.window.sound_ed tr:nth-child(2n) {
+.window.sound_ed tr:nth-last-child(12n + 2),
+.window.sound_ed tr:nth-last-child(12n + 4),
+.window.sound_ed tr:nth-last-child(12n + 7),
+.window.sound_ed tr:nth-last-child(12n + 9),
+.window.sound_ed tr:nth-last-child(12n + 11) {
   background-color: #bbb;
 }
 
