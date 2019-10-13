@@ -1,9 +1,9 @@
 .music_ed content {
-  min-width: 280px;
+  min-width: 224px;
   height: 256px;
 }
 
-.music_ed td, .music_ed select {
+.music_ed, .music_ed td, .music_ed td div {
   font-family: 'Roboto Mono';
 }
 
@@ -11,6 +11,9 @@
   padding-right: 8px;
 }
 
-.music_ed td select {
-  width: 100%;
+.music_ed td div {
+  width: 24px;
+  text-align: center;
+  padding: 0px 2px 0px 2px;
+  border: 1px grey solid;
 }

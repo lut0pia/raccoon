@@ -6,7 +6,7 @@ function rcn_music_ed() {
   rcn_music_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
 
-  this.track_select = [];
+  this.track_input = [];
   this.flag_checkbox = [];
 
   const music_ed = this;
@@ -31,20 +31,29 @@ function rcn_music_ed() {
     music_row.appendChild(music_index);
     music_index.innerText = String(music).padStart(2, '0');
 
-    // Create track select
+    // Create track inputs
     for(let track = 0; track < rcn.music_track_count; track++) {
-      const select_cell = document.createElement('td');
-      music_row.appendChild(select_cell);
+      const input_cell = document.createElement('td');
+      music_row.appendChild(input_cell);
 
-      const select = rcn_ui_select({
-        options: rcn_music_track_select_options,
-        onchange: function() {
-          music_ed.set_track(music, track, Number(this.value));
-        },
-      });
-      select_cell.appendChild(select);
+      const track_input = document.createElement('div');
+      track_input.contentEditable = true;
+      track_input.onfocus = function() {
+        let range = document.createRange();
+        range.selectNodeContents(this);
+        let selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+      track_input.oninput = function() {
+        if(this.innerText.length >= 2) {
+          music_ed.set_track(music, track, Number(this.innerText));
+          this.onfocus();
+        }
+      }
+      input_cell.appendChild(track_input);
 
-      this.track_select.push(select);
+      this.track_input.push(track_input);
     }
 
     // Create music flags
@@ -117,7 +126,7 @@ rcn_music_ed.prototype.update_tracks = function() {
     // Update tracks
     for(let track = 0; track < rcn.music_track_count; track++) {
       const track_index = music * 4 + track;
-      this.track_select[track_index].value = this.get_track(music, track);
+      this.track_input[track_index].innerText = String(this.get_track(music, track)).padStart(2, '0');
     }
 
     // Update flags
