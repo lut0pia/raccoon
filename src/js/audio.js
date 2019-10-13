@@ -8,7 +8,7 @@ const rcn_audio_buffer_size = rcn_audio_sample_rate / 30;
 const rcn_audio_latency = 1 / 30;
 const rcn_audio_frames_per_frame = 4;
 const rcn_audio_frames_per_second = rcn_audio_frames_per_frame * 30;
-const rcn_audio_ticks_per_measure = 32
+const rcn_audio_ticks_per_measure = 32;
 const rcn_audio_ticks_per_beat = rcn_audio_ticks_per_measure / 4;
 const rcn_audio_bpm_per_period = (60 * rcn_audio_frames_per_second) / rcn_audio_ticks_per_beat;
 
