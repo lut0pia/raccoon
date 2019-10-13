@@ -15,6 +15,11 @@ function rcn_vm_ed() {
       vm_ed.set_paused(!vm_ed.vm.paused)
     }
   });
+  const vm_onmessage = this.vm.onmessage;
+  this.vm.onmessage = function(e) {
+    vm_onmessage.call(this, e);
+    vm_ed.onmessage(e);
+  }
   this.add_child(this.vm.canvas.node);
 
   // Create reboot button
@@ -93,6 +98,14 @@ rcn_vm_ed.prototype.reboot = function() {
   this.vm.load_bin(rcn_global_bin);
   this.update_volume();
   rcn_dispatch_ed_event('rcn_reboot');
+}
+
+rcn_vm_ed.prototype.onmessage = function(e) {
+  switch(e.data.type) {
+    case 'error':
+      rcn_dispatch_ed_event('rcn_error', e.data);
+      break;
+  }
 }
 
 rcn_editors.push(rcn_vm_ed);

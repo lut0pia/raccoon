@@ -160,10 +160,6 @@ rcn_vm.prototype.onmessage = function(e) {
       break;
     case 'error':
       this.kill();
-      rcn_dispatch_ed_event('rcn_error', e.data);
-      break;
-    default:
-      rcn_log('Unhandled VM message: ', e.data);
       break;
   }
 }
