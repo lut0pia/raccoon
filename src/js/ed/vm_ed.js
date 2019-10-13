@@ -103,7 +103,10 @@ rcn_vm_ed.prototype.reboot = function() {
 rcn_vm_ed.prototype.onmessage = function(e) {
   switch(e.data.type) {
     case 'error':
-      rcn_dispatch_ed_event('rcn_error', e.data);
+      const code_ed = rcn_find_editor(rcn_code_ed);
+      if(code_ed) {
+        code_ed.set_error(e.data);
+      }
       break;
   }
 }

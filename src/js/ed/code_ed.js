@@ -81,9 +81,6 @@ function rcn_code_ed() {
     }
   });
 
-  this.addEventListener('rcn_error', function(e) {
-    code_ed.set_error(e.detail);
-  });
   this.addEventListener('rcn_reboot', function() {
     code_ed.set_error(null);
   });
