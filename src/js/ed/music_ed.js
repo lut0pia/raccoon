@@ -49,7 +49,11 @@ function rcn_music_ed() {
         selection.addRange(range);
       }
       track_input.oninput = function() {
-        if(this.innerText.length >= 2) {
+        console.log(this.innerText.length);
+        if(this.innerText.match(/^(-+|\s*)$/i)) {
+          music_ed.set_track(music, track, -1);
+          this.onfocus();
+        } else if(this.innerText.length >= 2) {
           music_ed.set_track(music, track, Number(this.innerText));
           this.onfocus();
         }
@@ -139,7 +143,8 @@ rcn_music_ed.prototype.update_tracks = function() {
     // Update tracks
     for(let track = 0; track < rcn.music_track_count; track++) {
       const track_index = music * 4 + track;
-      this.track_input[track_index].innerText = String(this.get_track(music, track)).padStart(2, '0');
+      const sound = this.get_track(music, track);
+      this.track_input[track_index].innerText = sound >= 0 ? String(sound).padStart(2, '0') : '--';
     }
 
     // Update flags
