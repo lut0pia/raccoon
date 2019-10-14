@@ -280,6 +280,9 @@ function rcn_find_editor(ed, create = false) {
     const section = rcn_window_container.children[i];
     const window = section.rcn_window;
     if(window.constructor == ed) {
+      if(create) {
+        window.foreground();
+      }
       return window;
     }
   }
