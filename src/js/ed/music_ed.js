@@ -17,12 +17,6 @@ function rcn_music_ed() {
   const music_table = document.createElement('table');
   this.add_child(music_table);
 
-  const rcn_music_track_select_options = {};
-  rcn_music_track_select_options[-1] = '--';
-  for(let i = 0; i < rcn.sound_count; i++) {
-    rcn_music_track_select_options[i] = String(i).padStart(2, '0');
-  }
-
   // Create music rows
   for(let music = 0; music < rcn.music_count; music++) {
     const music_row = document.createElement('tr');
