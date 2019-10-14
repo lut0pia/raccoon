@@ -17,12 +17,7 @@ function rcn_start_editor_mode(params) {
     tool.innerText = ed.prototype.title;
     tool.ed = ed;
     tool.addEventListener('click', function() {
-      const existing_ed = rcn_find_editor(ed);
-      if(existing_ed) {
-        existing_ed.foreground();
-      } else {
-        new ed();
-      }
+      rcn_find_editor(ed, true);
       rcn_update_toolbox();
     });
     rcn_toolbox.appendChild(tool);
