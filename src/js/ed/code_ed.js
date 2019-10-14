@@ -118,7 +118,7 @@ rcn_code_ed.prototype.update_token_count_text = function() {
 rcn_code_ed.prototype.update_mirror = function() {
   const keywords = [
     'break', 'class', 'const', 'constructor', 'continue', 'else', 'extends', 'false', 'for',
-    'function', 'if', 'in', 'let', 'new', 'null', 'return', 'super', 'this', 'true', 'var', 'while',
+    'function', 'if', 'in', 'let', 'new', 'null', 'of', 'return', 'super', 'this', 'true', 'var', 'while',
   ];
   const keyword_regexp = new RegExp('\\b('+keywords.join('|')+')\\b', 'g');
   const classify = function(class_name) {
