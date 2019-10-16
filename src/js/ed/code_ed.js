@@ -272,7 +272,7 @@ rcn_code_ed.prototype.update_keyword_link = function() {
         // We need to delay docs viewer creation or it will be backgrounded
         // by the code editor's return to focus
         setTimeout(function() {
-          rcn_find_editor(rcn_docs_ed, true).lookup(link);
+          rcn_find_editor(rcn_docs_ed, true).lookup(link + '-functions');
         }, 0);
       }
       keyword_span.style.visibility = 'visible';
