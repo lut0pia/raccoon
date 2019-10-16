@@ -47,7 +47,33 @@
   height: 20px;
 }
 
+/* Overlay */
+
+.window.code_ed .textoverlay {
+  z-index: initial;
+  display: none;
+}
+
+.window.code_ed .textoverlay.active {
+  display: block;
+}
+
+.window.code_ed .textoverlay line {
+  color: #00000000;
+}
+
+.window.code_ed .textoverlay .keyword_link {
+  color: #00000000;
+  text-decoration: underline;
+  text-decoration-color: black;
+}
+
+.window.code_ed .textoverlay .keyword_link:hover {
+  cursor: pointer;
+}
+
 /* Syntax highlighting */
+
 .window.code_ed .textmirror .keyword {
   color: #0047f2;
 }
@@ -69,6 +95,7 @@
 }
 
 /* Error highlighting */
+
 .window.code_ed .textmirror .error {
   background-color: rgba(255, 0, 0, 0.295);
   display: block;

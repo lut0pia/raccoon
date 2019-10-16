@@ -64,7 +64,7 @@ The `Autoapply` checkbox indicates whether or not data changes made to the curre
 
 ## Code Editor
 
-The code editor is a text editor with syntax highlighting.
+The code editor is a text editor with syntax highlighting. Clicking on underlined symbols while holding `Control` will take you to their definition.
 
 Pressing the `Apply` button or `Control+Enter` (while focusing the text input) will send the current code to the virtual machine, so you can see changes happen right away.
 

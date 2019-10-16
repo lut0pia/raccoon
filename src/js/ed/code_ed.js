@@ -1,6 +1,22 @@
 // Raccoon code editor
 'use strict';
 
+const rcn_code_ed_keywords = [
+  'break', 'class', 'const', 'constructor', 'continue', 'delete', 'else', 'extends', 'false', 'for',
+  'function', 'if', 'in', 'let', 'new', 'null', 'of', 'return', 'super', 'this', 'true', 'var', 'while',
+];
+
+const rcn_code_ed_doc_functions = {
+  'rendering': [
+    'cls', 'cam', 'palset', 'pset', 'pget', 'palm', 'palt', 'fget', 'fset', 'mget', 'mset',
+    'spr', 'map', 'print', 'line', 'rect', 'rectfill', 'circ', 'circfill'],
+  'sound': ['sfx', 'mus'],
+  'math': ['flr', 'ceil', 'abs', 'sign', 'max', 'min', 'mid', 'sqrt', 'rnd', 'sin', 'cos', 'atan2'],
+  'input': ['btn', 'btnp'],
+  'memory': ['memcpy', 'memset', 'read', 'write'],
+};
+
+
 function rcn_code_ed() {
   rcn_code_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
@@ -10,10 +26,21 @@ function rcn_code_ed() {
   this.textmirror.classList.add('textmirror');
   this.add_child(this.textmirror);
 
+  this.textoverlay = document.createElement('div');
+  this.textoverlay.classList.add('textmirror');
+  this.textoverlay.classList.add('textoverlay');
+  this.textoverlay.addEventListener('mousedown', function() {
+    // Give focus back to text area
+    setTimeout(function() {
+      code_ed.textarea.focus();
+    }, 0);
+  });
+  this.add_child(this.textoverlay);
+
   this.textarea = document.createElement('textarea');
   this.textarea.setAttribute('wrap', 'off');
   this.textarea.setAttribute('spellcheck', 'false');
-  this.textarea.onkeydown = function(e) {
+  this.textarea.addEventListener('keydown', function(e) {
     const key_code = e.keyCode || e.which;
     const tab_size = 2;
 
@@ -50,16 +77,27 @@ function rcn_code_ed() {
     }
 
     code_ed.update_mirror();
-  };
+  });
   this.textarea.onscroll = function(e) {
-    code_ed.textmirror.scrollTop = code_ed.textarea.scrollTop;
-    code_ed.textmirror.scrollLeft = code_ed.textarea.scrollLeft;
+    code_ed.textmirror.scrollTop = code_ed.textoverlay.scrollTop = code_ed.textarea.scrollTop;
+    code_ed.textmirror.scrollLeft = code_ed.textoverlay.scrollLeft = code_ed.textarea.scrollLeft;
   }
   this.textarea.oninput = function() {
     rcn_global_bin.code = this.value;
     rcn_dispatch_ed_event('rcn_bin_change', {code: true});
     code_ed.update_token_count_text();
   };
+  const textoverlay_onevent = function(e) {
+    const active = !!e.ctrlKey;
+    if(active) {
+      code_ed.update_keyword_link();
+    }
+    code_ed.textoverlay.classList.toggle('active', active);
+    this.onscroll();
+  }
+  this.textarea.addEventListener('keydown', textoverlay_onevent);
+  this.textarea.addEventListener('keyup', textoverlay_onevent);
+  this.textarea.addEventListener('blur', textoverlay_onevent)
   this.add_child(this.textarea);
 
   this.add_child(this.apply_button = rcn_ui_button({
@@ -109,6 +147,7 @@ rcn_code_ed.prototype.apply = function() {
 rcn_code_ed.prototype.update_textarea = function() {
   this.textarea.value = rcn_global_bin.code;
   this.update_mirror();
+  this.update_overlay();
 }
 
 rcn_code_ed.prototype.update_token_count_text = function() {
@@ -116,11 +155,7 @@ rcn_code_ed.prototype.update_token_count_text = function() {
 }
 
 rcn_code_ed.prototype.update_mirror = function() {
-  const keywords = [
-    'break', 'class', 'const', 'constructor', 'continue', 'else', 'extends', 'false', 'for',
-    'function', 'if', 'in', 'let', 'new', 'null', 'of', 'return', 'super', 'this', 'true', 'var', 'while',
-  ];
-  const keyword_regexp = new RegExp('\\b('+keywords.join('|')+')\\b', 'g');
+  const keyword_regexp = new RegExp('\\b('+rcn_code_ed_keywords.join('|')+')\\b', 'g');
   const classify = function(class_name) {
     return function(text) {
       text = text.replace(/\<.*?\>/gi, ''); // Remove html
@@ -169,20 +204,102 @@ rcn_code_ed.prototype.update_mirror = function() {
   }
 }
 
+rcn_code_ed.prototype.update_overlay = function() {
+  const lines = this.textarea.value.split('\n');
+
+  // Remove excess lines
+  while(this.textoverlay.childElementCount >= lines.length) {
+    this.textoverlay.removeChild(this.textoverlay.lastChild);
+  }
+
+  for(let i = 0; i < lines.length; i++) {
+    // Add missing line
+    if(this.textoverlay.childElementCount <= i) {
+      this.textoverlay.appendChild(document.createElement('line'));
+    }
+
+    const line_node = this.textoverlay.childNodes[i];
+    const line_content_changed = lines[i] != line_node.rcn_line;
+
+    if(line_content_changed) {
+      const line_html = html_encode(lines[i])
+        .replace(/ /gi, '&nbsp;')
+        .replace(/\/\/.*$/, '')
+        .replace(/(&?)\b([a-z]\w*)\b(;?)/gi, function(full, amp, keyword, semi) {
+          if(!amp || !semi) {
+            return `${amp}<span class="keyword_link" data-line="${i}">${keyword}</span>${semi}`;
+          } else {
+            return full;
+          }
+        });
+
+      line_node.rcn_line = lines[i];
+      line_node.innerHTML = line_html;
+    }
+  }
+}
+
+rcn_code_ed.prototype.update_keyword_link = function() {
+  const lines = this.textarea.value.split('\n');
+  const keyword_link = {};
+  for(let doc_section in rcn_code_ed_doc_functions) {
+    for(let func of rcn_code_ed_doc_functions[doc_section]) {
+      keyword_link[func] = doc_section;
+    }
+  }
+
+  // Look for symbol definitions
+  for(let i = 0; i < lines.length; i++) {
+    const match = lines[i].match(/function\s+(\w+)/i);
+    if(match) {
+      keyword_link[match[1]] = i + 1;
+    }
+  }
+
+  const code_ed = this;
+  for(let keyword_span of document.getElementsByClassName('keyword_link')) {
+    const keyword = keyword_span.textContent;
+    const link = keyword_link[keyword];
+
+    if(typeof link === 'number' && parseInt(keyword_span.getAttribute('data-line')) + 1 != link) {
+      keyword_span.onmousedown = function() {
+        code_ed.scroll_to_line(link);
+      }
+      keyword_span.style.visibility = 'visible';
+    } else if(typeof link === 'string') {
+      keyword_span.onmousedown = function() {
+        // It's quick, it's easy and it's free: pouring river water in your socks
+        // We need to delay docs viewer creation or it will be backgrounded
+        // by the code editor's return to focus
+        setTimeout(function() {
+          rcn_find_editor(rcn_docs_ed, true).lookup(link);
+        }, 0);
+      }
+      keyword_span.style.visibility = 'visible';
+    } else {
+      keyword_span.onmousedown = null;
+      keyword_span.style.visibility = 'hidden';
+    }
+  }
+}
+
 rcn_code_ed.prototype.set_error = function(e) {
   this.error = e;
   this.update_mirror();
 
   if(this.error) {
-    // Scroll the textarea to the error
-    let target = (this.error.line - 1) * 20;
-    target -= this.textarea.clientHeight >> 1;
-
-    this.textarea.scrollBy({
-      top: target - this.textarea.scrollTop,
-      behavior: 'smooth',
-    })
+    this.scroll_to_line(this.error.line);
   }
+}
+
+rcn_code_ed.prototype.scroll_to_line = function(line) {
+  let target = (line - 1) * 20;
+  target -= this.textarea.clientHeight >> 1;
+
+  this.textarea.scrollBy({
+    top: target - this.textarea.scrollTop,
+    behavior: 'smooth',
+  });
 }
 
 function rcn_code_ed_textarea_insert_text(textarea, text) {
