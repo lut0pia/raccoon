@@ -2,8 +2,8 @@
 'use strict';
 
 const rcn_code_ed_keywords = [
-  'break', 'class', 'const', 'constructor', 'continue', 'delete', 'else', 'extends', 'false', 'for',
-  'function', 'if', 'in', 'let', 'new', 'null', 'of', 'return', 'super', 'this', 'true', 'var', 'while',
+  'break', 'case', 'class', 'const', 'constructor', 'continue', 'delete', 'else', 'extends', 'false', 'for',
+  'function', 'if', 'in', 'let', 'new', 'null', 'of', 'return', 'super', 'switch', 'this', 'true', 'var', 'while',
 ];
 
 const rcn_code_ed_doc_functions = {
