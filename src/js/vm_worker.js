@@ -197,7 +197,7 @@ function rcn_vm_worker_function(rcn) {
     text = _String(text);
 
     const ox = x;
-
+    let max_width = 0;
     for(let i = 0; i < text.length; i++) {
       const char = text.charAt(i);
 
@@ -220,7 +220,9 @@ function rcn_vm_worker_function(rcn) {
       } else {
         x += 4;
       }
+      max_width = _max(max_width, x - ox);
     }
+    return max_width;
   }
   const hline = function(x, y, w, c) {
     // No bounds-checking, no color palette support
