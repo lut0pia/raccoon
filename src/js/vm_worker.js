@@ -111,8 +111,7 @@ function rcn_vm_worker_function(rcn) {
   palt = function(c, t) {
     ram[rcn_mem_palmod_offset+c] = (ram[rcn_mem_palmod_offset+c] & 0x0f) | (t ? 0x80 : 0x00);
   }
-  cls = c = function(c) {
-    c = c || 0; // Default color is 0
+  cls = c = function(c = 0) { // Default color is 0
     c |= c<<4; // Left and right pixel to same color
     ram.fill(c, rcn_mem_screen_offset, rcn_mem_screen_offset + rcn_mem_screen_size);
   }
@@ -120,11 +119,7 @@ function rcn_vm_worker_function(rcn) {
     ram_view.setInt16(rcn.mem_cam_offset + 0, x);
     ram_view.setInt16(rcn.mem_cam_offset + 2, y);
   }
-  const _spr = spr = function(n, x, y, ow, oh, fx, fy) {
-    // Default width and height
-    ow = ow || 1.0;
-    oh = oh || 1.0;
-
+  const _spr = spr = function(n, x, y, ow = 1.0, oh = 1.0, fx = false, fy = false) {
     // Camera
     x -= cam_x();
     y -= cam_y();
@@ -177,9 +172,7 @@ function rcn_vm_worker_function(rcn) {
   mset = function(celx, cely, n) {
     ram[rcn.mem_map_offset + (cely << 7) + (celx << 0)] = n;
   }
-  map = function(celx, cely, sx, sy, celw, celh, layer) {
-    layer = layer || 0xff;
-
+  map = function(celx, cely, sx, sy, celw, celh, layer = 0xff) {
     for(let x = 0; x < celw; x++) {
       for(let y = 0; y < celh; y++) {
         _spr(_mget(celx + x, cely + y), sx + (x << 3), sy + (y << 3));
@@ -528,12 +521,10 @@ function rcn_vm_worker_function(rcn) {
   }
 
   // Raccoon input API
-  btn = b = function(i, p) {
-    p = p || 0; // First player by default
+  btn = b = function(i, p = 0) { // First player by default
     return (ram[rcn_mem_gamepad_offset+p] & (1 << i)) != 0;
   }
-  btnp = function(i, p) {
-    p = p || 0; // First player by default
+  btnp = function(i, p = 0) { // First player by default
     return (ram[rcn_mem_gamepad_offset+p] & (1 << i)) != 0 &&
       (ram[rcn_mem_gamepad_offset+p+4] & (1 << i)) == 0;
   }
