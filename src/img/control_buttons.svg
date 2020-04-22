@@ -1,14 +1,32 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"
   viewBox="0 0 100 100" preserveAspectRatio="xMinyMin meet">
+  <style>
+    .label {
+      font: bold 20px sans-serif;
+      fill: #88888888;
+    }
+  </style>
   <defs>
     <g id="button">
       <circle r="20" fill="#88888888"/>
     </g>
   </defs>
 
-  <g transform="translate(50 20)"><use xlink:href="#button"/></g>
-  <g transform="translate(80 50)"><use xlink:href="#button"/></g>
-  <g transform="translate(50 80)"><use xlink:href="#button"/></g>
-  <g transform="translate(20 50)"><use xlink:href="#button"/></g>
+  <g transform="translate(50 80)">
+    <use xlink:href="#button"/>
+    <text y="7" text-anchor="middle" class="label">A</text>
+  </g>
+  <g transform="translate(80 50)">
+    <use xlink:href="#button"/>
+    <text y="7" text-anchor="middle" class="label">B</text>
+  </g>
+  <g transform="translate(20 50)">
+    <use xlink:href="#button"/>
+    <text y="7" text-anchor="middle" class="label">X</text>
+  </g>
+  <g transform="translate(50 20)">
+    <use xlink:href="#button"/>
+    <text y="7" text-anchor="middle" class="label">Y</text>
+  </g>
 </svg>

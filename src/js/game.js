@@ -21,6 +21,7 @@ function rcn_start_game_mode(params) {
 
   if(rcn_is_touch_device) {
     rcn_create_touch_controls(vm);
+    vm.set_gamepad_layout(0, rcn.gamepad_layout_abxy);
     document.body.addEventListener('click', function() {
       rcn_fullscreen(this);
     });
