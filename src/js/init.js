@@ -29,8 +29,8 @@ const rcn = {
   mem_soundreg_size: 0x0010, // 16B = 4x(8+8+6+1+3+3)
   mem_palmod_offset: 0x5fe2,
   mem_palmod_size: 0x0010, // 16B = 16x(7+1)bits (4b color + 1b transp)
-  mem_gamepad_offset: 0x5ff8,
-  mem_gamepad_size: 0x0008, // 8B = 2x4x(4+4)bits (4b directions + 4b buttons)
+  mem_gamepad_offset: 0x5ff4,
+  mem_gamepad_size: 0x000c, // 12B = 2x4x(4+4)+4x8bits (4b directions + 4b buttons)
   mem_screen_offset: 0x6000,
   mem_screen_size: 0x2000, // 8KiB = 128x128x4bits
 
@@ -38,6 +38,9 @@ const rcn = {
   music_track_count: 4,
   sound_count: 64,
   sound_pitch_count: 64,
+
+  gamepad_layout_xcvb: 0,
+  gamepad_layout_abxy: 1,
 };
 
 let rcn_global_bin;

@@ -18,12 +18,14 @@ function rcn_vm() {
     if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
       e.preventDefault();
       this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], true);
+      this.vm.set_gamepad_layout(0, rcn.gamepad_layout_xcvb);
     }
   });
   this.canvas.node.addEventListener('keyup', function(e) {
     if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
       e.preventDefault();
       this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], false);
+      this.vm.set_gamepad_layout(0, rcn.gamepad_layout_xcvb);
     }
   });
   this.canvas.node.addEventListener('blur', function() {
@@ -91,6 +93,7 @@ rcn_vm.prototype.update = function() {
     this.set_gamepad_bit(gamepad.index, 5, gamepad.buttons[1].pressed);
     this.set_gamepad_bit(gamepad.index, 6, gamepad.buttons[2].pressed);
     this.set_gamepad_bit(gamepad.index, 7, gamepad.buttons[3].pressed);
+    this.set_gamepad_layout(gamepad.index, rcn.gamepad_layout_abxy);
   }
 
   this.worker.postMessage({type: 'write', offset: rcn.mem_gamepad_offset, bytes: this.gamepad_state});
@@ -112,6 +115,12 @@ rcn_vm.prototype.reset = function() {
   const vm = this;
   this.worker.onmessage = function(e) { vm.onmessage(e); }
   this.audio = new rcn_audio();
+
+  // Set default gamepad layouts
+  this.set_gamepad_layout(0, rcn.gamepad_layout_xcvb); // Keyboard for first player
+  for(let i = 1; i < 4; i++) {
+    this.set_gamepad_layout(i, rcn.gamepad_layout_abxy); // Abxy for the rest
+  }
 }
 
 rcn_vm.prototype.load_bin = function(bin) {
@@ -140,6 +149,10 @@ rcn_vm.prototype.set_gamepad_bit = function(player, offset, value) {
   } else {
     this.gamepad_state[player] &= ~(1 << offset);
   }
+}
+
+rcn_vm.prototype.set_gamepad_layout = function(player, layout) {
+  this.gamepad_state[player + 8] = layout;
 }
 
 rcn_vm.prototype.set_volume = function(volume) {
