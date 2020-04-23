@@ -208,6 +208,9 @@ function rcn_vm_worker_function(rcn) {
     '\ue00e':[2,-1,3,-1,4,-1,1,0,3,0,5,0,0,1,1,1,3,1,5,1,6,1,0,2,1,2,2,2,4,2,5,2,6,2,0,3,1,3,3,3,5,3,6,3,1,4,3,4,5,4,2,5,3,5,4,5,8], // Gamepad third button
     '\ue00f':[2,-1,3,-1,4,-1,1,0,3,0,5,0,0,1,1,1,3,1,5,1,6,1,0,2,1,2,5,2,6,2,0,3,1,3,2,3,4,3,5,3,6,3,1,4,2,4,4,4,5,4,2,5,3,5,4,5,8], // Gamepad fourth button
   };
+  const font_ys = _Object.values(font).map(a => a.filter((v, i) => i&1)).flat();
+  const font_min_y = font_ys.reduce((a, b) => _min(a, b));
+  const font_max_y = font_ys.reduce((a, b) => _max(a, b));
   print = function(x, y, text, c) {
     // Camera
     x -= cam_x();
@@ -226,19 +229,17 @@ function rcn_vm_worker_function(rcn) {
         continue;
       }
 
-      const glyph = font[char];
-      if(glyph) {
-        for(let j = 0; j < glyph.length - 1; j += 2) {
-          const gx = glyph[j+0] + x;
-          const gy = glyph[j+1] + y;
+      const g = font[char];
+      const advance = (g && g.length % 2 == 1) ? g[g.length - 1] : 4;
+      if(g && x < 128 && x + advance > 0 &&
+        y + font_min_y < 128 && y + font_max_y >= 0) {
+        for(let j = 0; j < g.length - 1; j += 2) {
+          const gx = g[j+0] + x;
+          const gy = g[j+1] + y;
           _pset(gx, gy, c);
         }
       }
-      if(glyph && glyph.length % 2 == 1) {
-        x += glyph[glyph.length - 1];
-      } else {
-        x += 4;
-      }
+      x += advance;
       max_width = _max(max_width, x - ox);
     }
     return max_width;
