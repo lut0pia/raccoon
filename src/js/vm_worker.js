@@ -19,8 +19,10 @@ function rcn_vm_worker_function(rcn) {
   const ram = new Uint8Array(ram_buffer);
 
   // Keep parts of the API local
+  const _console = console;
   const _Function = Function;
   const _Math = Math;
+  const _Object = Object;
   const _postMessage = postMessage;
   const _self = self;
   const _String = String;
