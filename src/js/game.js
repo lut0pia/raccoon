@@ -27,12 +27,14 @@ function rcn_start_game_mode(params) {
     });
   }
 
-  const edit_link = document.createElement('a');
-  edit_link.id = 'edit_link';
-  edit_link.href = location.href + '&edit';
-  edit_link.innerText = 'Open in edit mode';
-  edit_link.target = '_blank';
-  document.body.appendChild(edit_link);
+  if(!rcn_is_touch_device) {
+    const edit_link = document.createElement('a');
+    edit_link.id = 'edit_link';
+    edit_link.href = location.href + '&edit';
+    edit_link.innerText = 'Open in edit mode';
+    edit_link.target = '_blank';
+    document.body.appendChild(edit_link);
+  }
 }
 
 function rcn_create_touch_controls(vm) {
