@@ -23,8 +23,12 @@ const rcn = {
   // ... 0x0590
   // RAM/ROM limit
   // ... 0x0fd2
-  mem_cam_offset: 0x5fce,
+  mem_cam_offset: 0x5fb5,
   mem_cam_size: 0x0004, // 4B = 2x16bits
+  mem_musicstate_offset: 0x5fb9,
+  mem_musicstate_size: 0x0005, // 5B = 1+7+16+16bits (1b playing + 7b index + 16b time + 16b max_time)
+  mem_soundstate_offset: 0x5fbe,
+  mem_soundstate_size: 0x0014, // 20B = 4x(8+8+8+16)bits (8b index + 8b offset + 8b length + 16b time)
   mem_soundreg_offset: 0x5fd2,
   mem_soundreg_size: 0x0010, // 16B = 4x(8+8+6+1+3+3)
   mem_palmod_offset: 0x5fe2,
