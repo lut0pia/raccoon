@@ -27,6 +27,12 @@
   height: 20px;
 }
 
+/* Playing indicator */
+
+.window.sound_ed td.playing {
+  background-color: lightblue;
+}
+
 /* Tone markers */
 
 .window.sound_ed tr:nth-last-child(12n + 2),

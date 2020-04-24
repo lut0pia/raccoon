@@ -7,6 +7,17 @@ function rcn_sound_ed() {
 
   const sound_ed = this;
 
+  // Create VM
+  this.vm = new rcn_vm({
+    no_canvas: true,
+    dom_element: this.section,
+  });
+  const vm_onmessage = this.vm.onmessage;
+  this.vm.onmessage = function(e) {
+    vm_onmessage.call(this, e);
+    sound_ed.onmessage(e);
+  }
+
   // Create sound select
   const sound_select_label = document.createElement('label');
   sound_select_label.innerText = 'Track: ';
@@ -17,6 +28,16 @@ function rcn_sound_ed() {
       sound_ed.set_current_sound(Number(this.value));
     },
   }));
+  this.add_child(document.createTextNode(' '));
+
+  // Create play button
+  this.add_child(this.play_button = rcn_ui_button({
+    value: 'Play',
+    onclick: function() {
+      sound_ed.toggle_play();
+    },
+  }));
+
   this.add_child(document.createElement('br'));
 
   // Create speed select
@@ -132,6 +153,9 @@ function rcn_sound_ed() {
     } else if(e.key == 'ArrowDown') {
       sound_ed.transpose(-transpose_factor);
       e.preventDefault();
+    } else if(e.key == ' ') {
+      sound_ed.toggle_play();
+      e.preventDefault();
     }
   });
 
@@ -148,6 +172,11 @@ rcn_sound_ed.prototype.set_current_sound = function(i) {
 
 rcn_sound_ed.prototype.get_current_sound_offset = function() {
   return rcn.mem_sound_offset + this.current_sound * 66;
+}
+
+rcn_sound_ed.prototype.get_period = function() {
+  const sound_offset = this.get_current_sound_offset();
+  return rcn_global_bin.rom[sound_offset] + 4;
 }
 
 rcn_sound_ed.prototype.set_period = function(period) {
@@ -218,10 +247,12 @@ rcn_sound_ed.prototype.set_current_sound_note = function(index, note) {
 rcn_sound_ed.prototype.update_notes = function() {
   for(let note_index = 0; note_index < 32; note_index++) {
     const note = this.get_current_sound_note(note_index)
+    const is_playing = note_index == this.note_playing;
     for(let pitch = 0; pitch < rcn.sound_pitch_count; pitch++) {
       const cell = this.note_cells[pitch][note_index];
       const is_active = pitch == note.pitch && note.volume > 0;
       cell.classList.toggle('active', is_active);
+      cell.classList.toggle('playing', is_playing);
       if(is_active) {
         cell.setAttribute('effect', ['none', 'slide', 'vibrato', 'drop', 'fadein', 'fadeout'][note.effect]);
         cell.setAttribute('volume', note.volume);
@@ -243,6 +274,33 @@ rcn_sound_ed.prototype.transpose = function(delta) {
     begin: sound_offset + 2,
     end: sound_offset + 2 + rcn_audio_ticks_per_measure * 2,
   });
+}
+
+rcn_sound_ed.prototype.toggle_play = function() {
+  this.vm.load_memory(rcn_global_bin.rom);
+  this.vm.load_code(`
+    if(read(${rcn.mem_soundstate_offset + 2}) == 0) {
+      sfx(${this.current_sound}, 0);
+    } else {
+      sfx(0, 0, 0, 0); // Reset sound
+    }
+  `);
+}
+
+rcn_sound_ed.prototype.onmessage = function(e) {
+  switch(e.data.type) {
+    case 'audio':
+      this.vm.worker.postMessage({type: 'read', name: 'sound', offset: rcn.mem_soundstate_offset, size: rcn.mem_soundstate_size});
+      break;
+    case 'sound':
+      const time = (new DataView(e.data.bytes.buffer).getUint16(3));
+      const note = time > 0 ? Math.floor(time / this.get_period()) : -1;
+      if(this.note_playing != note) {
+        this.note_playing = note;
+        this.update_notes();
+      }
+      break;
+  }
 }
 
 rcn_sound_ed.prototype.title = 'Sound Editor';
