@@ -7,31 +7,38 @@ const rcn_keycode_to_gamepad = {
   88: 4, 67: 5, 86: 6, 66: 7, // X C V B
 };
 
-function rcn_vm() {
+function rcn_vm(params = {}) {
   this.gamepad_state = new Uint8Array(rcn.mem_gamepad_size);
 
-  this.canvas = new rcn_canvas();
-  this.canvas.set_size(128, 128);
-  this.canvas.node.tabIndex = 0; // Means we can focus the canvas and receive input
-  this.canvas.node.vm = this;
-  this.canvas.node.addEventListener('keydown', function(e) {
-    if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
-      e.preventDefault();
-      this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], true);
-      this.vm.set_gamepad_layout(0, rcn.gamepad_layout_xcvb);
-    }
-  });
-  this.canvas.node.addEventListener('keyup', function(e) {
-    if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
-      e.preventDefault();
-      this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], false);
-      this.vm.set_gamepad_layout(0, rcn.gamepad_layout_xcvb);
-    }
-  });
-  this.canvas.node.addEventListener('blur', function() {
-    // Reset keyboard state
-    this.vm.gamepad_state[0] = 0;
-  });
+  if(!params.no_canvas) {
+    this.canvas = new rcn_canvas();
+    this.canvas.set_size(128, 128);
+    this.canvas.node.tabIndex = 0; // Means we can focus the canvas and receive input
+    this.canvas.node.vm = this;
+    this.canvas.node.addEventListener('keydown', function(e) {
+      if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
+        e.preventDefault();
+        this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], true);
+        this.vm.set_gamepad_layout(0, rcn.gamepad_layout_xcvb);
+      }
+    });
+    this.canvas.node.addEventListener('keyup', function(e) {
+      if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
+        e.preventDefault();
+        this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], false);
+        this.vm.set_gamepad_layout(0, rcn.gamepad_layout_xcvb);
+      }
+    });
+    this.canvas.node.addEventListener('blur', function() {
+      // Reset keyboard state
+      this.vm.gamepad_state[0] = 0;
+    });
+    this.dom_element = this.canvas.node;
+  }
+
+  if(params.dom_element) {
+    this.dom_element = params.dom_element;
+  }
 
   this.reset();
   this.last_tick = 0;
@@ -63,18 +70,18 @@ rcn_vm.prototype.kill = function() {
 }
 
 rcn_vm.prototype.tick = function() {
-  if(!document.body.contains(this.canvas.node)) {
-    // The canvas was removed from the visible DOM, bail
+  if(this.dom_element && !document.body.contains(this.dom_element)) {
+    // The DOM element was removed from the visible DOM, bail
     this.kill();
     return false;
   }
 
   if(this.worker && !this.paused) {
     this.update();
-  } else {
+  } else if(this.canvas) {
     this.canvas.flush();
   }
-  if(this.worker) {
+  if(this.worker && this.canvas) {
     this.draw();
   }
   return true;
@@ -164,8 +171,10 @@ rcn_vm.prototype.onmessage = function(e) {
       this.palette = e.data.bytes;
       break;
     case 'screen':
-      this.canvas.blit(0, 0, 128, 128, e.data.bytes, this.palette);
-      this.canvas.flush();
+      if(this.canvas) {
+        this.canvas.blit(0, 0, 128, 128, e.data.bytes, this.palette);
+        this.canvas.flush();
+      }
       break;
     case 'audio':
       this.audio.update(e.data.bytes);
