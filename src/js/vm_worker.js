@@ -497,7 +497,7 @@ function rcn_vm_worker_function(rcn) {
     let n = _mus_state.n;
     let time = _mus_state.time;
 
-    if(time >= max_time) {
+    if(max_time > 0 && time >= max_time) {
       const mus_index = rcn_mem_music_offset + n * 4;
       if(ram[mus_index + 1] & 0x80) { // End flag
         for(let i = n; i >= 0; i--) {
