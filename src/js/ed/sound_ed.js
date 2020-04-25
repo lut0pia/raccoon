@@ -188,6 +188,11 @@ function rcn_sound_ed() {
   this.set_current_sound(0);
 }
 
+rcn_sound_ed.prototype.title = 'Sound Editor';
+rcn_sound_ed.prototype.docs_link = 'sound-editor';
+rcn_sound_ed.prototype.type = 'sound_ed';
+rcn_editors.push(rcn_sound_ed);
+
 rcn_sound_ed.prototype.set_current_sound = function(i) {
   this.current_sound = i;
   this.update_period();
@@ -328,9 +333,3 @@ rcn_sound_ed.prototype.onmessage = function(e) {
       break;
   }
 }
-
-rcn_sound_ed.prototype.title = 'Sound Editor';
-rcn_sound_ed.prototype.docs_link = 'sound-editor';
-rcn_sound_ed.prototype.type = 'sound_ed';
-
-rcn_editors.push(rcn_sound_ed);
