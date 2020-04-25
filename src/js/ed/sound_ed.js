@@ -110,18 +110,44 @@ function rcn_sound_ed() {
         rcn_window_focus(e.target);
         e.preventDefault();
         const note = sound_ed.get_current_sound_note(note_index);
-        if(note.pitch == pitch) { // Already a note
-          if(e.buttons == 1) { // Remove note
-            note.pitch = note.volume = note.effect = 0
-          } else if(e.buttons == 2) { // Decrease volume
-            note.volume = note.volume > 1 ? note.volume - 1 : 7;
-          } else if(e.buttons == 4) { // Change effect
-            note.effect = (note.effect + 1) % 6;
+
+        if(e.type == 'mousedown') { // Initial action
+          if(note.pitch == pitch) { // Already a note
+            if(e.buttons == 1) { // Remove note
+              note.pitch = note.volume = note.effect = 0;
+              sound_ed.last_mouse_action = 'remove';
+            } else if(e.buttons == 2) { // Decrease volume
+              note.volume = note.volume > 1 ? note.volume - 1 : 7;
+              sound_ed.last_mouse_action = 'volume';
+              sound_ed.last_mouse_value = note.volume;
+            } else if(e.buttons == 4) { // Change effect
+              note.effect = (note.effect + 1) % 6;
+              sound_ed.last_mouse_action = 'effect';
+              sound_ed.last_mouse_value = note.effect;
+            }
+          } else { // New note
+            note.pitch = pitch;
+            note.volume = 7;
+            note.effect = 0;
+            sound_ed.last_mouse_action = 'add';
           }
-        } else { // New note
-          note.pitch = pitch;
-          note.volume = 7;
-          note.effect = 0;
+        } else { // Repeat initial action
+          switch(sound_ed.last_mouse_action) {
+            case 'add':
+              note.pitch = pitch;
+              note.volume = 7;
+              note.effect = 0;
+              break;
+            case 'effect':
+              note.effect = sound_ed.last_mouse_value;
+              break;
+            case 'remove':
+              note.pitch = note.volume = note.effect = 0;
+              break;
+            case 'volume':
+              note.volume = sound_ed.last_mouse_value;
+              break;
+          }
         }
         sound_ed.set_current_sound_note(note_index, note)
       }
