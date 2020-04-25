@@ -28,19 +28,31 @@ main {
   Input button
 */
 
-input[type=button] {
+/* Text version */
+
+input[type=button].text {
   padding: 0px 2px 0px 2px;
   border: 1px grey outset;
   background-color: lightgrey;
 }
 
-input[type=button]:hover {
+input[type=button].text:hover {
   background-color: whitesmoke;
 }
 
-input[type=button]:active, input[type=button]:disabled {
+input[type=button].text:active, input[type=button].text:disabled {
   border-style: inset;
   background-color: grey;
+}
+
+/* Non-text version */
+
+input[type=button]:not(.text) {
+  opacity: 0.5;
+}
+
+input[type=button]:hover {
+  opacity: 1;
 }
 
 /*
