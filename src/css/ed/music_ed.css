@@ -1,5 +1,5 @@
 .music_ed content {
-  min-width: 224px;
+  min-width: 239px;
   height: 256px;
 }
 
@@ -26,4 +26,27 @@
 
 .music_ed tr.playing {
   background-color: lightblue;
+}
+
+/* Play/stop buttons */
+
+.music_ed .play_button,
+.music_ed .stop_button {
+  visibility: hidden;
+}
+
+.music_ed tr.playing .play_button {
+  display: none;
+}
+
+.music_ed tr:not(.playing) .stop_button {
+  display: none;
+}
+
+.music_ed tr:hover .play_button {
+  visibility: visible;
+}
+
+.music_ed tr:hover .stop_button {
+  visibility: visible;
 }

@@ -1,7 +1,6 @@
 // Raccoon music editor
 'use strict';
 
-
 function rcn_music_ed() {
   rcn_music_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
@@ -12,6 +11,17 @@ function rcn_music_ed() {
   this.play_index = -1;
 
   const music_ed = this;
+
+  // Create VM
+  this.vm = new rcn_vm({
+    no_canvas: true,
+    dom_element: this.section,
+  });
+  const vm_onmessage = this.vm.onmessage;
+  this.vm.onmessage = function(e) {
+    vm_onmessage.call(this, e);
+    music_ed.onmessage(e);
+  }
 
   // Create music table
   const music_table = document.createElement('table');
@@ -27,6 +37,22 @@ function rcn_music_ed() {
     const music_index = document.createElement('td');
     music_row.appendChild(music_index);
     music_index.innerText = String(music).padStart(2, '0');
+
+    // Create play button
+    const music_play_button = rcn_ui_button({
+      value: '▶️',
+      onclick: () => music_ed.play(music),
+    });
+    music_play_button.classList.add('play_button');
+    music_row.appendChild(music_play_button);
+
+    // Create stop button
+    const music_stop_button = rcn_ui_button({
+      value: '⏹️',
+      onclick: () => music_ed.stop(),
+    });
+    music_stop_button.classList.add('stop_button');
+    music_row.appendChild(music_stop_button);
 
     // Create track inputs
     for(let track = 0; track < rcn.music_track_count; track++) {
@@ -146,5 +172,32 @@ rcn_music_ed.prototype.update_tracks = function() {
     this.flag_checkbox[music * 3 + 0].checked = rcn_global_bin.rom[music_offset + 0] & 0x80;
     this.flag_checkbox[music * 3 + 1].checked = rcn_global_bin.rom[music_offset + 1] & 0x80;
     this.flag_checkbox[music * 3 + 2].checked = rcn_global_bin.rom[music_offset + 2] & 0x80;
+  }
+}
+
+rcn_music_ed.prototype.play = function(music) {
+  this.vm.load_memory(rcn_global_bin.rom);
+  this.vm.load_code(`mus(${music});`);
+}
+
+rcn_music_ed.prototype.stop = function(music) {
+  this.vm.load_code(`mus(-1);`);
+}
+
+rcn_music_ed.prototype.onmessage = function(e) {
+  switch(e.data.type) {
+    case 'audio':
+      this.vm.worker.postMessage({type: 'read', name: 'music', offset: rcn.mem_musicstate_offset, size: rcn.mem_musicstate_size});
+      break;
+    case 'music':
+      const is_playing = (e.data.bytes[0] & 0x80) != 0;
+      const index = e.data.bytes[0] & 0x7f;
+      this.section.classList.toggle('playing', is_playing);
+      if(is_playing) {
+        this.set_play_index(index);
+      } else {
+        this.set_play_index(-1);
+      }
+      break;
   }
 }
