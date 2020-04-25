@@ -48,15 +48,14 @@ function rcn_code_ed() {
     const end = this.selectionEnd;
     const start_line_beg = this.value.lastIndexOf('\n', start-1)+1;
     const start_line_end = (this.value.indexOf('\n', start) + 1 || this.value.length) - 1;
-    const end_line_beg = this.value.lastIndexOf('\n', end-1)+1;
-    const line_last_space = Math.max(0, this.value.substr(start_line_beg).search(/[^ ]/))+start_line_beg;
+    const start_line_last_space = Math.max(0, this.value.substr(start_line_beg).search(/[^ ]/))+start_line_beg;
 
     if(key_code == 13) { // Enter key
       if(e.ctrlKey) { // CTRL + Enter
         code_ed.apply();
       } else if(!e.shiftKey) { // Simple Enter
         e.preventDefault();
-        let next_line_indent = line_last_space-start_line_beg;
+        let next_line_indent = start_line_last_space-start_line_beg;
         if(this.value[start_line_end - 1] == '{') {
           next_line_indent += tab_size;
         }
@@ -65,22 +64,47 @@ function rcn_code_ed() {
     } else if (key_code == 9) { // Tab key
       e.preventDefault();
 
-      if(start_line_beg == end_line_beg) { // Same line selection
-        if(e.shiftKey) {
-          this.selectionEnd = line_last_space;
-          this.selectionStart = Math.max(line_last_space - tab_size, start_line_beg);
-          const diff = this.selectionStart - this.selectionEnd;
-          rcn_code_ed_textarea_insert_text(this, '');
-          this.selectionStart = Math.max(start_line_beg, start + diff);
-          this.selectionEnd = Math.max(start_line_beg, end + diff);
+      const line_begs = [start_line_beg];
+      while(true) {
+        const line_end = this.value.indexOf('\n', line_begs[0]);
+        if(line_end < 0 ||
+          line_end == this.value.length - 1 ||
+          line_end >= end) {
+          break;
         } else {
-          const chars_offset = tab_size - ((start-start_line_beg) % tab_size);
-          rcn_code_ed_textarea_insert_text(this, ' '.repeat(chars_offset));
+          line_begs.unshift(line_end + 1);
         }
       }
+      let start_offset = 0;
+      let end_offset = 0;
+      while(line_begs.length > 0) {
+        const line_beg = line_begs.shift();
+        const line_last_space = Math.max(0, this.value.substr(line_beg).search(/[^ ]/)) + line_beg;
+        const current_indent = line_last_space - line_beg;
+        const chars_offset = tab_size - current_indent % tab_size;
+        const new_indent = Math.max(0, e.shiftKey
+          ? current_indent - chars_offset
+          : current_indent + chars_offset);
+
+        this.selectionStart = line_beg;
+        this.selectionEnd = line_last_space;
+        rcn_code_ed_textarea_insert_text(this, ' '.repeat(new_indent));
+
+        const delta = new_indent - current_indent
+        if(start > line_beg) {
+          start_offset += delta;
+        }
+        if(end > line_beg) {
+          end_offset += delta;
+        }
+      }
+
+      this.selectionStart = start + start_offset;
+      this.selectionEnd = end + end_offset;
     }
 
-    code_ed.update_mirror();
+    rcn_global_bin.code = this.value;
+    rcn_dispatch_ed_event('rcn_bin_change', {code: true});
   });
   this.textarea.onscroll = function(e) {
     code_ed.textmirror.scrollTop = code_ed.textoverlay.scrollTop = code_ed.textarea.scrollTop;
