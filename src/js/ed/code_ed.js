@@ -56,7 +56,11 @@ function rcn_code_ed() {
         code_ed.apply();
       } else if(!e.shiftKey) { // Simple Enter
         e.preventDefault();
-        rcn_code_ed_textarea_insert_text(this, '\n'+' '.repeat(line_last_space-start_line_beg));
+        let next_line_indent = line_last_space-start_line_beg;
+        if(this.value[start_line_end - 1] == '{') {
+          next_line_indent += tab_size;
+        }
+        rcn_code_ed_textarea_insert_text(this, '\n'+' '.repeat(next_line_indent));
       }
     } else if (key_code == 9) { // Tab key
       e.preventDefault();
