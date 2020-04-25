@@ -503,17 +503,14 @@ function rcn_vm_worker_function(rcn) {
         for(let i = n; i >= 0; i--) {
           if(ram[rcn_mem_music_offset + i * 4 + 0] & 0x80) { // Begin flag
             _mus_state.n = n = i;
-            _postMessage({type: 'mus', index: n});
             break;
           }
         }
       } else if(ram[mus_index + 2] & 0x80) { // Stop flag
         _mus_state.stop();
-        _postMessage({type: 'mus', index: -1});
         return;
       } else {
         _mus_state.n = n = (n + 1) % rcn.music_count;
-        _postMessage({type: 'mus', index: n});
       }
       _mus_state.time = time = 0;
     }
@@ -542,7 +539,6 @@ function rcn_vm_worker_function(rcn) {
         _sfx_stop(track);
       }
     }
-    _postMessage({type: 'mus', index: -1});
   }
   mus = function(n) {
     if(_mus_state.is_playing) {
@@ -553,7 +549,6 @@ function rcn_vm_worker_function(rcn) {
     } else {
       _mus_state.n = n;
       _mus_state.time = 0;
-      _postMessage({type: 'mus', index: n});
     }
   }
 

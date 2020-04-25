@@ -108,12 +108,6 @@ rcn_vm_ed.prototype.onmessage = function(e) {
         code_ed.set_error(e.data);
       }
       break;
-    case 'mus':
-        const music_ed = rcn_find_editor(rcn_music_ed);
-        if(music_ed) {
-          music_ed.set_play_index(e.data.index);
-        }
-      break;
   }
 }
 
