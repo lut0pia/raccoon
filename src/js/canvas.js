@@ -70,11 +70,15 @@ rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, pa
       pixel = ((x & 1) == 0) ? (pixel & 0xf) : (pixel >> 4); // Deal with left or right pixel
 
       const cpixel_index = y*width + x;
-      this.img[cpixel_index*4+0] = palette[pixel*3+0];
-      this.img[cpixel_index*4+1] = palette[pixel*3+1];
-      this.img[cpixel_index*4+2] = palette[pixel*3+2];
+      this.img[cpixel_index*3+0] = palette[pixel*3+0];
+      this.img[cpixel_index*3+1] = palette[pixel*3+1];
+      this.img[cpixel_index*3+2] = palette[pixel*3+2];
     }
   }
+
+  const gl = this.gl;
+  gl.bindTexture(gl.TEXTURE_2D, this.texture);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, this.width, this.height, 0, gl.RGB, gl.UNSIGNED_BYTE, this.img);
 }
 
 rcn_canvas.prototype.draw_quad = function(x, y, width, height, r, g, b, a) {
@@ -123,7 +127,6 @@ rcn_canvas.prototype.flush = function() {
     // Set and upload texture
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.width, this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.img);
 
     gl.useProgram(this.img_program);
     gl.uniform1i(gl.getUniformLocation(this.img_program, 'sampler'), 0);
@@ -148,12 +151,7 @@ rcn_canvas.prototype.set_size = function(width, height) {
 
   this.width = width;
   this.height = height;
-  this.img = new Uint8Array(width * height * 4);
-
-  // Set all alpha values to 255 in advance to avoid doing it later
-  for(let i = 3; i < this.img.length; i += 4) {
-    this.img[i] = 255;
-  }
+  this.img = new Uint8Array(width * height * 3);
 }
 
 rcn_canvas.prototype.client_to_texture_coords = function(x, y) {
