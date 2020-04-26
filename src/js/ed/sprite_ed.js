@@ -295,6 +295,8 @@ rcn_sprite_ed.prototype.fill_pixel = function(start_x, start_y) {
   const queue = [];
   queue.push({x: start_x, y: start_y});
   const color_cmp = this.get_pixel(start_x, start_y);
+  let change_begin = Infinity;
+  let change_end = -Infinity;
 
   while(queue.length > 0) {
     const node = queue.pop();
@@ -304,8 +306,20 @@ rcn_sprite_ed.prototype.fill_pixel = function(start_x, start_y) {
     if(visited.has(key)) continue; // Already visited this pixel
     visited.add(key);
     if(x < 0 || y < 0 || x >= (rcn_current_sprite_columns << 3) || y >= (rcn_current_sprite_rows << 3)) continue; // Outside sprite selection
-    if(this.get_pixel(x, y) != color_cmp) continue; // Outside wanted area
-    this.set_pixel(x, y, this.current_color);
+    const texel_index = this.get_texel_index(x, y);
+    let texel = rcn_global_bin.rom[texel_index];
+    const color = (x&1) ? (texel >> 4) : (texel & 0xf);
+    if(color != color_cmp) continue; // Outside wanted area
+    if(x&1) {
+      texel &= 0xf;
+      texel |= this.current_color << 4;
+    } else {
+      texel &= 0xf0;
+      texel |= this.current_color;
+    }
+    rcn_global_bin.rom[texel_index] = texel;
+    change_begin = Math.min(change_begin, texel_index);
+    change_end = Math.max(change_end, texel_index);
     queue.push(
       {x: x, y: y - 1},
       {x: x, y: y + 1},
@@ -313,6 +327,11 @@ rcn_sprite_ed.prototype.fill_pixel = function(start_x, start_y) {
       {x: x + 1, y: y},
     );
   }
+
+  rcn_dispatch_ed_event('rcn_bin_change', {
+    begin: change_begin,
+    end: change_end + 1,
+  });
 }
 
 rcn_sprite_ed.prototype.get_pixel = function(x, y) {
