@@ -38,7 +38,7 @@ rcn_hover.prototype.update_hovering = function(tex_coords) {
       }
       this.canvas.flush();
     }
-  } else if(this.current_hover_x !== null) {
+  } else if(this.is_hovering()) {
     this.current_x = null;
     this.current_y = null;
     if(this.onchange) {
