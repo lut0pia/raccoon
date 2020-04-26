@@ -315,14 +315,10 @@ rcn_sprite_ed.prototype.fill_pixel = function(start_x, start_y) {
   }
 }
 
-rcn_sprite_ed.prototype.get_pixel = function(draw_x, draw_y) {
-  const texel_index = this.get_texel_index(draw_x, draw_y);
+rcn_sprite_ed.prototype.get_pixel = function(x, y) {
+  const texel_index = this.get_texel_index(x, y);
   const texel = rcn_global_bin.rom[texel_index];
-  if((draw_x % 2) < 1) {
-    return texel & 0xf;
-  } else {
-    return texel >> 4;
-  }
+  return (x&1) ? (texel >> 4) : (texel & 0xf);
 }
 
 rcn_sprite_ed.prototype.set_current_color = function(color) {
