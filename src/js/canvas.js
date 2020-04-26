@@ -7,6 +7,7 @@ function rcn_canvas() {
 
   this.padding_x = 0;
   this.padding_y = 0;
+  this.min_vp_mul = 1;
 
   this.onpostflush = [];
 
@@ -149,6 +150,9 @@ rcn_canvas.prototype.set_size = function(width, height) {
     return;
   }
 
+  this.node.style.minWidth = (width*this.min_vp_mul)+'px';
+  this.node.style.minHeight = (height*this.min_vp_mul)+'px';
+
   this.width = width;
   this.height = height;
   this.img = new Uint8Array(width * height * 3);
@@ -156,7 +160,7 @@ rcn_canvas.prototype.set_size = function(width, height) {
 
 rcn_canvas.prototype.client_to_texture_coords = function(x, y) {
   const vp = this.compute_viewport();
-  if(vp.x <= x && vp.y <= y && x < vp.x + vp.width  && y < vp.y + vp.height) {
+  if(vp.x <= x && vp.y <= y && x < vp.x + vp.width && y < vp.y + vp.height) {
     return {
       x: Math.floor((x - vp.x) / vp.mul),
       y: Math.floor((y - vp.y) / vp.mul),
@@ -171,7 +175,7 @@ rcn_canvas.prototype.compute_viewport = function() {
   // that is a multiple of the texture size and fits the actual size
   const inner_width = this.node.width - this.padding_x;
   const inner_height = this.node.height - this.padding_y;
-  const vp_mul = Math.floor(Math.min(inner_width / this.width, inner_height / this.height));
+  const vp_mul = Math.max(this.min_vp_mul, Math.floor(Math.min(inner_width / this.width, inner_height / this.height)));
   const vp_width = vp_mul * this.width;
   const vp_height = vp_mul * this.height;
   const vp_x = (this.node.width - vp_width) / 2;
