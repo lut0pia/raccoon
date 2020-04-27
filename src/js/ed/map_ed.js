@@ -6,8 +6,9 @@ function rcn_map_ed() {
   rcn_window.call(this);
 
   // Init map editing state
-  this.current_offset_x = 0;
-  this.current_offset_y = 0;
+  this.offset_x = 0;
+  this.offset_y = 0;
+  this.zoom = 0;
 
   const map_ed = this;
 
@@ -35,21 +36,23 @@ function rcn_map_ed() {
       if(e.type == 'mousedown') {
         shift_start_client_x = e.clientX;
         shift_start_client_y = e.clientY;
-        shift_start_offset_x = map_ed.current_offset_x;
-        shift_start_offset_y = map_ed.current_offset_y;
+        shift_start_offset_x = map_ed.offset_x;
+        shift_start_offset_y = map_ed.offset_y;
         e.preventDefault();
       }
       if(shift_start_client_x != undefined && shift_start_offset_y != undefined) {
         const vp = map_ed.map_canvas.compute_viewport();
-        map_ed.current_offset_x = shift_start_offset_x + (shift_start_client_x - e.clientX) / (vp.mul * 8);
-        map_ed.current_offset_y = shift_start_offset_y + (shift_start_client_y - e.clientY) / (vp.mul * 8);
-        map_ed.current_offset_x = Math.max(0, Math.min(128 - 16, map_ed.current_offset_x)) << 0;
-        map_ed.current_offset_y = Math.max(0, Math.min(64 - 16, map_ed.current_offset_y)) << 0;
+        map_ed.offset_x = shift_start_offset_x + (shift_start_client_x - e.clientX) / (vp.mul * 8);
+        map_ed.offset_y = shift_start_offset_y + (shift_start_client_y - e.clientY) / (vp.mul * 8);
         map_ed.update_map_canvas();
         map_ed.selection.reset();
         e.preventDefault();
       }
     }
+  });
+  this.map_canvas.node.addEventListener('wheel', function(e) {
+    map_ed.change_zoom(-Math.sign(e.deltaY))
+    e.preventDefault();
   });
   this.selection = new rcn_selection(this.map_canvas);
   this.selection.requires_shift = true;
@@ -58,8 +61,8 @@ function rcn_map_ed() {
   this.hover.tile_size = 8;
   this.hover.onchange = function() {
     if(this.is_hovering()) {
-      const abs_tile_x = this.current_x + map_ed.current_offset_x;
-      const abs_tile_y = this.current_y + map_ed.current_offset_y;
+      const abs_tile_x = this.current_x + map_ed.offset_x;
+      const abs_tile_y = this.current_y + map_ed.offset_y;
 
       map_ed.map_coords_text.innerText =
         abs_tile_x.toString().padStart(3, '0') + ';' +
@@ -124,10 +127,11 @@ function rcn_map_ed() {
 rcn_map_ed.prototype.title = 'Map Editor';
 rcn_map_ed.prototype.docs_link = 'map-editor';
 rcn_map_ed.prototype.type = 'map_ed';
+rcn_editors.push(rcn_map_ed);
 
-rcn_map_ed.prototype.get_tile_index = function(map_x, map_y) {
-  const x = map_x + this.current_offset_x;
-  const y = map_y + this.current_offset_y;
+rcn_map_ed.prototype.get_tile_index = function(rel_x, rel_y) {
+  const x = this.offset_x + rel_x;
+  const y = this.offset_y + rel_y;
   return rcn.mem_map_offset + (y << 7) + (x << 0);
 }
 
@@ -146,16 +150,29 @@ rcn_map_ed.prototype.get_tile = function(map_x, map_y) {
   return rcn_global_bin.rom[tile_index];
 }
 
+rcn_map_ed.prototype.get_viewport_width = function() {
+  return rcn.map_width >> this.zoom;
+}
+
+rcn_map_ed.prototype.get_viewport_height = function() {
+  return Math.min(rcn.map_height, this.get_viewport_width())
+}
+
 rcn_map_ed.prototype.update_map_canvas = function() {
-  const map_w = 16;
-  const map_h = 16;
-  const pixels = new Uint8Array(((map_w * map_h) << 6) >> 1);
-  const map_row_size = (map_w << 3) >> 1;
+  const vp_w = this.get_viewport_width();
+  const vp_h = this.get_viewport_height();
+
+  // Enforce offset validity
+  this.offset_x = Math.max(0, Math.min(rcn.map_width - vp_w, this.offset_x)) << 0;
+  this.offset_y = Math.max(0, Math.min(rcn.map_height - vp_h, this.offset_y)) << 0;
+
+  const pixels = new Uint8Array(((vp_w * vp_h) << 6) >> 1);
+  const map_row_size = (vp_w << 3) >> 1;
 
   const draw_tile = function(pixels, mx, my, spr) {
     const pix_x = mx << 3;
     const pix_y = my << 3;
-    const pix_index = (pix_y<<6)+(pix_x>>1);
+    const pix_index = (pix_y * vp_w * 4) + (pix_x >> 1);
     const spr_tex_index = ((spr & 0xf) << 2) + ((spr >> 4) << 9);
     const spr_row_size = 4;
 
@@ -165,8 +182,8 @@ rcn_map_ed.prototype.update_map_canvas = function() {
     }
   }
 
-  for(let mx = 0; mx < map_w; mx++) {
-    for(let my = 0; my < map_h; my++) {
+  for(let mx = 0; mx < vp_w; mx++) {
+    for(let my = 0; my < vp_h; my++) {
       draw_tile(pixels, mx, my, this.get_tile(mx, my));
     }
   }
@@ -176,25 +193,41 @@ rcn_map_ed.prototype.update_map_canvas = function() {
     draw_tile(pixels, this.hover.current_x, this.hover.current_y, rcn_current_sprite);
   }
 
-  this.map_canvas.set_size(map_w << 3, map_h << 3);
-  this.map_canvas.blit(0, 0, map_w << 3, map_h << 3, pixels);
+  this.map_canvas.set_size(vp_w << 3, vp_h << 3);
+  this.map_canvas.blit(0, 0, vp_w << 3, vp_h << 3, pixels);
   this.map_canvas.flush();
+}
+
+rcn_map_ed.prototype.change_zoom = function(delta) {
+  this.zoom += delta;
+  this.zoom = Math.min(Math.max(this.zoom, 0), 4);
+  if(this.hover.is_hovering()) {
+    const center_x = this.hover.current_x + this.offset_x;
+    const center_y = this.hover.current_y + this.offset_y;
+
+    // Center viewport based on hovered tile
+    this.offset_x = center_x - this.get_viewport_width() / 2;
+    this.offset_y = center_y - this.get_viewport_height() / 2;
+  }
+  this.hover.update_hovering(null);
+  this.selection.reset();
+  this.update_map_canvas();
 }
 
 rcn_map_ed.prototype.move_selection = function(dx, dy) {
   if(!this.selection.is_selecting()) return;
 
-  const new_x = Math.min(Math.max(this.selection.x + dx, 0), 16 - this.selection.w);
-  const new_y = Math.min(Math.max(this.selection.y + dy, 0), 16 - this.selection.h);
+  const new_x = Math.min(Math.max(this.selection.x + dx, 0), rcn.map_width - this.selection.w);
+  const new_y = Math.min(Math.max(this.selection.y + dy, 0), rcn.map_height - this.selection.h);
 
   if(this.selection.x == new_x && this.selection.y == new_y) return;
 
   rcn_move_map_region(
-    this.current_offset_x + this.selection.x,
-    this.current_offset_y + this.selection.y,
+    this.offset_x + this.selection.x,
+    this.offset_y + this.selection.y,
     this.selection.w, this.selection.h,
-    this.current_offset_x + new_x,
-    this.current_offset_y + new_y,
+    this.offset_x + new_x,
+    this.offset_y + new_y,
   );
 
   this.selection.x = new_x;
@@ -205,8 +238,8 @@ rcn_map_ed.prototype.move_selection = function(dx, dy) {
 rcn_map_ed.prototype.copy_selection = function() {
   if(this.selection.is_selecting()) {
     rcn_copy_map_region(
-      this.current_offset_x + this.selection.x,
-      this.current_offset_y + this.selection.y,
+      this.offset_x + this.selection.x,
+      this.offset_y + this.selection.y,
       this.selection.w,
       this.selection.h,
     );
@@ -217,8 +250,8 @@ rcn_map_ed.prototype.copy_selection = function() {
 rcn_map_ed.prototype.paste_selection = function() {
   if(this.hover.is_hovering()) {
     rcn_paste_map_region(
-      this.current_offset_x + this.hover.current_x,
-      this.current_offset_y + this.hover.current_y,
+      this.offset_x + this.hover.current_x,
+      this.offset_y + this.hover.current_y,
       128, 128,
     );
   }
@@ -289,5 +322,3 @@ function rcn_move_map_region(x, y, w, h, nx, ny) {
     end: rcn.mem_map_offset + Math.max(((y + h) << 7) + ((x + w) << 0), ((ny + h) << 7) + ((nx + w) << 0)) + 1,
   });
 }
-
-rcn_editors.push(rcn_map_ed);

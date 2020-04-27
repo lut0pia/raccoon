@@ -38,6 +38,8 @@ const rcn = {
   mem_screen_offset: 0x6000,
   mem_screen_size: 0x2000, // 8KiB = 128x128x4bits
 
+  map_width: 128,
+  map_height: 64,
   music_count: 64,
   music_track_count: 4,
   sound_count: 64,
