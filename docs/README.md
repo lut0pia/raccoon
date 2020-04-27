@@ -147,15 +147,11 @@ Map data is 128x64 tiles, where each tile is a byte-sized sprite index.
 
 ## Palette Memory
 
-Palette data is 16 RGB colors, each 3 bytes for the red, green and blue channels.
+Palette data is 16 colors represented in 4 bytes each: 3 bytes for the red, green and blue channels, and a fourth byte with extra data. The fourth byte's 4 lowest bits are used as an indirection index (to render another color instead of this one), and its highest bit is used for transparency.
 
 ## Sprite Flags Memory
 
 Sprite flags are 192 8bits bitfields.
-
-## Palette Mod Memory
-
-Palette mod are 16 bytes used for palette state for each 16 colors. The first 4 bits are used as a permutation, the last bit is used for transparency, the 3 bits inbetween are reserved for now.
 
 ## Gamepad State Memory
 

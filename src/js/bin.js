@@ -7,11 +7,17 @@ const rcn_bin_non_tokens = {
   const: true, let: true,
 };
 const rcn_bin_token_limit = 4096;
+const rcn_bin_current_version = 4;
 
 function rcn_bin() {
   this.name = 'Untitled';
   this.code = '';
   this.rom = new Uint8Array(rcn.rom_size);
+
+  // Set default palette permutation
+  for(let c = 0; c < 16; c++) {
+    this.rom[rcn.mem_palette_offset+c*4+3] = c;
+  }
 }
 
 rcn_bin.prototype.clone = function() {
@@ -28,7 +34,7 @@ rcn_bin.prototype.token_count = function() {
 }
 
 rcn_bin.prototype.from_json = function(bin) {
-  if(bin.version > 1 && bin.version <= 3) {
+  if(bin.version > 1 && bin.version <= rcn_bin_current_version) {
     this.name = bin.name;
 
     let code = '';
@@ -76,6 +82,17 @@ rcn_bin.prototype.from_json = function(bin) {
       }
     }
 
+    // Change from palette mod in RAM to everything palette in ROM
+    if(bin.version < 4) {
+      const pal_off = rcn.mem_palette_offset;
+      for(let c = 15; c >= 0; c--) {
+        this.rom[pal_off+c*4+3] = c;
+        this.rom[pal_off+c*4+2] = this.rom[pal_off+c*3+2];
+        this.rom[pal_off+c*4+1] = this.rom[pal_off+c*3+1];
+        this.rom[pal_off+c*4+0] = this.rom[pal_off+c*3+0];
+      }
+    }
+
     this.host = bin.host;
     this.link = bin.link;
   } else {
@@ -109,7 +126,7 @@ rcn_bin.prototype.to_json = function() {
 
   return {
     name: this.name,
-    version: 3,
+    version: rcn_bin_current_version,
     code: code_lines,
     rom: {
       spr: rom_to_hex(this.rom, rcn.mem_spritesheet_offset, rcn.mem_spritesheet_size),

@@ -5,10 +5,8 @@
 function rcn_vm_worker_function(rcn) {
   const rcn_ram_size = rcn.ram_size;
   const rcn_mem_palette_offset = rcn.mem_palette_offset;
-  const rcn_mem_palette_size = rcn.mem_palette_size;
   const rcn_mem_sound_offset = rcn.mem_sound_offset;
   const rcn_mem_music_offset = rcn.mem_music_offset;
-  const rcn_mem_palmod_offset = rcn.mem_palmod_offset;
   const rcn_mem_gamepad_offset = rcn.mem_gamepad_offset;
   const rcn_mem_musicstate_offset = rcn.mem_musicstate_offset;
   const rcn_mem_soundstate_offset = rcn.mem_soundstate_offset;
@@ -36,11 +34,6 @@ function rcn_vm_worker_function(rcn) {
       delete _self[key];
     }
   });
-
-  // Initialize permutation
-  for(let i = 0; i < 16; i++) {
-    ram[rcn_mem_palmod_offset+i] = i;
-  }
 
   // Local helper functions
   const sprite_pixel_index = function(x, y) {
@@ -100,21 +93,21 @@ function rcn_vm_worker_function(rcn) {
     }
   }
   palset = function(i, r, g, b) {
-    ram[rcn_mem_palette_offset+i*3+0] = r;
-    ram[rcn_mem_palette_offset+i*3+1] = g;
-    ram[rcn_mem_palette_offset+i*3+2] = b;
+    ram[rcn_mem_palette_offset+i*4+0] = r;
+    ram[rcn_mem_palette_offset+i*4+1] = g;
+    ram[rcn_mem_palette_offset+i*4+2] = b;
   }
   const _palmget = function(c) {
-    return ram[rcn_mem_palmod_offset+c] & 0xf;
+    return ram[rcn_mem_palette_offset+c*4+3] & 0xf;
   }
   palm = function(src, dst) {
-    ram[rcn_mem_palmod_offset+src] = (ram[rcn_mem_palmod_offset+src] & 0xf0) | dst;
+    ram[rcn_mem_palette_offset+src*4+3] = (ram[rcn_mem_palette_offset+src*4+3] & 0xf0) | dst;
   }
   const _paltget = function(c) {
-    return (ram[rcn_mem_palmod_offset+c] >> 7) != 0;
+    return (ram[rcn_mem_palette_offset+c*4+3] >> 7) != 0;
   }
   palt = function(c, t) {
-    ram[rcn_mem_palmod_offset+c] = (ram[rcn_mem_palmod_offset+c] & 0x0f) | (t ? 0x80 : 0x00);
+    ram[rcn_mem_palette_offset+c*4+3] = (ram[rcn_mem_palette_offset+c*4+3] & 0x0f) | (t ? 0x80 : 0x00);
   }
   cls = c = function(c = 0) { // Default color is 0
     c |= c<<4; // Left and right pixel to same color

@@ -13,14 +13,14 @@ const rcn = {
   mem_map_offset: 0x1800,
   mem_map_size: 0x2000, // 8KiB = 128x64x8bits
   mem_palette_offset: 0x3800,
-  mem_palette_size: 0x0030, // 48B = 16x24bits
-  mem_spriteflags_offset: 0x3830,
+  mem_palette_size: 0x0040, // 64B = 16x(24+1+3+4)bits (24bit RGB color + 1b transp + 3b reserved + 4b redir)
+  mem_spriteflags_offset: 0x3840,
   mem_spriteflags_size: 0x00c0, // 192B = 192x8bits
-  mem_sound_offset: 0x38f0,
+  mem_sound_offset: 0x3900,
   mem_sound_size: 0x1080, // 4224B = 64x(8+8+(32x16))bits
-  mem_music_offset: 0x4970,
+  mem_music_offset: 0x4980,
   mem_music_size: 0x0100, // 256B = 64x(4x6+2+6)bits
-  // ... 0x0590
+  // ... 0x0580
   // RAM/ROM limit
   // ... 0x0fd2
   mem_cam_offset: 0x5fb5,
@@ -31,8 +31,6 @@ const rcn = {
   mem_soundstate_size: 0x0014, // 20B = 4x(8+8+8+16)bits (8b index + 8b offset + 8b length + 16b time)
   mem_soundreg_offset: 0x5fd2,
   mem_soundreg_size: 0x0010, // 16B = 4x(8+8+6+1+3+3)
-  mem_palmod_offset: 0x5fe2,
-  mem_palmod_size: 0x0010, // 16B = 16x(7+1)bits (4b color + 1b transp)
   mem_gamepad_offset: 0x5ff4,
   mem_gamepad_size: 0x000c, // 12B = 2x4x(4+4)+4x8bits (4b directions + 4b buttons)
   mem_screen_offset: 0x6000,

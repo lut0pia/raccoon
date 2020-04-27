@@ -71,9 +71,9 @@ rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, pa
       pixel = ((x & 1) == 0) ? (pixel & 0xf) : (pixel >> 4); // Deal with left or right pixel
 
       const cpixel_index = y*width + x;
-      this.img[cpixel_index*3+0] = palette[pixel*3+0];
-      this.img[cpixel_index*3+1] = palette[pixel*3+1];
-      this.img[cpixel_index*3+2] = palette[pixel*3+2];
+      this.img[cpixel_index*3+0] = palette[pixel*4+0];
+      this.img[cpixel_index*3+1] = palette[pixel*4+1];
+      this.img[cpixel_index*3+2] = palette[pixel*4+2];
     }
   }
 
