@@ -212,6 +212,7 @@ rcn_map_ed.prototype.change_zoom = function(delta) {
   this.hover.update_hovering(null);
   this.selection.reset();
   this.update_map_canvas();
+  this.hover.refresh_hovering();
 }
 
 rcn_map_ed.prototype.move_selection = function(dx, dy) {
