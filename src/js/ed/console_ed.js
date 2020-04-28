@@ -37,7 +37,9 @@ rcn_console_ed.prototype.log = function(text) {
 }
 
 rcn_console_ed.prototype.log_error = function(error) {
-  const log_el = this.log(`Error: line ${error.line}: ${error.message}`);
+  const text = `Error: ${error.message}
+    ${error.stack.map(l => `${l.func}:${l.line}`).join('\n')}`;
+  const log_el = this.log(text);
   log_el.classList.add('error');
 }
 
