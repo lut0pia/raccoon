@@ -575,6 +575,14 @@ function rcn_vm_worker_function(rcn) {
     ram[addr] = val;
   }
 
+  // Raccoon debug API
+  debug = function(msg) {
+    _postMessage({
+      type: 'debug',
+      msg: msg,
+    });
+  }
+
   onmessage = function(e) {
     switch(e.data.type) {
       case 'code':

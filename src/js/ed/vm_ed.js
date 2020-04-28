@@ -102,10 +102,23 @@ rcn_vm_ed.prototype.reboot = function() {
 
 rcn_vm_ed.prototype.onmessage = function(e) {
   switch(e.data.type) {
-    case 'error':
+    case 'error': {
       const code_ed = rcn_find_editor(rcn_code_ed);
       if(code_ed) {
         code_ed.set_error(e.data);
+      }
+
+      const console_ed = rcn_find_editor(rcn_console_ed);
+      if(console_ed) {
+        console_ed.log_error(e.data);
+      }
+    } break;
+    case 'debug':
+      console.log('Raccoon VM:', e.data.msg);
+
+      const console_ed = rcn_find_editor(rcn_console_ed);
+      if(console_ed) {
+        console_ed.log(e.data.msg);
       }
       break;
   }
