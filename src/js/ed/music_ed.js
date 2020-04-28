@@ -69,7 +69,6 @@ function rcn_music_ed() {
         selection.addRange(range);
       }
       track_input.oninput = function() {
-        console.log(this.innerText.length);
         if(this.innerText.match(/^(-+|\s*)$/i)) {
           music_ed.set_track(music, track, -1);
           this.onfocus();
