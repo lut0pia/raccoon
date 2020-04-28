@@ -55,11 +55,16 @@ function rcn_sprite_ed() {
     const color_input = document.createElement('input');
     color_input.type = 'color';
     color_input.oninput = function() {
-      // Update bin's palette with UI palette
-      rcn_global_bin.rom.set(sprite_ed.get_palette_bytes(), rcn.mem_palette_offset);
+      // Update bin's palette with new color
+      const rgb_int = parseInt(this.value.slice(1), 16);
+      const rgb_bytes = new Uint8Array(3);
+      rgb_bytes[0] = (rgb_int>>16);
+      rgb_bytes[1] = (rgb_int>>8) & 0xff;
+      rgb_bytes[2] = rgb_int & 0xff;
+      rcn_global_bin.rom.set(rgb_bytes, rcn.mem_palette_offset + i*4);
       rcn_dispatch_ed_event('rcn_bin_change', {
-        begin: rcn.mem_palette_offset,
-        end: rcn.mem_palette_offset+rcn.mem_palette_size,
+        begin: rcn.mem_palette_offset + i*4,
+        end: rcn.mem_palette_offset + i*4+3,
       });
     }
     this.color_inputs.push(color_input);
@@ -243,7 +248,7 @@ rcn_sprite_ed.prototype.update_color_inputs = function() {
     let rgb_str = '#';
     let max = 0;
     for(let j = 0; j < 3; j++) {
-      const component = palette_bytes[i*3+j];
+      const component = palette_bytes[i*4+j];
       max = Math.max(max, component);
       rgb_str += ('00'+component.toString(16)).slice(-2);
     }
@@ -251,17 +256,6 @@ rcn_sprite_ed.prototype.update_color_inputs = function() {
     this.color_labels[i].style.backgroundColor = rgb_str;
     this.color_labels[i].style.color = max >= 128 ? 'black' : 'lightgrey';
   }
-}
-
-rcn_sprite_ed.prototype.get_palette_bytes = function() {
-  const palette_bytes = new Uint8Array(rcn.mem_palette_size); // 16 RGB values
-  for(let i = 0; i < this.color_inputs.length; i++) {
-    const rgb_int = parseInt(this.color_inputs[i].value.slice(1), 16);
-    palette_bytes[i*3+0] = (rgb_int>>16);
-    palette_bytes[i*3+1] = (rgb_int>>8) & 0xff;
-    palette_bytes[i*3+2] = rgb_int & 0xff;
-  }
-  return palette_bytes;
 }
 
 rcn_sprite_ed.prototype.get_texel_index = function(draw_x, draw_y) {
