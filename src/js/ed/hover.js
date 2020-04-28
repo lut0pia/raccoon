@@ -9,9 +9,9 @@ function rcn_hover(canvas) {
 
   const hover = this;
   canvas.node.addEventListener('mousemove', function(e) {
-    const canvas_coords = this.getBoundingClientRect();
-    const tex_coords = canvas.client_to_texture_coords(e.clientX - canvas_coords.x, e.clientY - canvas_coords.y);
-    hover.update_hovering(tex_coords);
+    hover.mouse_x = e.clientX;
+    hover.mouse_y = e.clientY;
+    hover.refresh_hovering();
   });
   canvas.node.addEventListener('mouseout', function(e) {
     hover.update_hovering(null);
@@ -23,6 +23,12 @@ function rcn_hover(canvas) {
 
 rcn_hover.prototype.is_hovering = function() {
   return this.current_x !== null;
+}
+
+rcn_hover.prototype.refresh_hovering = function() {
+  const canvas_coords = this.canvas.node.getBoundingClientRect();
+  const tex_coords = this.canvas.client_to_texture_coords(this.mouse_x - canvas_coords.x, this.mouse_y - canvas_coords.y);
+  this.update_hovering(tex_coords);
 }
 
 rcn_hover.prototype.update_hovering = function(tex_coords) {
