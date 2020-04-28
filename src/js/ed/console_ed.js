@@ -43,7 +43,7 @@ rcn_console_ed.prototype.log_error = function(error) {
 
 rcn_console_ed.prototype.execute = function() {
   const vm_ed = rcn_find_editor(rcn_vm_ed);
-  if(vm_ed) {
+  if(vm_ed && vm_ed.vm.worker) {
     this.log(`Execute: ${this.input.value}`);
     vm_ed.vm.load_code(this.input.value);
     this.input.value = '';
