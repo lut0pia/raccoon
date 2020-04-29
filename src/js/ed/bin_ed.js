@@ -165,17 +165,7 @@ rcn_bin_ed.prototype.type = 'bin_ed';
 
 rcn_bin_ed.prototype.save_bin = function() {
   rcn_log('Saving bin: '+rcn_global_bin.name);
-  const save_index = rcn_storage.bins.findIndex(function(bin) {
-    return bin.name == rcn_global_bin.name;
-  });
-  if(save_index < 0) {
-    rcn_log('Creating new saved bin: '+rcn_global_bin.name);
-    rcn_storage.bins.push(rcn_global_bin.to_json());
-  }
-  else {
-    rcn_log('Overwriting old bin: '+rcn_global_bin.name);
-    rcn_storage.bins[save_index] = rcn_global_bin.to_json();
-  }
+  rcn_storage.bins[rcn_global_bin.name] = rcn_global_bin.to_json();
   rcn_dispatch_ed_event('rcn_bins_change');
 }
 
@@ -261,10 +251,7 @@ rcn_bin_ed.prototype.pull_bin = async function() {
 }
 
 rcn_bin_ed.prototype.delete_bin = function(bin_name) {
-  const bin_index = rcn_storage.bins.findIndex(function(bin) {
-    return bin.name == bin_name;
-  });
-  rcn_storage.bins.splice(bin_index, 1);
+  delete rcn_storage.bins[bin_name];
   rcn_dispatch_ed_event('rcn_bins_change');
 }
 
@@ -330,7 +317,7 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
 
   const bin_ed = this;
   this.bin_node = document.createElement('div');
-  rcn_storage.bins.forEach(function(stored_bin) {
+  for(let stored_bin of Object.values(rcn_storage.bins)) {
     const bin_node = document.createElement('article');
 
     const bin_name = document.createElement('span');
@@ -363,7 +350,7 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
     }
 
     bin_ed.bin_node.appendChild(bin_node);
-  });
+  }
   this.add_child(this.bin_node);
 }
 

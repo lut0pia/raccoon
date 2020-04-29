@@ -238,9 +238,7 @@ function rcn_dispatch_ed_event(type, detail) {
 }
 
 function rcn_bin_save_status() {
-  const saved_bin = rcn_storage.bins.find(function(bin) {
-    return bin.name == rcn_global_bin.name;
-  });
+  const saved_bin = rcn_storage.bins[rcn_global_bin.name];
   const current_json = JSON.stringify(rcn_global_bin.to_json());
   const default_json = JSON.stringify((new rcn_bin()).to_json());
   const saved_json = saved_bin ? JSON.stringify(saved_bin) : '';
@@ -263,7 +261,12 @@ function rcn_confirm_bin_override() {
 
 // Create defaults in rcn_storage
 if(!rcn_storage.bins) {
-  rcn_storage.bins = [];
+  rcn_storage.bins = {};
+}
+
+// Move from old bin array to new bin map
+if(rcn_storage.bins instanceof Array) {
+  rcn_storage.bins = Object.assign(...Object.values(rcn_storage.bins).map(bin => ({[bin.name]: bin})));
 }
 
 if(!rcn_storage.window_layouts) {
