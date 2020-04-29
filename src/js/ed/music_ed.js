@@ -115,8 +115,12 @@ function rcn_music_ed() {
     if(e.detail.begin < mem_music_end && e.detail.end > mem_music_begin) {
       music_ed.update_tracks();
     }
+    if(e.detail.begin < e.detail.end) {
+      music_ed.vm.load_memory(rcn_global_bin.rom.slice(e.detail.begin, e.detail.end), e.detail.begin);
+    }
   });
 
+  this.vm.load_memory(rcn_global_bin.rom);
   this.update_tracks();
 }
 
@@ -175,7 +179,6 @@ rcn_music_ed.prototype.update_tracks = function() {
 }
 
 rcn_music_ed.prototype.play = function(music) {
-  this.vm.load_memory(rcn_global_bin.rom);
   this.vm.load_code(`mus(${music});`);
 }
 

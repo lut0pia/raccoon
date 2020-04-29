@@ -166,6 +166,9 @@ function rcn_sound_ed() {
       sound_ed.update_instrument();
       sound_ed.update_notes();
     }
+    if(e.detail.begin < e.detail.end) {
+      sound_ed.vm.load_memory(rcn_global_bin.rom.slice(e.detail.begin, e.detail.end), e.detail.begin);
+    }
   });
 
   this.section.addEventListener('keydown', function(e) {
@@ -185,6 +188,7 @@ function rcn_sound_ed() {
     }
   });
 
+  this.vm.load_memory(rcn_global_bin.rom);
   this.set_current_sound(0);
 }
 
@@ -308,7 +312,6 @@ rcn_sound_ed.prototype.transpose = function(delta) {
 }
 
 rcn_sound_ed.prototype.toggle_play = function() {
-  this.vm.load_memory(rcn_global_bin.rom);
   this.vm.load_code(`
     if(read(${rcn.mem_soundstate_offset + 2}) == 0) {
       sfx(${this.current_sound}, 0);
