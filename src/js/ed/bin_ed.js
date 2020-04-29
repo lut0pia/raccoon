@@ -10,12 +10,22 @@ function rcn_bin_ed() {
   // Create name input
   this.name_input = document.createElement('input');
   this.name_input.type = 'text';
-  this.name_input.placeholder = 'Bin name';
-  this.name_input.oninput = function() { // Update bin name on input change
+  this.name_input.placeholder = 'Save name';
+  this.name_input.oninput = function() {
     rcn_global_bin.name = this.value;
     bin_ed.update_bin_save_status();
   }
   this.add_child(this.name_input);
+
+  // Create name input
+  this.display_name_input = document.createElement('input');
+  this.display_name_input.type = 'text';
+  this.display_name_input.placeholder = 'Display name';
+  this.display_name_input.oninput = function() {
+    rcn_global_bin.display_name = this.value;
+    bin_ed.update_bin_save_status();
+  }
+  this.add_child(this.display_name_input);
 
   // Create host select
   this.host_select = document.createElement('select');
@@ -359,6 +369,7 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
 
 rcn_bin_ed.prototype.update_name_input = function() {
   this.name_input.value = rcn_global_bin.name;
+  this.display_name_input.value = rcn_global_bin.display_name;
 }
 
 rcn_bin_ed.prototype.update_bin_save_status = function() {

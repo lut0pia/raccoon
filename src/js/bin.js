@@ -36,6 +36,7 @@ rcn_bin.prototype.token_count = function() {
 rcn_bin.prototype.from_json = function(bin) {
   if(bin.version > 1 && bin.version <= rcn_bin_current_version) {
     this.name = bin.name;
+    this.display_name = bin.display_name || bin.name;
 
     let code = '';
     bin.code.forEach(function(line) {
@@ -126,6 +127,7 @@ rcn_bin.prototype.to_json = function() {
 
   return {
     name: this.name,
+    display_name: this.display_name,
     version: rcn_bin_current_version,
     code: code_lines,
     rom: {
@@ -143,6 +145,7 @@ rcn_bin.prototype.to_json = function() {
 
 rcn_bin.prototype.to_json_text = function() {
   const json = this.to_json();
+  delete json.name; // Only keep display name
   delete json.host; // Host information should not be saved outside raccoon
   delete json.link;
   return JSON.stringify(json, null, 2);

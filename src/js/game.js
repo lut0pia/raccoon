@@ -15,7 +15,7 @@ function rcn_start_game_mode(params) {
 
   const vm = new rcn_vm();
   vm.load_bin(params.bin);
-  document.title = params.bin.name;
+  document.title = params.bin.display_name;
   document.body.appendChild(vm.canvas.node);
   vm.canvas.node.focus();
 
