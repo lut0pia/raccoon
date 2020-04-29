@@ -91,10 +91,10 @@ function rcn_code_ed() {
         rcn_code_ed_textarea_insert_text(this, ' '.repeat(new_indent));
 
         const delta = new_indent - current_indent
-        if(start > line_beg) {
+        if(start >= line_beg) {
           start_offset += delta;
         }
-        if(end > line_beg) {
+        if(end >= line_beg) {
           end_offset += delta;
         }
       }
