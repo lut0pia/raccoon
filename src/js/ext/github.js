@@ -182,8 +182,8 @@ async function rcn_github_get_blob(owner, repo, sha) {
 
 rcn_hosts['github'] = {
   get_param: 'gh',
-  pull_bin: async function(bin) {
-    const pair = bin.link.split('/');
+  pull_bin: async function(link) {
+    const pair = link.split('/');
     const owner = pair[0];
     const repo = pair[1];
     const ref = await rcn_github_get_ref(owner, repo, 'heads/master');
@@ -191,12 +191,13 @@ rcn_hosts['github'] = {
     const tree = await rcn_github_get_tree(owner, repo, commit.tree.sha);
     const node = rcn_github_get_tree_bin_node(tree);
     const json = await rcn_github_get_blob(owner, repo, node.sha);
+    const bin = new rcn_bin();
     bin.from_json(JSON.parse(json));
     bin.host = 'github';
     bin.link = owner+'/'+repo+'/'+ref.object.sha;
     return bin;
   },
-  push_bin: async function(bin, create_repo) {
+  push_bin: async function(bin) {
     const pair = bin.link.split('/');
     const owner = pair[0];
     const repo = pair[1];
@@ -253,9 +254,10 @@ rcn_hosts['github'] = {
     const head_tree = await rcn_github_get_tree(owner, repo, head_tree_sha);
     const head_node = rcn_github_get_tree_bin_node(head_tree);
     const json = await rcn_github_get_blob(owner, repo, head_node.sha);
-    bin.from_json(JSON.parse(json));
-    bin.host = 'github';
-    bin.link = owner+'/'+repo+'/'+head_commit_sha;
-    return bin;
+    const new_bin = new rcn_bin();
+    new_bin.from_json(JSON.parse(json));
+    new_bin.host = 'github';
+    new_bin.link = owner+'/'+repo+'/'+head_commit_sha;
+    return new_bin;
   },
 }

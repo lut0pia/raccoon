@@ -206,7 +206,9 @@ rcn_bin_ed.prototype.sync_bin = async function() {
 
   rcn_overlay_push();
   try {
+    const bin_name = rcn_global_bin.name;
     await host.sync_bin(rcn_global_bin);
+    rcn_global_bin.name = bin_name;
     this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
   } catch(e) {
     alert('Failed to sync bin ' + rcn_global_bin.name + ': ' + e);
@@ -226,8 +228,9 @@ rcn_bin_ed.prototype.push_bin = async function() {
   }
   rcn_overlay_push();
   try {
-    await host.push_bin(rcn_global_bin);
-    this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
+    const bin = await host.push_bin(rcn_global_bin);
+    bin.name = rcn_global_bin.name;
+    this.change_bin(bin);
   } catch(e) {
     alert('Failed to push bin ' + rcn_global_bin.name + ': ' + e);
   } finally {
@@ -241,8 +244,9 @@ rcn_bin_ed.prototype.pull_bin = async function() {
 
   rcn_overlay_push();
   try {
-    await host.pull_bin(rcn_global_bin);
-    this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
+    const bin = await host.pull_bin(rcn_global_bin.link);
+    bin.name = rcn_global_bin.name;
+    this.change_bin(bin);
   } catch(e) {
     alert('Failed to pull bin ' + rcn_global_bin.name + ': ' + e);
   } finally {
