@@ -169,8 +169,8 @@ rcn_bin_ed.prototype.save_bin = function() {
   rcn_dispatch_ed_event('rcn_bins_change');
 }
 
-rcn_bin_ed.prototype.change_bin = function(new_bin) {
-  if(rcn_global_bin != new_bin && !rcn_confirm_bin_override()) {
+rcn_bin_ed.prototype.change_bin = async function(new_bin) {
+  if(rcn_global_bin != new_bin && !await rcn_confirm_bin_override()) {
     return;
   }
   rcn_global_bin = new_bin;
@@ -221,7 +221,7 @@ rcn_bin_ed.prototype.push_bin = async function() {
   let host = this.check_host_for_bin(rcn_global_bin);
   if(!host) return;
 
-  if(!confirm(
+  if(!await rcn_ui_confirm(
   'Are you sure you want to push bin ' + rcn_global_bin.name + ' to ' + rcn_global_bin.link + '? '
   +'This is a destructive action.')) {
     return;
@@ -338,8 +338,8 @@ rcn_bin_ed.prototype.refresh_bins_ui = function() {
     }));
     bin_node.appendChild(rcn_ui_button({
       value: 'Delete',
-      onclick: function() {
-        if(confirm('Are you sure you want to delete '+stored_bin.name+'?')) {
+      onclick: async function() {
+        if(await rcn_ui_confirm('Are you sure you want to delete '+stored_bin.name+'?')) {
           bin_ed.delete_bin(stored_bin.name);
         }
       },

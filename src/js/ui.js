@@ -96,6 +96,22 @@ async function rcn_ui_popup(o) {
   return promise;
 }
 
+async function rcn_ui_confirm(text) {
+  return rcn_ui_popup({
+    text: text,
+    buttons: [
+      {
+        value: 'Okay',
+        return_value: true,
+      },
+      {
+        value: 'Cancel',
+        return_value: false,
+      },
+    ],
+  });
+}
+
 const rcn_overlay = document.createElement('div');
 rcn_overlay.id = 'overlay';
 rcn_overlay.stack = 0;

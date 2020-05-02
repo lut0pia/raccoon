@@ -1,7 +1,7 @@
 // Raccoon editor functionality
 'use strict';
 
-function rcn_start_editor_mode(params) {
+async function rcn_start_editor_mode(params) {
   rcn_log('Starting editor mode');
 
   document.body.classList.add('editor');
@@ -32,7 +32,7 @@ function rcn_start_editor_mode(params) {
     rcn_global_bin.from_json(rcn_storage.working_bin);
   }
 
-  if(params.bin && rcn_confirm_bin_override()) {
+  if(params.bin && await rcn_confirm_bin_override()) {
     rcn_global_bin = params.bin;
   }
 
@@ -236,10 +236,10 @@ function rcn_bin_save_status() {
   }
 }
 
-function rcn_confirm_bin_override() {
+async function rcn_confirm_bin_override() {
   const save_status = rcn_bin_save_status();
   return (save_status != 'unsaved' && save_status != 'new') ||
-    confirm('Are you sure you want to overwrite your working bin? You have unsaved changes.');
+    await rcn_ui_confirm(`Are you sure you want to overwrite your working bin ${rcn_global_bin.name}? You have unsaved changes.`);
 }
 
 // Create defaults in rcn_storage
