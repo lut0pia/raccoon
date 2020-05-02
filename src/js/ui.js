@@ -112,6 +112,12 @@ async function rcn_ui_confirm(text) {
   });
 }
 
+async function rcn_ui_alert(text) {
+  return rcn_ui_popup({
+    text: text,
+  });
+}
+
 const rcn_overlay = document.createElement('div');
 rcn_overlay.id = 'overlay';
 rcn_overlay.stack = 0;

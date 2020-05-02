@@ -122,7 +122,7 @@ function rcn_bin_ed() {
   // Create file input
   this.file_input = document.createElement('input');
   this.file_input.type = 'file';
-  this.file_input.onchange = function(e) {
+  this.file_input.onchange = async function(e) {
     if(this.files.length>0) {
       const file = this.files[0];
       if(file.name.match(/\.rcn\.json$/i)) { // It's a text format
@@ -134,7 +134,7 @@ function rcn_bin_ed() {
         }
         file_reader.readAsText(file);
       } else {
-        alert('Unable to load file: '+file.name);
+        await rcn_ui_alert('Unable to load file: '+file.name);
       }
     }
     this.value = null;
@@ -182,7 +182,7 @@ rcn_bin_ed.prototype.change_bin = async function(new_bin) {
   });
 }
 
-rcn_bin_ed.prototype.check_host_for_bin = function(bin) {
+rcn_bin_ed.prototype.check_host_for_bin = async function(bin) {
   let host = null;
   for(let host_id in rcn_hosts) {
     if(bin.host == host_id) {
@@ -191,9 +191,9 @@ rcn_bin_ed.prototype.check_host_for_bin = function(bin) {
   }
 
   if(!host) {
-    alert('No valid host for bin '+bin.name);
+    await rcn_ui_alert('No valid host for bin '+bin.name);
   } else if(!bin.link) {
-    alert('No valid link for bin '+bin.name);
+    await rcn_ui_alert('No valid link for bin '+bin.name);
     host = null;
   }
 
@@ -201,7 +201,7 @@ rcn_bin_ed.prototype.check_host_for_bin = function(bin) {
 }
 
 rcn_bin_ed.prototype.sync_bin = async function() {
-  let host = this.check_host_for_bin(rcn_global_bin);
+  let host = await this.check_host_for_bin(rcn_global_bin);
   if(!host) return;
 
   rcn_overlay_push();
@@ -211,14 +211,14 @@ rcn_bin_ed.prototype.sync_bin = async function() {
     rcn_global_bin.name = bin_name;
     this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
   } catch(e) {
-    alert('Failed to sync bin ' + rcn_global_bin.name + ': ' + e);
+    await rcn_ui_alert('Failed to sync bin ' + rcn_global_bin.name + ': ' + e);
   } finally {
     rcn_overlay_pop();
   }
 }
 
 rcn_bin_ed.prototype.push_bin = async function() {
-  let host = this.check_host_for_bin(rcn_global_bin);
+  let host = await this.check_host_for_bin(rcn_global_bin);
   if(!host) return;
 
   if(!await rcn_ui_confirm(
@@ -232,14 +232,14 @@ rcn_bin_ed.prototype.push_bin = async function() {
     bin.name = rcn_global_bin.name;
     this.change_bin(bin);
   } catch(e) {
-    alert('Failed to push bin ' + rcn_global_bin.name + ': ' + e);
+    await rcn_ui_alert('Failed to push bin ' + rcn_global_bin.name + ': ' + e);
   } finally {
     rcn_overlay_pop();
   }
 }
 
 rcn_bin_ed.prototype.pull_bin = async function() {
-  let host = this.check_host_for_bin(rcn_global_bin);
+  let host = await this.check_host_for_bin(rcn_global_bin);
   if(!host) return;
 
   rcn_overlay_push();
@@ -248,7 +248,7 @@ rcn_bin_ed.prototype.pull_bin = async function() {
     bin.name = rcn_global_bin.name;
     this.change_bin(bin);
   } catch(e) {
-    alert('Failed to pull bin ' + rcn_global_bin.name + ': ' + e);
+    await rcn_ui_alert('Failed to pull bin ' + rcn_global_bin.name + ': ' + e);
   } finally {
     rcn_overlay_pop();
   }

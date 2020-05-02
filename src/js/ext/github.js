@@ -62,10 +62,10 @@ rcn_github_ed.prototype.login = async function() {
     this.password_input.value = '';
     rcn_storage.github.username = username;
     rcn_storage.github.token = auth.token;
-    alert('Log in success!');
+    await rcn_ui_alert('Log in success!');
   } catch(e) {
     rcn_storage.github = {};
-    alert('Log in failed: ' + e);
+    await rcn_ui_alert('Log in failed: ' + e);
   }
   this.update_token_input();
 }
