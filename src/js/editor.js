@@ -150,23 +150,6 @@ function rcn_start_editor_mode(params) {
   });
 }
 
-const rcn_overlay = document.createElement('div');
-rcn_overlay.id = 'overlay';
-rcn_overlay.stack = 0;
-document.body.appendChild(rcn_overlay);
-
-function rcn_overlay_push() {
-  if(++rcn_overlay.stack > 0) {
-    rcn_overlay.classList.add('active');
-  }
-}
-
-function rcn_overlay_pop() {
-  if(--rcn_overlay.stack <= 0) {
-    rcn_overlay.classList.remove('active');
-  }
-}
-
 const rcn_side_panel = document.createElement('aside');
 document.body.appendChild(rcn_side_panel);
 

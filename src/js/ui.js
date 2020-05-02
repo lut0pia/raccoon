@@ -49,3 +49,20 @@ function rcn_ui_checkbox(o) {
   checkbox.appendChild(checkbox_label);
   return checkbox;
 }
+
+const rcn_overlay = document.createElement('div');
+rcn_overlay.id = 'overlay';
+rcn_overlay.stack = 0;
+document.body.appendChild(rcn_overlay);
+
+function rcn_overlay_push() {
+  if(++rcn_overlay.stack > 0) {
+    rcn_overlay.classList.add('active');
+  }
+}
+
+function rcn_overlay_pop() {
+  if(--rcn_overlay.stack <= 0) {
+    rcn_overlay.classList.remove('active');
+  }
+}
