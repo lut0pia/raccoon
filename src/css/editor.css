@@ -169,6 +169,36 @@ input[type=text] {
 }
 
 /*
+  The popup appears above the overlay when it has the active class
+*/
+
+#popup {
+  display: none;
+}
+
+#popup.active {
+  display: block;
+  position: absolute;
+  z-index: 250;
+  top: 40%;
+  left: 25%;
+  width: 50%;
+  height: 20%;
+  text-align: center;
+  background-color: lightgrey;
+}
+
+#popup p {
+  margin: 32px;
+}
+
+#popup .buttons {
+  position: absolute;
+  width: 100%;
+  bottom: 8px;
+}
+
+/*
   The overlay appears when it has the active class
   Its function is to block access to underlying editors
 */

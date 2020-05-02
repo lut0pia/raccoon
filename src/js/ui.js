@@ -9,7 +9,7 @@ function rcn_ui_button(o) {
   button.value = o.value || 'Button';
   button.classList.toggle('text', o.value !== undefined && rcn_ui_text_regex.test(o.value));
   if(o.onclick) {
-    button.onclick = o.onclick;
+    button.addEventListener('click', o.onclick);
   }
   return button;
 }
@@ -48,6 +48,52 @@ function rcn_ui_checkbox(o) {
   checkbox.appendChild(checkbox_input);
   checkbox.appendChild(checkbox_label);
   return checkbox;
+}
+
+const rcn_popup = document.createElement('div');
+rcn_popup.id = 'popup';
+document.body.appendChild(rcn_popup);
+
+async function rcn_ui_popup(o) {
+   // Ensure there is at least a button to close the popup
+   if(!o.buttons || o.buttons.length == 0) {
+    o.buttons = [
+      {
+        value: 'Close',
+      },
+    ];
+  }
+
+  const promise = new Promise(function(resolve) {
+    rcn_overlay_push();
+
+    if(o.text) {
+      const text_el = document.createElement('p');
+      text_el.innerText = o.text;
+      rcn_popup.appendChild(text_el);
+    }
+
+    const buttons_el = document.createElement('div');
+    buttons_el.classList.add('buttons');
+    rcn_popup.appendChild(buttons_el);
+
+    for(let button of o.buttons) {
+      const button_el = rcn_ui_button(button);
+      const return_value = button.return_value;
+      button_el.addEventListener('click', () => resolve(return_value));
+      buttons_el.appendChild(button_el);
+    }
+    rcn_popup.classList.add('active');
+  });
+  const close_popup = function() {
+    rcn_popup.classList.remove('active');
+    while(rcn_popup.firstChild) {
+      rcn_popup.removeChild(rcn_popup.firstChild);
+    }
+    rcn_overlay_pop();
+  }
+  promise.then(close_popup, close_popup);
+  return promise;
 }
 
 const rcn_overlay = document.createElement('div');
