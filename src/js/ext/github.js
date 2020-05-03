@@ -182,23 +182,28 @@ async function rcn_github_get_blob(owner, repo, sha) {
 
 rcn_hosts['github'] = {
   get_param: 'gh',
-  pull_bin: async function(link) {
-    const pair = link.split('/');
+  read: async function(o) {
+    const pair = o.link.split('/');
     const owner = pair[0];
     const repo = pair[1];
-    const ref = await rcn_github_get_ref(owner, repo, 'heads/master');
-    const commit = await rcn_github_get_commit(owner, repo, ref.object.sha);
+    let commit_sha = pair[2];
+    if(o.latest || (!commit_sha && o.any)) {
+      const ref = await rcn_github_get_ref(owner, repo, 'heads/master');
+      commit_sha = ref.object.sha;
+    } else if(!commit_sha) {
+      throw 'Incomplete link to read';
+    }
+    const commit = await rcn_github_get_commit(owner, repo, commit_sha);
     const tree = await rcn_github_get_tree(owner, repo, commit.tree.sha);
     const node = rcn_github_get_tree_bin_node(tree);
-    const json = await rcn_github_get_blob(owner, repo, node.sha);
-    const bin = new rcn_bin();
-    bin.from_json(JSON.parse(json));
-    bin.host = 'github';
-    bin.link = owner+'/'+repo+'/'+ref.object.sha;
-    return bin;
+    return {
+      text: await rcn_github_get_blob(owner, repo, node.sha),
+      host: 'github',
+      link: `${owner}/${repo}/${commit_sha}`,
+    };
   },
-  push_bin: async function(bin) {
-    const pair = bin.link.split('/');
+  write: async function(o) {
+    const pair = o.link.split('/');
     const owner = pair[0];
     const repo = pair[1];
 
@@ -211,19 +216,21 @@ rcn_hosts['github'] = {
     } catch(e) {} // Repository already exists
 
     const new_tree = await rcn_github_create_tree(owner, repo, undefined, [{
-      path: repo + '.rcn.json',
+      path: o.name,
       mode: '100644', // Regular file
       type: 'blob',
-      content: bin.to_json_text(),
+      content: o.text,
     }]);
     const new_commit = await rcn_github_create_commit(owner, repo, undefined, 'Push from raccoon', new_tree.sha);
     await rcn_github_update_ref(owner, repo, 'heads/master', new_commit.sha, true);
-    bin.host = 'github';
-    bin.link = owner+'/'+repo+'/'+new_commit.sha;
-    return bin;
+    return {
+      text: o.text,
+      host: 'github',
+      link: `${owner}/${repo}/${new_commit.sha}`,
+    };
   },
-  sync_bin: async function(bin) {
-    const pair = bin.link.split('/');
+  sync: async function(o) {
+    const pair = o.link.split('/');
     const owner = pair[0];
     const repo = pair[1];
     const commit_sha = pair[2];
@@ -234,9 +241,9 @@ rcn_hosts['github'] = {
       path: node.path,
       mode: '100644', // Regular file
       type: 'blob',
-      content: bin.to_json_text(),
+      content: o.text,
     }]);
-    const commit_message = prompt('Commit message:', 'Autocommit from raccoon');
+    const commit_message = prompt('Commit message:', 'Commit from raccoon');
     const new_commit = await rcn_github_create_commit(owner, repo, [commit_sha], commit_message, new_tree.sha);
     let head_commit_sha = new_commit.sha;
     let head_tree_sha = new_commit.tree.sha;
@@ -244,20 +251,27 @@ rcn_hosts['github'] = {
       await rcn_github_update_ref(owner, repo, 'heads/master', head_commit_sha);
     } catch(e) {
       if(e == 422) { // Update ref failed, try merging
-        const merge = await rcn_github_merge(owner, repo, 'master', head_commit_sha);
-        head_commit_sha = merge.sha;
-        head_tree_sha = merge.commit.tree.sha;
+        try {
+          const merge = await rcn_github_merge(owner, repo, 'master', head_commit_sha);
+          head_commit_sha = merge.sha;
+          head_tree_sha = merge.commit.tree.sha;
+        } catch(e) {
+          if(e == 409) {
+            throw 'conflict';
+          } else {
+            throw `Merge failure: ${e}`;
+          }
+        }
       } else {
-        throw 'Merge attempt failed';
+        throw `Fast-forward failure: ${e}`;
       }
     }
     const head_tree = await rcn_github_get_tree(owner, repo, head_tree_sha);
     const head_node = rcn_github_get_tree_bin_node(head_tree);
-    const json = await rcn_github_get_blob(owner, repo, head_node.sha);
-    const new_bin = new rcn_bin();
-    new_bin.from_json(JSON.parse(json));
-    new_bin.host = 'github';
-    new_bin.link = owner+'/'+repo+'/'+head_commit_sha;
-    return new_bin;
+    return {
+      text: await rcn_github_get_blob(owner, repo, head_node.sha),
+      host: 'github',
+      link: `${owner}/${repo}/${head_commit_sha}`,
+    };
   },
 }

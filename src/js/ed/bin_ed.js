@@ -60,41 +60,37 @@ function rcn_bin_ed() {
   // Create new button
   this.add_child(this.new_button = rcn_ui_button({
     value: 'New',
-    onclick: function() {
-      bin_ed.change_bin(new rcn_bin());
-    },
+    onclick: () => bin_ed.change_bin(new rcn_bin()),
   }));
 
   // Create save button
   this.add_child(this.save_button = rcn_ui_button({
     value: 'Save',
-    onclick: function() {
-      bin_ed.save_bin();
-    },
-  }));
-
-  // Create sync button
-  this.add_child(this.sync_button = rcn_ui_button({
-    value: 'Sync',
-    onclick: function() {
-      bin_ed.sync_bin();
-    },
+    onclick: () => bin_ed.save_bin(),
   }));
 
   // Create push button
   this.add_child(this.push_button = rcn_ui_button({
     value: 'Push',
-    onclick: function() {
-      bin_ed.push_bin();
-    },
+    onclick: () => bin_ed.push_bin(),
   }));
 
   // Create pull button
   this.add_child(this.pull_button = rcn_ui_button({
     value: 'Pull',
-    onclick: function() {
-      bin_ed.pull_bin();
-    },
+    onclick: () => bin_ed.pull_bin(),
+  }));
+
+  // Create force push button
+  this.add_child(this.force_push_button = rcn_ui_button({
+    value: 'Force Push',
+    onclick: () => bin_ed.force_push_bin(),
+  }));
+
+  // Create force pull button
+  this.add_child(this.force_pull_button = rcn_ui_button({
+    value: 'Force Pull',
+    onclick: () => bin_ed.force_pull_bin(),
   }));
 
   // Create download as json button
@@ -200,55 +196,179 @@ rcn_bin_ed.prototype.check_host_for_bin = async function(bin) {
   return host;
 }
 
-rcn_bin_ed.prototype.sync_bin = async function() {
-  let host = await this.check_host_for_bin(rcn_global_bin);
-  if(!host) return;
-
-  rcn_overlay_push();
-  try {
-    const bin_name = rcn_global_bin.name;
-    await host.sync_bin(rcn_global_bin);
-    rcn_global_bin.name = bin_name;
-    this.change_bin(rcn_global_bin); // Simple way to force complete bin reload
-  } catch(e) {
-    await rcn_ui_alert('Failed to sync bin ' + rcn_global_bin.name + ': ' + e);
-  } finally {
-    rcn_overlay_pop();
-  }
-}
-
 rcn_bin_ed.prototype.push_bin = async function() {
-  let host = await this.check_host_for_bin(rcn_global_bin);
+  const host = await this.check_host_for_bin(rcn_global_bin);
   if(!host) return;
 
-  if(!await rcn_ui_confirm(
-  'Are you sure you want to push bin ' + rcn_global_bin.name + ' to ' + rcn_global_bin.link + '? '
-  +'This is a destructive action.')) {
-    return;
-  }
   rcn_overlay_push();
   try {
-    const bin = await host.push_bin(rcn_global_bin);
+    const data = await host.sync({
+      link: rcn_global_bin.link,
+      text: rcn_global_bin.to_json_text(),
+    });
+    const bin = new rcn_bin();
+    bin.from_json(JSON.parse(data.text));
     bin.name = rcn_global_bin.name;
+    bin.host = data.host;
+    bin.link = data.link;
     this.change_bin(bin);
   } catch(e) {
-    await rcn_ui_alert('Failed to push bin ' + rcn_global_bin.name + ': ' + e);
+    if(e == 'conflict') {
+      await rcn_ui_alert(`Failed to merge bin ${rcn_global_bin.name} because of a conflict. Try pulling to resolve problems.`);
+    } else {
+      await rcn_ui_alert(`Failed to push bin ${rcn_global_bin.name}: ${e}`);
+    }
   } finally {
     rcn_overlay_pop();
   }
 }
 
 rcn_bin_ed.prototype.pull_bin = async function() {
-  let host = await this.check_host_for_bin(rcn_global_bin);
+  const host = await this.check_host_for_bin(rcn_global_bin);
   if(!host) return;
 
   rcn_overlay_push();
   try {
-    const bin = await host.pull_bin(rcn_global_bin.link);
+    const local_json = rcn_global_bin.to_json();
+    const ref_data = await host.read({
+      link: rcn_global_bin.link,
+    });
+    const latest_data = await host.read({
+      link: rcn_global_bin.link,
+      latest: true,
+    });
+    ref_data.json = JSON.parse(ref_data.text);
+    latest_data.json = JSON.parse(latest_data.text);
+
+    const merged = await this.merge(local_json, latest_data.json, ref_data.json);
+    const bin = new rcn_bin();
+    bin.from_json(merged);
     bin.name = rcn_global_bin.name;
+    bin.host = latest_data.host;
+    bin.link = latest_data.link;
     this.change_bin(bin);
   } catch(e) {
-    await rcn_ui_alert('Failed to pull bin ' + rcn_global_bin.name + ': ' + e);
+    await rcn_ui_alert(`Failed to pull bin ${rcn_global_bin.name}: ${e}`);
+  } finally {
+    rcn_overlay_pop();
+  }
+}
+
+rcn_bin_ed.prototype.merge = async function(local, latest, ref) {
+  const inner_merge = async function(name, access, hash) {
+    const local_value = access(local);
+    const latest_value = access(latest);
+    const ref_value = access(ref);
+    const local_hash = hash(local_value);
+    const latest_hash = hash(latest_value);
+    const ref_hash = hash(ref_value)
+    if(ref_hash == local_hash || local_hash == latest_hash) {
+      return latest_value;
+    } else if(ref_hash == latest_hash) {
+      return local_value;
+    } else {
+      while(true) {
+        const choice = await rcn_ui_popup({
+          text:`There is a conflict between local changes to ${name} and latest changes.`+
+            `\nWhich version do you wish to keep?`,
+          buttons: [
+            {
+              value: `Keep local ${name}`,
+              return_value: 'local',
+            },
+            {
+              value: `Take latest ${name}`,
+              return_value: 'latest',
+            },
+            {
+              value: 'Cancel',
+              return_value: 'cancel',
+            },
+          ]
+        });
+        switch(choice) {
+          case 'local': return local_value;
+          case 'latest': return latest_value;
+          default: throw 'Cancelled merge';
+        }
+      }
+    }
+  }
+  const merged = {};
+  for(let part_id in ref) {
+    switch(part_id) {
+      case 'code':
+        merged[part_id] = await inner_merge(part_id, b => b.code, p => p && p.join(''));
+        break;
+      case 'rom':
+        const rom_part_names = {
+          mus: 'music',
+          pal: 'palette',
+          snd: 'sound',
+          spf: 'sprite flags',
+          spr: 'sprites',
+        }
+        merged.rom = {};
+        for(let rom_part_id in ref.rom) {
+          merged.rom[rom_part_id] = await inner_merge(rom_part_names[rom_part_id] || rom_part_id,
+            b => b.rom[rom_part_id], p => p && p.join(''));
+        }
+        break;
+      default:
+        merged[part_id] = await inner_merge(part_id, b => b[part_id], p => p);
+        break;
+    }
+  }
+  return merged;
+}
+
+rcn_bin_ed.prototype.force_push_bin = async function() {
+  const host = await this.check_host_for_bin(rcn_global_bin);
+  if(!host) return;
+
+  if(!await rcn_ui_confirm(
+    `Are you sure you want to force push bin ${rcn_global_bin.name} to ${rcn_global_bin.link}?`+
+    `\nThis is a destructive action.`)) {
+    return;
+  }
+  rcn_overlay_push();
+  try {
+    const data = await host.write({
+      link: rcn_global_bin.link,
+      text: rcn_global_bin.to_json_text(),
+      name: 'bin.rcn.json'
+    });
+    const bin = new rcn_bin();
+    bin.from_json(JSON.parse(data.text));
+    bin.name = rcn_global_bin.name;
+    bin.host = rcn_global_bin.host;
+    bin.link = data.link;
+    this.change_bin(bin);
+  } catch(e) {
+    await rcn_ui_alert(`Failed to force push bin ${rcn_global_bin.name}: ${e}`);
+  } finally {
+    rcn_overlay_pop();
+  }
+}
+
+rcn_bin_ed.prototype.force_pull_bin = async function() {
+  const host = await this.check_host_for_bin(rcn_global_bin);
+  if(!host) return;
+
+  rcn_overlay_push();
+  try {
+    const data = await host.read({
+      link: rcn_global_bin.link,
+      latest: true,
+    });
+    const bin = new rcn_bin();
+    bin.from_json(JSON.parse(data.text));
+    bin.name = rcn_global_bin.name;
+    bin.host = rcn_global_bin.host;
+    bin.link = data.link;
+    this.change_bin(bin);
+  } catch(e) {
+    await rcn_ui_alert(`Failed to force pull bin ${rcn_global_bin.name}: ${e}`);
   } finally {
     rcn_overlay_pop();
   }

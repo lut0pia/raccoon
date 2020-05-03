@@ -152,11 +152,21 @@ rcn_bin.prototype.to_json_text = function() {
 }
 
 async function rcn_bin_from_env() {
-  for(let i in rcn_hosts) {
-    const host = rcn_hosts[i];
+  for(let host_id in rcn_hosts) {
+    const host = rcn_hosts[host_id];
     const link = rcn_get_parameters[host.get_param];
     if(link) {
-      return await host.pull_bin(link);
+      const data = await host.read({
+        link: link,
+        any: true,
+      });
+      if(data) {
+        const bin = new rcn_bin();
+        bin.from_json(JSON.parse(data.text));
+        bin.host = host_id;
+        bin.link = data.link;
+        return bin;
+      }
     }
   }
   return null;
