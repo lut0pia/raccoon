@@ -17,20 +17,20 @@ const rcn = {
   mem_spriteflags_offset: 0x3840,
   mem_spriteflags_size: 0x00c0, // 192B = 192x8bits
   mem_sound_offset: 0x3900,
-  mem_sound_size: 0x1080, // 4224B = 64x(8+8+(32x16))bits
+  mem_sound_size: 0x1080, // 4224B = 64x(8+2+6+(32x(2+6+2+3+3)))bits
   mem_music_offset: 0x4980,
-  mem_music_size: 0x0100, // 256B = 64x(4x6+2+6)bits
+  mem_music_size: 0x0100, // 256B = 64x(4x(1+1+6))bits
   // ... 0x0580
   // RAM/ROM limit
-  // ... 0x0fd2
-  mem_cam_offset: 0x5fb5,
+  // ... 0x0fc7
+  mem_cam_offset: 0x5fc7,
   mem_cam_size: 0x0004, // 4B = 2x16bits
-  mem_musicstate_offset: 0x5fb9,
-  mem_musicstate_size: 0x0005, // 5B = 1+7+16+16bits (1b playing + 7b index + 16b time + 16b max_time)
-  mem_soundstate_offset: 0x5fbe,
+  mem_soundstate_offset: 0x5fcb,
   mem_soundstate_size: 0x0014, // 20B = 4x(8+8+8+16)bits (8b index + 8b offset + 8b length + 16b time)
-  mem_soundreg_offset: 0x5fd2,
-  mem_soundreg_size: 0x0010, // 16B = 4x(8+8+6+1+3+3)
+  mem_musicstate_offset: 0x5fdf,
+  mem_musicstate_size: 0x0005, // 5B = 1+7+16+16bits (1b playing + 7b index + 16b time + 16b max_time)
+  mem_soundreg_offset: 0x5fe4,
+  mem_soundreg_size: 0x0010, // 16B = 4x(8+8+6+1+3+3)bits
   mem_gamepad_offset: 0x5ff4,
   mem_gamepad_size: 0x000c, // 12B = 2x4x(4+4)+4x8bits (4b directions + 4b buttons)
   mem_screen_offset: 0x6000,

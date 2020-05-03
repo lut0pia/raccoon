@@ -6,6 +6,7 @@
     1. [Bin Browser](#bin-browser)
     1. [Virtual Machine](#virtual-machine)
     1. [Code Editor](#code-editor)
+    1. [Console](#console)
     1. [Sprite Editor](#sprite-editor)
     1. [Sprite Selector](#sprite-selector)
     1. [Map Editor](#map-editor)
@@ -28,7 +29,7 @@
 
 # Introduction
 
-Raccoon is a browser-based fantasy console. It's a tool to make, share and play small games. Its capabilities are purposefully limited to allow you, the creator, not to be overwhelmed by the possibilities. Although the console is limited, the tools are carefully crafted to give you a smooth creating experience. Raccoon games are contained in bins, they're a virtual equivalent to console cartridges. Programming is done in JavaScript.
+Raccoon is a browser-based fantasy console. It's a tool to make, share and play small games. Its capabilities are purposefully limited to allow you, the creator, not to be overwhelmed by the possibilities. Although the console is limited, the tools are carefully crafted to give you a smooth creating experience. Raccoon games are contained in bins, they're a virtual equivalent to console cartridges. Programming is done in [JavaScript](https://developer.mozilla.org/docs/Web/JavaScript/A_re-introduction_to_JavaScript).
 
 ## Game Loop
 
@@ -68,36 +69,50 @@ The code editor is a text editor with syntax highlighting. Clicking on underline
 
 Pressing the `Apply` button or `Control+Enter` (while focusing the text input) will send the current code to the virtual machine, so you can see changes happen right away.
 
+- Use `Control+Left-Click` on function names to go to their definition (or documentation).
+
+## Console
+
+The console displays messages, errors and callstacks in chronological order.
+
+You can use the text input to execute code in the [Virtual Machine](#virtual-machine) by pressing `Enter`.
+
 ## Sprite Editor
 
 The sprite editor allows you to draw small images that you will then be able to render into your game.
 
 The canvas displays the currently selected sprites (see [Sprite Selector](#sprite-selector) for more information).
 
-To select a drawing color, either use `Left-Click` on the palette on the right or use `1-8` to select the first 8 colors and `Shift+1-8` to select the last 8 colors.
+To select a drawing color, either use `Left-Click` on the palette on the right or use `1-8` to select the first 8 colors and `Shift+1-8` to select the last 8 colors. You can double click on a color to change it.
 
 - Use `Left-Click` to set the texel color to the current color.
 - Use `Right-Click` to change the current color to be the color of the clicked texel (color picking).
 - Use `Control+Left-Click` to fill with the current color.
-- Use `Shift+Left-Click` to select texels
-- Use `Control+C` to copy selected texels
-- Use `Control+V` to paste copied texels
+- Use `Shift+Left-Click` to select texels.
+- Use `Control+C` to copy selected texels.
+- Use `Control+V` to paste copied texels.
 
 ## Sprite Selector
 
 The canvas displays the spritesheet. The index of the currently selected sprite is displayed above.
 
 - Use `Left-Click` to select the sprites you want to edit in the [Sprite Editor](#sprite-editor) or draw in the [Map Editor](#map-editor).
+- Use `Control+C` to copy selected sprites.
+- Use `Control+V` to paste copied sprites.
 
 ## Map Editor
 
 The map editor allows you to edit a 128x64 tilemap for your game. We'll be using the word tile in this document, any 1x1 sprite is a tile, there is no separate memory for either tiles or sprites.
 
-The canvas displays a view of the map. The coordinates of the current tile is displayed above.
+The canvas displays a view of the map. The coordinates of the currently hovered tile are displayed above.
 
 - Use `Left-Click` to set the tile under your cursor to the current tile.
 - Use `Right-Click` to change the current tile to be the tile under your cursor.
 - Use `Middle-Click` to drag your view of the map to edit different parts of the map.
+- Use `Mouse Wheel` to change the zoom level.
+- Use `Shift+Left-Click` to select tiles.
+- Use `Control+C` to copy selected tiles.
+- Use `Control+V` to paste copied tiles.
 
 ## Sound Editor
 
@@ -112,6 +127,7 @@ The table represents time on the x-axis and note pitches on the y-axis. You can 
 - Use `Middle-Click` to change a note's effect.
 - Use `Up/Down-Arrow` to transpose one semitone.
 - Use `Control+Up/Down-Arrow` to transpose one octave.
+- Use `Space` to play/stop the current sound.
 
 ## Music Editor
 
@@ -120,6 +136,8 @@ The music editor allows you to orchestrate multiple sound tracks at once and in 
 Each row is a list of 4 optional sound effect indices which will be played simultaneously.
 
 When a row is done playing, the subsequent row is played, unless 🛑 is set, in which case playback stops, or ⤴️ is set, in which case we go back up to the closest ⤵️.
+
+- Use ▶️/⏹️ to play/stop the music.
 
 # Memory
 
@@ -131,10 +149,14 @@ N.B. Ranges in memory are expressed with their end excluded.
 | --- | --- | --- | ---
 | `0x0000-0x1800` | [Spritesheet](#spritesheet-memory) | ROM | 128x96x4bits
 | `0x1800-0x3800` | [Map](#map-memory) | ROM | 128x64x8bits
-| `0x3800-0x3830` | [Palette](#palette-memory) | ROM | 16x24bits
-| `0x3830-0x38f0` | [Sprite flags](#sprite-flags-memory) | ROM | 192x8bits
-| `0x5fe2-0x5ff8` | [Palette mod](#palette-mod-memory) | RAM | 16x(4+3+1)bits
-| `0x5ff8-0x6000` | [Gamepad state](#gamepad-state-memory) | RAM | 2x4x(4+4)bits
+| `0x3800-0x3840` | [Palette](#palette-memory) | ROM | 16x(24+1+3+4)bits
+| `0x3840-0x3900` | [Sprite flags](#sprite-flags-memory) | ROM | 192x8bits
+| `0x3900-0x4980` | [Sound](#sound-memory) | ROM | 64x(8+2+6+(32x(2+6+2+3+3)))bits
+| `0x4980-0x4a80` | [Music](#music-memory) | ROM | 64x(4x(1+1+6))bits
+| `0x5fcb-0x5fdf` | [Sound state](#sound-state-memory) | RAM | 4x(8+8+6+1+3+3)bits
+| `0x5fdf-0x5fe4` | [Music state](#music-state-memory) | RAM | 4x(8+8+6+1+3+3)bits
+| `0x5fe4-0x5ff4` | [Sound registers](#sound-registers-memory) | RAM | 4x(1+7+2+6+2+6+2+3+3)bits
+| `0x5ff4-0x6000` | [Gamepad state](#gamepad-state-memory) | RAM | 2x4x(4+4)bits
 | `0x6000-0x8000` | [Screen](#screen-memory) | RAM | 128x128x4bits
 
 ## Spritesheet Memory
@@ -149,9 +171,49 @@ Map data is 128x64 tiles, where each tile is a byte-sized sprite index.
 
 Palette data is 16 colors represented in 4 bytes each: 3 bytes for the red, green and blue channels, and a fourth byte with extra data. The fourth byte's 4 lowest bits are used as an indirection index (to render another color instead of this one), and its highest bit is used for transparency.
 
+- Color: `RRRRRRRR GGGGGGGG BBBBBBBBB T___IIII`
+
 ## Sprite Flags Memory
 
 Sprite flags are 192 8bits bitfields.
+
+## Sound Memory
+
+Sound data is 64 tracks.
+
+- Track: `PPPPPPPPP EEIIIIII 64xNote`
+    - P: Period
+    - E: Envelope
+    - I: Instrument
+- Note: `__TTTTTT __EEEVVV`
+    - T: Tone
+    - E: Effect
+    - V: Volume
+
+## Music Memory
+
+Music data is 64 32bit nodes that connect tracks together via their indices.
+
+- Music: `FUTTTTTT FUTTTTTT FUTTTTTTT _UTTTTTT`
+    - F: Flags
+    - U: Used
+    - T: Track
+
+## Sound State Memory
+
+## Sound Registers Memory
+
+Sound registers are 4 32bit registers that are used by the virtual machine to communicate to the sound chip.
+
+- Register: `SPPPPPPP EEIIIIII OOTTTTTT __EEEVVV`
+    - S: Switch
+    - P: Period
+    - E: Envelope
+    - I: Instrument
+    - O: Offset
+    - T: Tone
+    - E: Effect
+    - V: Volume
 
 ## Gamepad State Memory
 
@@ -182,7 +244,7 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `mset(celx, cely, n)`: Set the sprite index at map coordinates (`celx`;`cely`) to `n`
 - 🎥 `spr(n, x, y, w=1.0, h=1.0, fx=false, fy=false)`: Draws the `n`th sprite at screen coordinates (`x`;`y`) where `w` and `h` are the width and height of the drawing in sprite length (8 pixels per unit), and `fx` and `fy` indicate whether to flip the drawing horizontally and vertically
 - 🎥 `map(celx, cely, sx, sy, celw, celh)`: Draws a rectangle of the map starting at (`celx`;`cely`) with an extent of (`celw`;`celh`) at the pixel (`sx`;`sy`)
-- 🎥 `print(x, y, text, c)`: Prints the `text` in color `c` starting at screen coordinates (`x`;`y`)
+- 🎥 `print(x, y, text, c)`: Prints the `text` in color `c` starting at screen coordinates (`x`;`y`), returns the width of the text in pixels
 - 🎥 `line(x0, y0, x1, y1, c)`: Draws straight line in color `c` between screen coordinates (`x0`;`y0`) and (`x1`;`y1`)
 - 🎥 `rect(x, y, w, h, c)`: Draws a hollow rectangle at screen coordinates (`x`;`y`) of width `w`, height `h`, and color `c`
 - 🎥 `rectfill(x, y, w, h, c)`: Draws a filled rectangle at screen coordinates (`x`;`y`) of width `w`, height `h`, and color `c`
@@ -220,6 +282,9 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `memset(dst, val, len)`: Sets `len` bytes in RAM to value `val` at `dst`
 - `read(addr)`: Returns the value of the byte at address `addr` in RAM
 - `write(addr, val)`: Writes value `val` to the byte at address `addr` in RAM
+
+## Debug Functions
+- `debug(msg)`: Logs `msg` to the [Console](#console)
 
 ## Function Shortcuts
 

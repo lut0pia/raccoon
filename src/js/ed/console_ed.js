@@ -24,6 +24,7 @@ function rcn_console_ed() {
 
 rcn_console_ed.prototype.title = 'Console';
 rcn_console_ed.prototype.type = 'console_ed';
+rcn_console_ed.prototype.docs_link = 'console';
 
 rcn_console_ed.prototype.log = function(text) {
   const at_end = this.log_container.scrollTop >= this.log_container.scrollHeight - this.log_container.clientHeight;
