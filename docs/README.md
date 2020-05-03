@@ -275,6 +275,7 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 
 - `btn(i, p=0)`: Returns true if button `i` is pressed for player `p`
 - `btnp(i, p=0)`: Returns true if button `i` is pressed but wasn't pressed in previous frame for player `p`
+- `btns(i, p=0)`: Returns a string to represent the button `i` for player `p`
 
 ## Memory Functions
 

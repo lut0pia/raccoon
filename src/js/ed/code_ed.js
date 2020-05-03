@@ -12,7 +12,7 @@ const rcn_code_ed_doc_functions = {
     'spr', 'map', 'print', 'line', 'rect', 'rectfill', 'circ', 'circfill'],
   'sound': ['sfx', 'mus'],
   'math': ['flr', 'ceil', 'abs', 'sign', 'max', 'min', 'mid', 'sqrt', 'rnd', 'sin', 'cos', 'atan2'],
-  'input': ['btn', 'btnp'],
+  'input': ['btn', 'btnp', 'btns'],
   'memory': ['memcpy', 'memset', 'read', 'write'],
 };
 
