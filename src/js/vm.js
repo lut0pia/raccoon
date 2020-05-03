@@ -8,30 +8,33 @@ const rcn_keycode_to_gamepad = {
 };
 
 function rcn_vm(params = {}) {
-  this.gamepad_state = new Uint8Array(rcn.mem_gamepad_size);
+  const vm = this;
 
   if(!params.no_canvas) {
     this.canvas = new rcn_canvas();
     this.canvas.set_size(128, 128);
     this.canvas.node.tabIndex = 0; // Means we can focus the canvas and receive input
-    this.canvas.node.vm = this;
     this.canvas.node.addEventListener('keydown', function(e) {
       if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
         e.preventDefault();
-        this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], true);
-        this.vm.set_gamepad_layout(0, rcn.gamepad_layout_xcvb);
+        const player = vm.get_player_for_gamepad_id('keyboard', rcn.gamepad_layout_xcvb, true);
+        if(player >= 0) {
+          vm.set_gamepad_bit(player, rcn_keycode_to_gamepad[e.keyCode], true);
+        }
       }
     });
     this.canvas.node.addEventListener('keyup', function(e) {
       if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
         e.preventDefault();
-        this.vm.set_gamepad_bit(0, rcn_keycode_to_gamepad[e.keyCode], false);
-        this.vm.set_gamepad_layout(0, rcn.gamepad_layout_xcvb);
+        const player = vm.get_player_for_gamepad_id('keyboard', rcn.gamepad_layout_xcvb, true);
+        if(player >= 0) {
+          vm.set_gamepad_bit(player, rcn_keycode_to_gamepad[e.keyCode], false);
+        }
       }
     });
     this.canvas.node.addEventListener('blur', function() {
       // Reset keyboard state
-      this.vm.gamepad_state[0] = 0;
+      vm.gamepad_state[0] = 0;
     });
     this.dom_element = this.canvas.node;
   }
@@ -43,7 +46,6 @@ function rcn_vm(params = {}) {
   this.reset();
   this.last_tick = 0;
 
-  const vm = this;
   const tick = function() {
     const now = performance.now();
     if(now > vm.last_tick + 30) {
@@ -88,20 +90,7 @@ rcn_vm.prototype.tick = function() {
 }
 
 rcn_vm.prototype.update = function() {
-  const gamepads = navigator.getGamepads();
-  for(let i = 0; i < gamepads.length; i++) {
-    let gamepad = gamepads[i];
-    if(!gamepad) continue;
-    this.set_gamepad_bit(gamepad.index, 0, gamepad.axes[0] < -0.33);
-    this.set_gamepad_bit(gamepad.index, 1, gamepad.axes[0] > +0.33);
-    this.set_gamepad_bit(gamepad.index, 2, gamepad.axes[1] < -0.33);
-    this.set_gamepad_bit(gamepad.index, 3, gamepad.axes[1] > +0.33);
-    this.set_gamepad_bit(gamepad.index, 4, gamepad.buttons[0].pressed);
-    this.set_gamepad_bit(gamepad.index, 5, gamepad.buttons[1].pressed);
-    this.set_gamepad_bit(gamepad.index, 6, gamepad.buttons[2].pressed);
-    this.set_gamepad_bit(gamepad.index, 7, gamepad.buttons[3].pressed);
-    this.set_gamepad_layout(gamepad.index, rcn.gamepad_layout_abxy);
-  }
+  this.poll_gamepads();
 
   this.worker.postMessage({type: 'write', offset: rcn.mem_gamepad_offset, bytes: this.gamepad_state});
   this.worker.postMessage({type: 'update'});
@@ -122,11 +111,41 @@ rcn_vm.prototype.reset = function() {
   const vm = this;
   this.worker.onmessage = function(e) { vm.onmessage(e); }
   this.audio = new rcn_audio();
+  this.gamepad_state = new Uint8Array(rcn.mem_gamepad_size);
+  this.gamepad_mapping = [];
 
   // Set default gamepad layouts
   this.set_gamepad_layout(0, rcn.gamepad_layout_xcvb); // Keyboard for first player
   for(let i = 1; i < 4; i++) {
     this.set_gamepad_layout(i, rcn.gamepad_layout_abxy); // Abxy for the rest
+  }
+}
+
+rcn_vm.prototype.poll_gamepads = function() {
+  const gamepads = navigator.getGamepads();
+  for(let i = 0; i < gamepads.length; i++) {
+    const gamepad = gamepads[i];
+    if(!gamepad) {
+      continue;
+    }
+    const state = [
+      gamepad.axes[0] < -0.33,
+      gamepad.axes[0] > +0.33,
+      gamepad.axes[1] < -0.33,
+      gamepad.axes[1] > +0.33,
+      gamepad.buttons[0].pressed,
+      gamepad.buttons[1].pressed,
+      gamepad.buttons[2].pressed,
+      gamepad.buttons[3].pressed,
+    ];
+
+    const create_mapping = state.includes(true);
+    const player = this.get_player_for_gamepad_id(gamepad.id, rcn.gamepad_layout_abxy, create_mapping);
+    if(player >= 0) {
+      for(let i in state) {
+        this.set_gamepad_bit(player, i, state[i]);
+      }
+    }
   }
 }
 
@@ -147,6 +166,16 @@ rcn_vm.prototype.load_memory = function(bytes, offset = 0) {
 
 rcn_vm.prototype.load_memory_from_bin = function(offset, size) {
   this.load_memory(rcn_global_bin.rom.slice(offset, offset + size), offset);
+}
+
+rcn_vm.prototype.get_player_for_gamepad_id = function(id, layout, create_mapping = false) {
+  let player = this.gamepad_mapping.indexOf(id);
+  if(player < 0 && create_mapping && this.gamepad_mapping.length < 4) {
+    player = this.gamepad_mapping.length;
+    this.gamepad_mapping.push(id);
+    this.set_gamepad_layout(player, layout);
+  }
+  return player;
 }
 
 rcn_vm.prototype.set_gamepad_bit = function(player, offset, value) {
