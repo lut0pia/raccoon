@@ -1,10 +1,11 @@
 // Generic draggable window
 'use strict';
 
+const rcn_window_snap_radius = 16;
 let rcn_window_drag = null;
 
 function rcn_window() {
-  let window = this;
+  const window = this;
 
   this.section = document.createElement('section');
   this.section.id = ((Math.random() * 0x10000000) >>> 0).toString(16);
@@ -50,10 +51,10 @@ function rcn_window() {
 
   // Create content resize observer
   this.observer = new MutationObserver(function(mutations) {
-    for(let i = 0; i < mutations.length; i++) {
-      let mutation = mutations[i];
+    for(let mutation of mutations) {
       if(mutation.attributeName == 'style') {
         window.section.dispatchEvent(new CustomEvent('rcn_window_resize'));
+        window.update_snapping();
       }
     }
   });
@@ -97,6 +98,66 @@ rcn_window.prototype.foreground = function() {
   });
 }
 
+rcn_window.prototype.update_snapping = function() {
+  const this_window = this;
+  const other_windows = rcn_get_windows().filter(w => w != this_window);
+  const unique = (v, i, a) => a.indexOf(v) == i;
+  const guides_x = other_windows
+    .map(w => [parseInt(w.section.style.left), parseInt(w.section.style.left) + w.section.clientWidth])
+    .flat().filter(unique);
+  const guides_y = other_windows
+    .map(w => [parseInt(w.section.style.top), parseInt(w.section.style.top) + w.section.clientHeight])
+    .flat().filter(unique);
+  const container_width = rcn_window_container.clientWidth;
+  const container_height = rcn_window_container.clientHeight;
+
+  const snap_pos = function(guides, v, d) {
+    let guide = guides.find(g => Math.abs(g - v) <= rcn_window_snap_radius);
+    if(guide !== undefined) {
+      return guide;
+    }
+    guide = guides.find(g => Math.abs(g - v - d) <= rcn_window_snap_radius);
+    if(guide !== undefined) {
+      return guide - d;
+    }
+    return v;
+  }
+
+  let x = parseInt(this.section.style.left);
+  let y = parseInt(this.section.style.top);
+  const snapped_x = snap_pos(guides_x, x, this.section.clientWidth);
+  const snapped_y = snap_pos(guides_y, y, this.section.clientHeight);
+  if(this.old_x != x || this.old_y != y) {
+    x = Math.max(0, Math.min(snapped_x, container_width - this.section.clientWidth - 2));
+    y = Math.max(0, Math.min(snapped_y, container_height - this.section.clientHeight - 2));
+    this.section.style.left = `${x}px`;
+    this.section.style.top = `${y}px`;
+    this.old_x = x;
+    this.old_y = y;
+  }
+
+  const snap_dim = function(guides, v, d) {
+    const guide = guides.find(g => Math.abs(g - v - d) <= rcn_window_snap_radius);
+    return guide !== undefined ? guide - v : d;
+  }
+
+  let width = this.section.clientWidth;
+  let height = this.section.clientHeight;
+  const snapped_width = snap_dim(guides_x, x, width);
+  const snapped_height = snap_dim(guides_y, y, height);
+  if(this.old_width != width || this.old_height != height) {
+    const padding_x = this.section.clientWidth - parseInt(this.content.style.width);
+    const padding_y = this.section.clientHeight - parseInt(this.content.style.height);
+    width = Math.min(snapped_width, container_width - x - 2) - padding_x;
+    height = Math.min(snapped_height, container_height - y - 2) - padding_y;
+
+    this.content.style.width = `${width}px`;
+    this.content.style.height = `${height}px`;
+    this.old_width = width;
+    this.old_height = height;
+  }
+}
+
 function rcn_window_onmousedown() {
   // Focus clicked window
   this.focus();
@@ -108,7 +169,7 @@ function rcn_window_header_onmousedown(e) {
   e.preventDefault();
 
   rcn_window_drag = {
-    node: this.parentElement,
+    window: this.parentElement.rcn_window,
     dx: this.parentElement.offsetLeft - e.clientX,
     dy: this.parentElement.offsetTop - e.clientY,
   };
@@ -116,18 +177,19 @@ function rcn_window_header_onmousedown(e) {
   document.body.classList.add('window_dragging')
 }
 
+function rcn_get_windows() {
+  return Array.from(rcn_window_container.children).map(c => c.rcn_window);
+}
+
 function rcn_window_save_layout() {
   const layout = {};
 
-  for(let i = 0; i < rcn_window_container.childElementCount; i++) {
-    const section = rcn_window_container.children[i];
-    const window = section.rcn_window;
-
-    layout[section.id] = {
+  for(let window of rcn_get_windows()) {
+    layout[window.section.id] = {
       ctor: window.constructor.name,
-      left: section.style.left,
-      top: section.style.top,
-      z_index: section.style.zIndex,
+      left: window.section.style.left,
+      top: window.section.style.top,
+      z_index: window.section.style.zIndex,
       width: window.content.style.width,
       height: window.content.style.height,
     }
@@ -184,14 +246,11 @@ document.addEventListener('mousemove', function(e) {
   e = e || window.event;
   e.preventDefault();
 
-  const node = rcn_window_drag.node;
-  let new_x = e.clientX + rcn_window_drag.dx;
-  let new_y = e.clientY + rcn_window_drag.dy;
-  new_x = Math.max(0, Math.min(new_x, rcn_window_container.clientWidth - node.clientWidth - 2));
-  new_y = Math.max(0, Math.min(new_y, rcn_window_container.clientHeight - node.clientHeight - 2));
+  const section = rcn_window_drag.window.section;
+  section.style.left = `${e.clientX + rcn_window_drag.dx}px`;
+  section.style.top = `${e.clientY + rcn_window_drag.dy}px`;
 
-  node.style.left = new_x + "px";
-  node.style.top = new_y + "px";
+  rcn_window_drag.window.update_snapping();
 });
 
 document.addEventListener('mouseup', function(e) {
