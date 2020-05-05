@@ -2,6 +2,24 @@
 'use strict';
 
 const rcn_default_palettes = {
+  'Raccoon': [
+    0x80000000,
+    0x00ffffff,
+    0x00fd4637,
+    0x00eeba59,
+    0x00eee209,
+    0x0064d838,
+    0x005840e3,
+    0x00925484,
+    0x00000000,
+    0x00adadad,
+    0x00cb0e12,
+    0x00d2844a,
+    0x00dfd346,
+    0x005fb630,
+    0x00383889,
+    0x00513342,
+  ],
   'Apple II': [
     0x80000000,
     0x00843d52,
