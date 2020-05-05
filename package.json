@@ -1,0 +1,19 @@
+{
+  "name": "raccoon-server",
+  "version": "0.0.1",
+  "description": "Server for the fantasy console raccoon",
+  "main": "src/js/srv/main.js",
+  "keywords": [
+    "fantasyconsole"
+  ],
+  "dependencies": {
+    "markdown-it": "10.0.x",
+    "markdown-it-anchor": "5.2.x",
+    "mime": "2.4.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lyatus/raccoon.git"
+  },
+  "license": "Unlicense"
+}
