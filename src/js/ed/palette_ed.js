@@ -100,6 +100,19 @@ const rcn_default_palettes = {
   ],
 };
 
+for(let pal_id in rcn_default_palettes) {
+  const bytes = new Uint8Array(rcn.mem_palette_size);
+  const palette = rcn_default_palettes[pal_id];
+  for(let i = 0; i < 16; i++) {
+    const color = i < palette.length ? palette[i] : 0x80000000;
+    bytes[i*4+0] = (color >> 16) & 0xff;
+    bytes[i*4+1] = (color >> 8) & 0xff;
+    bytes[i*4+2] = color & 0xff;
+    bytes[i*4+3] = (color >> 24) | i;
+  }
+  rcn_default_palettes[pal_id] = bytes;
+}
+
 function rcn_palette_ed() {
   rcn_palette_ed.prototype.__proto__ = rcn_window.prototype;
   rcn_window.call(this);
@@ -134,23 +147,10 @@ rcn_palette_ed.prototype.title = 'Palette Editor';
 rcn_palette_ed.prototype.type = 'palette_ed';
 rcn_editors.push(rcn_palette_ed);
 
-function rcn_palette_to_bytes(palette) {
-  const bytes = new Uint8Array(rcn.mem_palette_size);
-  for(let i = 0; i < 16; i++) {
-    const color = i < palette.length ? palette[i] : 0x80000000;
-    bytes[i*4+0] = (color >> 16) & 0xff;
-    bytes[i*4+1] = (color >> 8) & 0xff;
-    bytes[i*4+2] = color & 0xff;
-    bytes[i*4+3] = (color >> 24) | i;
-  }
-  return bytes;
-}
-
 rcn_palette_ed.prototype.update_palette_select = function() {
   const bin_bytes = rcn_global_bin.rom.slice(rcn.mem_palette_offset, rcn.mem_palette_offset + rcn.mem_palette_size);
   for(let pal_id in rcn_default_palettes) {
-    const palette = rcn_default_palettes[pal_id];
-    const bytes = rcn_palette_to_bytes(palette);
+    const bytes = rcn_default_palettes[pal_id]
     if(bin_bytes.every((v, i) => v === bytes[i])) {
       this.palette_select.value = pal_id;
       return;
@@ -160,9 +160,7 @@ rcn_palette_ed.prototype.update_palette_select = function() {
 }
 
 rcn_palette_ed.prototype.set_current_palette = function(pal_id) {
-  const palette = rcn_default_palettes[pal_id];
-  const palette_bytes = rcn_palette_to_bytes(palette);
-  rcn_global_bin.rom.set(palette_bytes, rcn.mem_palette_offset);
+  rcn_global_bin.rom.set(rcn_default_palettes[pal_id], rcn.mem_palette_offset);
   rcn_dispatch_ed_event('rcn_bin_change', {
     begin: rcn.mem_palette_offset,
     end: rcn.mem_palette_offset + rcn.mem_palette_size,
