@@ -15,9 +15,9 @@ function rcn_bin() {
   this.code = '';
   this.rom = new Uint8Array(rcn.rom_size);
 
-  // Set default palette permutation
-  for(let c = 0; c < 16; c++) {
-    this.rom[rcn.mem_palette_offset+c*4+3] = c;
+  // Set default palette if in editor
+  if(typeof rcn_default_palettes !== 'undefined') {
+    this.rom.set(rcn_default_palettes.Raccoon, rcn.mem_palette_offset);
   }
 }
 
