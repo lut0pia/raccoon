@@ -11,6 +11,7 @@ const rcn_bin_current_version = 4;
 
 function rcn_bin() {
   this.name = 'Untitled';
+  this.display_name = 'Untitled';
   this.code = '';
   this.rom = new Uint8Array(rcn.rom_size);
 
