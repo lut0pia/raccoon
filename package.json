@@ -8,8 +8,7 @@
   ],
   "dependencies": {
     "markdown-it": "10.0.x",
-    "markdown-it-anchor": "5.2.x",
-    "mime": "2.4.x"
+    "markdown-it-anchor": "5.2.x"
   },
   "repository": {
     "type": "git",

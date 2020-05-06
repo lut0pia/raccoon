@@ -7,7 +7,15 @@ const https = require('https');
 const http = require('http');
 const md = require('markdown-it')()
   .use(require('markdown-it-anchor'));
-const mime = new require('mime');
+
+const ext_to_mime = {
+  css: 'text/css',
+  html: 'text/html',
+  js: 'application/javascript',
+  md: 'text/html',
+  png: 'image/png',
+  svg: 'image/svg+xml',
+};
 
 const cached_files = {};
 function http_callback(request, response) {
@@ -30,7 +38,12 @@ function http_callback(request, response) {
       }
       cached_files[filepath] = content;
     }
-    response.setHeader('Content-Type', mime.getType(filepath));
+
+    const ext = filepath.substring(filepath.lastIndexOf(".") + 1);
+    const mime_type = ext_to_mime[ext];
+    if(mime_type) {
+      response.setHeader('Content-Type', mime_type);
+    }
     response.writeHead(200,);
     response.end(content);
   } catch(e) {
