@@ -8,6 +8,8 @@ const http = require('http');
 const md = require('markdown-it')()
   .use(require('markdown-it-anchor'));
 
+const config = JSON.parse(fs.readFileSync('config.json'));
+
 const ext_to_mime = {
   css: 'text/css',
   html: 'text/html',
@@ -64,4 +66,4 @@ try {
 } catch(e) {
   http_server = http.createServer(http_callback);
 }
-http_server.listen(80);
+http_server.listen(config.port);
