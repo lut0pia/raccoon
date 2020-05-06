@@ -58,12 +58,12 @@ function http_callback(request, response) {
 let http_server;
 try {
   const server_options = {
-    // TODO: These values should change for another server, add a conf file?
-    key: fs.readFileSync('/etc/letsencrypt/live/raccoon.computer/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/raccoon.computer/cert.pem')
+    key: fs.readFileSync(config.privkey),
+    cert: fs.readFileSync(config.cert),
   };
   http_server = https.createServer(server_options, http_callback);
+  http_server.listen(config.port_ssl);
 } catch(e) {
   http_server = http.createServer(http_callback);
+  http_server.listen(config.port);
 }
-http_server.listen(config.port);
