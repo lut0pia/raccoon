@@ -62,8 +62,11 @@ try {
     cert: fs.readFileSync(config.cert),
   };
   http_server = https.createServer(server_options, http_callback);
+  console.log(`Creating HTTPS server on port ${config.port_ssl}`)
   http_server.listen(config.port_ssl);
 } catch(e) {
+  console.log(`Unable to start HTTPS server: ${e}`)
+  console.log(`Creating HTTP server on port ${config.port}`)
   http_server = http.createServer(http_callback);
   http_server.listen(config.port);
 }
