@@ -82,7 +82,7 @@ async function rcn_github_request(p) {
     p.url += 'access_token='+rcn_storage.github.token;
   }
   p.url = 'https://api.github.com'+p.url;
-  return JSON.parse(await rcn_xhr(p));
+  return JSON.parse(await rcn_http_request(p));
 }
 
 async function rcn_github_get_commit(owner, repo, sha) {

@@ -163,7 +163,7 @@ window.addEventListener('load', async function() {
       // Raccoon core
       'bin','vm','vm_worker',
       // Utility
-      'audio','canvas','gl','utility','xhr',
+      'audio','canvas','gl','http','utility',
       // Extensions
       'ext/github',
     ]),

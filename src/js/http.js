@@ -1,7 +1,7 @@
 // Raccoon XMLHttpRequest helper
 'use strict';
 
-async function rcn_xhr(p) {
+async function rcn_http_request(p) {
   return new Promise(function(resolve, reject) {
     p = p instanceof Object && p || {url: p};
     const post_data = p.post && JSON.stringify(p.post);

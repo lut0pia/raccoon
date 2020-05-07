@@ -381,20 +381,20 @@ rcn_bin_ed.prototype.delete_bin = function(bin_name) {
 
 rcn_bin_ed.prototype.bin_to_html = async function() {
   let scripts = await Promise.all([
-    rcn_xhr('src/js/init.js'), // This needs to stay at the beginning
-    rcn_xhr('src/js/audio.js'),
-    rcn_xhr('src/js/bin.js'),
-    rcn_xhr('src/js/canvas.js'),
-    rcn_xhr('src/js/game.js'),
-    rcn_xhr('src/js/gl.js'),
-    rcn_xhr('src/js/utility.js'),
-    rcn_xhr('src/js/vm.js'),
-    rcn_xhr('src/js/vm_worker.js'),
+    rcn_http_request('src/js/init.js'), // This needs to stay at the beginning
+    rcn_http_request('src/js/audio.js'),
+    rcn_http_request('src/js/bin.js'),
+    rcn_http_request('src/js/canvas.js'),
+    rcn_http_request('src/js/game.js'),
+    rcn_http_request('src/js/gl.js'),
+    rcn_http_request('src/js/utility.js'),
+    rcn_http_request('src/js/vm.js'),
+    rcn_http_request('src/js/vm_worker.js'),
   ]);
   let styles = await Promise.all([
-    rcn_xhr('src/css/reset.css'),
-    rcn_xhr('src/css/game.css'),
-    rcn_xhr('src/css/export.css'),
+    rcn_http_request('src/css/reset.css'),
+    rcn_http_request('src/css/game.css'),
+    rcn_http_request('src/css/export.css'),
   ]);
 
   let resources = await Promise.all([
@@ -406,7 +406,7 @@ rcn_bin_ed.prototype.bin_to_html = async function() {
     }[url.split('.').pop()];
     return 'rcn_resources[' + JSON.stringify(url) + '] = '
     + 'URL.createObjectURL(new Blob('
-    + '[' + JSON.stringify(await rcn_xhr(url)) + '],'
+    + '[' + JSON.stringify(await rcn_http_request(url)) + '],'
     + '{type: ' + JSON.stringify(mime) + '}));';
   }));
 
