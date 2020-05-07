@@ -3,7 +3,6 @@
 process.title = 'raccoon-server';
 
 const fs = require('fs');
-const https = require('https');
 const http = require('http');
 const md = require('markdown-it')()
   .use(require('markdown-it-anchor'));
@@ -57,14 +56,3 @@ function http_callback(request, response) {
 
 console.log(`Creating HTTP server on port ${config.port}`)
 http.createServer(http_callback).listen(config.port);
-
-try {
-  const server_options = {
-    key: fs.readFileSync(config.privkey),
-    cert: fs.readFileSync(config.cert),
-  };
-  console.log(`Creating HTTPS server on port ${config.port_ssl}`);
-  https.createServer(server_options, http_callback).listen(config.port_ssl);
-} catch(e) {
-  console.log(`Unable to start HTTPS server: ${e}`)
-}
