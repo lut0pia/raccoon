@@ -55,18 +55,16 @@ function http_callback(request, response) {
   }
 }
 
-let http_server;
+console.log(`Creating HTTP server on port ${config.port}`)
+http.createServer(http_callback).listen(config.port);
+
 try {
   const server_options = {
     key: fs.readFileSync(config.privkey),
     cert: fs.readFileSync(config.cert),
   };
-  http_server = https.createServer(server_options, http_callback);
-  console.log(`Creating HTTPS server on port ${config.port_ssl}`)
-  http_server.listen(config.port_ssl);
+  console.log(`Creating HTTPS server on port ${config.port_ssl}`);
+  https.createServer(server_options, http_callback).listen(config.port_ssl);
 } catch(e) {
   console.log(`Unable to start HTTPS server: ${e}`)
-  console.log(`Creating HTTP server on port ${config.port}`)
-  http_server = http.createServer(http_callback);
-  http_server.listen(config.port);
 }
