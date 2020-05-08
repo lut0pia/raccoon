@@ -1,87 +1,66 @@
 // Raccoon GitHub integration
 'use strict';
 
-rcn_storage.github = rcn_storage.github || {};
-
-function rcn_github_ed() {
-  rcn_github_ed.prototype.__proto__ = rcn_window.prototype;
-  rcn_window.call(this);
-
-  const github_ed = this;
-
-  // Create name input
-  this.name_input = document.createElement('input');
-  this.name_input.type = 'text';
-  this.name_input.placeholder = 'Username';
-  this.add_child(this.name_input);
-
-  // Create password input
-  this.password_input = document.createElement('input');
-  this.password_input.type = 'password';
-  this.password_input.placeholder = 'Password';
-  this.add_child(this.password_input);
-
-  // Create token input
-  this.token_input = document.createElement('input');
-  this.token_input.type = 'text';
-  this.token_input.placeholder = 'Access token';
-  this.token_input.onchange = function() {
-    rcn_storage.github.token = this.value;
-  }
-  this.add_child(this.token_input);
-
-  this.add_child(this.login_button = rcn_ui_button({
-    value: 'Log In',
-    onclick: function() {
-      github_ed.login();
-    },
-  }));
-
-  this.update_token_input();
+async function rcn_github_login() {
+  return new Promise((resolve, reject) => {
+    localStorage.github_state = `github_${Math.random().toString().substr(2)}`;
+    localStorage.github_token = 'pending';
+    const popup = window.open('https://github.com/login/oauth/authorize'
+      +'?client_id=b5fd66cdee41f04ff6d3'
+      +'&scope=public_repo'
+      +`&state=${localStorage.github_state}`,
+      '', 'width=512,height=512');
+    if(popup) {
+      rcn_overlay_push();
+      let interval;
+      interval = setInterval(function() {
+        if(localStorage.github_token != 'pending') {
+          delete localStorage.github_state;
+          if(localStorage.github_token) {
+            resolve();
+          } else {
+            reject('Unknown error');
+          }
+          rcn_overlay_pop();
+          clearInterval(interval);
+        }
+      }, 200);
+    } else {
+      reject(`Unable to open login popup`);
+    }
+  });
 }
 
-rcn_github_ed.prototype.update_token_input = function() {
-  this.token_input.value = rcn_storage.github.token || '';
-}
-
-rcn_github_ed.prototype.login = async function() {
-  const username = this.name_input.value;
-  const password = this.password_input.value;
-  try {
-    const auth = await rcn_github_request({
-      url: '/authorizations',
-      username: username,
-      password: password,
+(async () => {
+  if(rcn_get_parameters.code &&
+    rcn_get_parameters.state == localStorage.github_state) {
+    const response = JSON.parse(await rcn_online_request({
+      path: '/oauth/github',
       post: {
-        scopes: ['public_repo'],
-        note: 'raccoon_' + (new Date(Date.now())).toISOString(),
-        note_url: location.origin,
+        code: rcn_get_parameters.code,
+        state: rcn_get_parameters.state,
       },
-    });
-    this.name_input.value = '';
-    this.password_input.value = '';
-    rcn_storage.github.username = username;
-    rcn_storage.github.token = auth.token;
-    await rcn_ui_alert('Log in success!');
-  } catch(e) {
-    rcn_storage.github = {};
-    await rcn_ui_alert('Log in failed: ' + e);
+    }));
+    if(response.access_token) {
+      localStorage.github_token = response.access_token;
+    } else {
+      delete localStorage.github_token;
+    }
+    window.close();
   }
-  this.update_token_input();
-}
-
-rcn_github_ed.prototype.title = 'GitHub';
-rcn_github_ed.prototype.type = 'github_ed';
-
-rcn_editors.push(rcn_github_ed);
+})();
 
 async function rcn_github_request(p) {
   p = p instanceof Object ? p : {url: p};
-  if(rcn_storage.github.token) {
+  if(p.requires_token) {
+    if(!localStorage.github_token ||
+      localStorage.github_token == 'pending') {
+      await rcn_github_login();
+    }
     p.url += (p.url.search('\\?') >= 0) ? '&' : '?';
-    p.url += 'access_token='+rcn_storage.github.token;
+    p.url += `access_token=${localStorage.github_token}`;
   }
-  p.url = 'https://api.github.com'+p.url;
+  p.url = `https://api.github.com${p.url}`;
   return JSON.parse(await rcn_http_request(p));
 }
 
@@ -100,6 +79,7 @@ async function rcn_github_get_tree(owner, repo, sha) {
 async function rcn_github_create_repo(repo) {
   return rcn_github_request({
     url: '/user/repos',
+    requires_token: true,
     post: {
       name: repo,
       description: 'Automatically created by raccoon',
@@ -111,6 +91,7 @@ async function rcn_github_create_repo(repo) {
 async function rcn_github_create_blob(owner, repo, content) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/git/blobs',
+    requires_token: true,
     post: {
       content: content,
       encoding: 'utf-8',
@@ -121,6 +102,7 @@ async function rcn_github_create_blob(owner, repo, content) {
 async function rcn_github_create_tree(owner, repo, base_tree, tree) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/git/trees',
+    requires_token: true,
     post: {
       base_tree: base_tree,
       tree: tree,
@@ -131,6 +113,7 @@ async function rcn_github_create_tree(owner, repo, base_tree, tree) {
 async function rcn_github_create_commit(owner, repo, parents, message, tree) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/git/commits',
+    requires_token: true,
     post: {
       message: message,
       tree: tree,
@@ -142,6 +125,7 @@ async function rcn_github_create_commit(owner, repo, parents, message, tree) {
 async function rcn_github_update_ref(owner, repo, ref, commit_sha, force) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/git/refs/'+ref,
+    requires_token: true,
     post: {
       sha: commit_sha,
       force: !!force,
@@ -152,6 +136,7 @@ async function rcn_github_update_ref(owner, repo, ref, commit_sha, force) {
 async function rcn_github_merge(owner, repo, base, head) {
   return rcn_github_request({
     url: '/repos/'+owner+'/'+repo+'/merges',
+    requires_token: true,
     post: {
       base: base,
       head: head,
@@ -206,10 +191,6 @@ rcn_hosts['github'] = {
     const pair = o.link.split('/');
     const owner = pair[0];
     const repo = pair[1];
-
-    if(owner != rcn_storage.github.username) {
-      throw 'Cannot push bin to unregistered user';
-    }
 
     try {
       await rcn_github_create_repo(repo);
