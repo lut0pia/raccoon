@@ -19,12 +19,17 @@ exports.http_callback = function(request, response) {
   }
   filepath = filepath.substr(1);
 
-  const content = fs.readFileSync(filepath);
-  const ext = filepath.substring(filepath.lastIndexOf(".") + 1);
-  const mime_type = ext_to_mime[ext];
-  if(mime_type) {
-    response.setHeader('Content-Type', mime_type);
+  try {
+    const content = fs.readFileSync(filepath);
+    const ext = filepath.substring(filepath.lastIndexOf(".") + 1);
+    const mime_type = ext_to_mime[ext];
+    if(mime_type) {
+      response.setHeader('Content-Type', mime_type);
+    }
+    response.writeHead(200);
+    response.end(content);
+  } catch(e) {
+    response.writeHead(404);
+    response.end('<h1>File not found</h1>');
   }
-  response.writeHead(200);
-  response.end(content);
 }
