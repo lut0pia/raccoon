@@ -6,16 +6,9 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 
-const config = JSON.parse(fs.readFileSync('config.json'));
+const static_files = require('./static_files.js')
 
-const ext_to_mime = {
-  css: 'text/css',
-  html: 'text/html',
-  js: 'application/javascript',
-  md: 'text/plain',
-  png: 'image/png',
-  svg: 'image/svg+xml',
-};
+const config = JSON.parse(fs.readFileSync('config.json'));
 
 async function read_body(msg) {
   return new Promise((resolve, reject) => {
@@ -61,21 +54,7 @@ async function http_callback(request, response) {
       state: params.state,
     }));
   } else if(config.serve_static_files) {
-    let filepath = request.url.split('?')[0];
-
-    if(filepath == '/') {
-      filepath = '/index.html';
-    }
-    filepath = filepath.substr(1);
-
-    const content = fs.readFileSync(filepath);
-    const ext = filepath.substring(filepath.lastIndexOf(".") + 1);
-    const mime_type = ext_to_mime[ext];
-    if(mime_type) {
-      response.setHeader('Content-Type', mime_type);
-    }
-    response.writeHead(200);
-    response.end(content);
+    static_files.http_callback(request, response);
   } else {
     response.writeHead(404);
     response.end();
