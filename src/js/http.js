@@ -17,11 +17,7 @@ async function rcn_http_request(p) {
       }
     };
 
-    let method = post_data ? 'POST' : 'GET';
-    if(p.method) {
-      method = p.method;
-    }
-
+    const method = p.method || (post_data ? 'POST' : 'GET');
     xhr.open(method, p.url, true);
 
     const username = p.username;
