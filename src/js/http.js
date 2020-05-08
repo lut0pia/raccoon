@@ -39,3 +39,9 @@ async function rcn_http_request(p) {
     xhr.send(post_data);
   });
 }
+
+async function rcn_online_request(p) {
+  p = p instanceof Object && p || {path: p};
+  p.url = `${location.protocol}//online.${location.host}${p.path}`;
+  return await rcn_http_request(p);
+}
