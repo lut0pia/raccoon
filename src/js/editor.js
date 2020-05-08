@@ -249,7 +249,11 @@ if(!rcn_storage.bins) {
 
 // Move from old bin array to new bin map
 if(rcn_storage.bins instanceof Array) {
-  rcn_storage.bins = Object.assign(...Object.values(rcn_storage.bins).map(bin => ({[bin.name]: bin})));
+  if(rcn_storage.bins.length > 0) {
+    rcn_storage.bins = Object.assign(...Object.values(rcn_storage.bins).map(bin => ({[bin.name]: bin})));
+  } else {
+    rcn_storage.bins = {};
+  }
 }
 
 if(!rcn_storage.window_layouts) {
