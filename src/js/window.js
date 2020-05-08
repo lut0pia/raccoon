@@ -207,6 +207,10 @@ function rcn_window_load_layout(layout) {
 
   for(let id in layout) {
     const save = layout[id];
+    if(!window[save.ctor]) {
+      console.log(`Unable to load window with ctor: ${save.ctor}`);
+      continue;
+    }
     const editor = new window[save.ctor]();
     editor.section.id = id;
     editor.section.style.left = save.left;
