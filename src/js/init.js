@@ -70,6 +70,16 @@ window.addEventListener('unload', function() {
   }
 })
 
+const rcn_get_parameters = (function() {
+  const params = {};
+  location.search.substr(1).split('&')
+  .forEach(function(item) {
+    const pair = item.split("=");
+    params[pair[0]] = decodeURIComponent(pair[1]);
+  });
+  return params;
+})();
+
 function rcn_resource(url) {
   return rcn_resources[url] || url;
 }

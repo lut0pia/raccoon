@@ -2,16 +2,6 @@
 // Honestly I don't know where else to put those
 'use strict';
 
-const rcn_get_parameters = (function() {
-  const params = {};
-  location.search.substr(1).split('&')
-  .forEach(function(item) {
-    const pair = item.split("=");
-    params[pair[0]] = decodeURIComponent(pair[1]);
-  });
-  return params;
-})();
-
 function rcn_download_file(p) {
   const e = document.createElement('a');
   e.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(p.content));
