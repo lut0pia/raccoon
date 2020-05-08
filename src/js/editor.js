@@ -36,7 +36,8 @@ async function rcn_start_editor_mode(params) {
   // Editor groups
   const editor_groups = rcn_editors
     .map(e => e.prototype.group)
-    .filter((v, i, a) => v && a.indexOf(v) == i);
+    .filter((v, i, a) => v && a.indexOf(v) == i)
+    .sort();
 
   // Fill toolbox
   for(let group of editor_groups) {
