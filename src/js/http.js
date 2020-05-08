@@ -30,6 +30,12 @@ async function rcn_http_request(p) {
       xhr.setRequestHeader('Content-Type', 'application/json');
     }
 
+    if(p.headers) {
+      for(let name in p.headers) {
+        xhr.setRequestHeader(name, p.headers[name]);
+      }
+    }
+
     xhr.send(post_data);
   });
 }
