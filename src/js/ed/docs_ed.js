@@ -9,7 +9,7 @@ function rcn_docs_ed() {
   this.add_child(this.iframe);
 }
 
-rcn_docs_ed.prototype.title = 'Documentation Viewer';
+rcn_docs_ed.prototype.title = 'Documentation';
 rcn_docs_ed.prototype.type = 'docs_ed';
 
 rcn_docs_ed.prototype.lookup = function(key) {
