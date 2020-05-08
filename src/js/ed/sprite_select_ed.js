@@ -99,6 +99,7 @@ function rcn_sprite_select_ed() {
 rcn_sprite_select_ed.prototype.title = 'Sprite Selector';
 rcn_sprite_select_ed.prototype.docs_link = 'sprite-selector';
 rcn_sprite_select_ed.prototype.type = 'sprite_select_ed';
+rcn_sprite_select_ed.prototype.group = 'visual';
 
 rcn_sprite_select_ed.prototype.update_selection = function() {
   const spr_x = rcn_current_sprite & 0xf;

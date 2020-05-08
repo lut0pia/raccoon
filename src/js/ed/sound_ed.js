@@ -195,6 +195,7 @@ function rcn_sound_ed() {
 rcn_sound_ed.prototype.title = 'Sound Editor';
 rcn_sound_ed.prototype.docs_link = 'sound-editor';
 rcn_sound_ed.prototype.type = 'sound_ed';
+rcn_sound_ed.prototype.group = 'sound';
 rcn_editors.push(rcn_sound_ed);
 
 rcn_sound_ed.prototype.set_current_sound = function(i) {

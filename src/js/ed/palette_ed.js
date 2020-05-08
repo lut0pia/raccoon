@@ -163,6 +163,7 @@ function rcn_palette_ed() {
 
 rcn_palette_ed.prototype.title = 'Palette Editor';
 rcn_palette_ed.prototype.type = 'palette_ed';
+rcn_palette_ed.prototype.group = 'visual';
 rcn_editors.push(rcn_palette_ed);
 
 rcn_palette_ed.prototype.update_palette_select = function() {

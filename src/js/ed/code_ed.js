@@ -159,6 +159,7 @@ function rcn_code_ed() {
 rcn_code_ed.prototype.title = 'Code Editor';
 rcn_code_ed.prototype.docs_link = 'code-editor';
 rcn_code_ed.prototype.type = 'code_ed';
+rcn_code_ed.prototype.group = 'code';
 
 rcn_code_ed.prototype.apply = function() {
   this.set_error(null); // Reset error because it may have been fixed

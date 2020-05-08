@@ -193,6 +193,7 @@ function rcn_sprite_ed() {
 rcn_sprite_ed.prototype.title = 'Sprite Editor';
 rcn_sprite_ed.prototype.docs_link = 'sprite-editor';
 rcn_sprite_ed.prototype.type = 'sprite_ed';
+rcn_sprite_ed.prototype.group = 'visual';
 
 rcn_sprite_ed.prototype.move_selection = function(dx, dy) {
   if(!this.selection.is_selecting()) return;

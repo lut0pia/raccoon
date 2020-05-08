@@ -127,6 +127,7 @@ function rcn_map_ed() {
 rcn_map_ed.prototype.title = 'Map Editor';
 rcn_map_ed.prototype.docs_link = 'map-editor';
 rcn_map_ed.prototype.type = 'map_ed';
+rcn_map_ed.prototype.group = 'visual';
 rcn_editors.push(rcn_map_ed);
 
 rcn_map_ed.prototype.get_tile_index = function(rel_x, rel_y) {

@@ -79,6 +79,7 @@ function rcn_vm_ed() {
 rcn_vm_ed.prototype.title = 'Virtual Machine';
 rcn_vm_ed.prototype.docs_link = 'virtual-machine';
 rcn_vm_ed.prototype.type = 'vm_ed';
+rcn_vm_ed.prototype.group = 'code';
 
 rcn_vm_ed.prototype.set_paused = function(paused) {
   this.vm.paused = paused;

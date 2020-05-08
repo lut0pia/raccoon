@@ -11,17 +11,38 @@ async function rcn_start_editor_mode(params) {
     return a.prototype.title > b.prototype.title ? 1 : -1;
   });
 
-  // Fill toolbox
-  for(let ed of rcn_editors) {
-    const tool = document.createElement('article');
-    tool.innerText = ed.prototype.title;
-    tool.ed = ed;
-    tool.addEventListener('click', function() {
+  const create_editor_button = (ed) => {
+    const editor_el = document.createElement('article');
+    editor_el.innerText = ed.prototype.title;
+    editor_el.ed = ed;
+    editor_el.addEventListener('click', function() {
       rcn_find_editor(ed, true);
       rcn_update_toolbox();
     });
-    rcn_toolbox.appendChild(tool);
+    return editor_el;
+  };
+
+  const create_editor_group = (group) => {
+    const group_el = document.createElement('section');
+    group_el.className = group;
+    for(let ed of rcn_editors) {
+      if(ed.prototype.group == group) {
+        group_el.appendChild(create_editor_button(ed));
+      }
+    }
+    return group_el;
+  };
+
+  // Editor groups
+  const editor_groups = rcn_editors
+    .map(e => e.prototype.group)
+    .filter((v, i, a) => v && a.indexOf(v) == i);
+
+  // Fill toolbox
+  for(let group of editor_groups) {
+    rcn_toolbox.appendChild(create_editor_group(group));
   }
+  rcn_toolbox.appendChild(create_editor_group());
 
   // Fill layout box
   rcn_update_layoutbox();

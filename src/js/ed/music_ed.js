@@ -127,6 +127,7 @@ function rcn_music_ed() {
 rcn_music_ed.prototype.title = 'Music Editor';
 rcn_music_ed.prototype.docs_link = 'music-editor';
 rcn_music_ed.prototype.type = 'music_ed';
+rcn_music_ed.prototype.group = 'sound';
 rcn_editors.push(rcn_music_ed);
 
 rcn_music_ed.prototype.set_play_index = function(index) {

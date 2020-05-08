@@ -24,6 +24,7 @@ function rcn_console_ed() {
 
 rcn_console_ed.prototype.title = 'Console';
 rcn_console_ed.prototype.type = 'console_ed';
+rcn_console_ed.prototype.group = 'code';
 rcn_console_ed.prototype.docs_link = 'console';
 
 rcn_console_ed.prototype.log = function(text) {
