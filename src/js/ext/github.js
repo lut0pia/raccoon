@@ -57,8 +57,8 @@ async function rcn_github_request(p) {
       localStorage.github_token == 'pending') {
       await rcn_github_login();
     }
-    p.url += (p.url.search('\\?') >= 0) ? '&' : '?';
-    p.url += `access_token=${localStorage.github_token}`;
+    p.headers = p.headers || {};
+    p.headers['Authorization'] = `token ${localStorage.github_token}`;
   }
   p.url = `https://api.github.com${p.url}`;
   return JSON.parse(await rcn_http_request(p));
