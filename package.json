@@ -6,10 +6,7 @@
   "keywords": [
     "fantasyconsole"
   ],
-  "dependencies": {
-    "markdown-it": "10.0.x",
-    "markdown-it-anchor": "5.2.x"
-  },
+  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/Lyatus/raccoon.git"
