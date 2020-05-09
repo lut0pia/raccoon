@@ -1,19 +1,17 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap');
-
-* {
-  font-family: Roboto;
-}
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed&display=swap');
 
 body {
-  background-color: white;
   overflow: hidden;
 }
 
 aside {
   width: 180px;
   height: 100%;
-  background-color: darkgray;
+  background-color: #232b2f;
 }
 
 main {
@@ -22,6 +20,7 @@ main {
   left: 180px;
   width: calc(100% - 180px);
   height: 100%;
+  background-color: #111517;
 }
 
 /*
@@ -116,56 +115,81 @@ input[type=text] {
 */
 
 #toolbox {
-  background-color: lightgrey;
-  border: 2px lightgrey outset;
+  color: white;
 }
 
 #toolbox::before {
   content: "Toolbox";
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 18px;
+  padding-top: 16px;
   display: block;
   text-align: center;
 }
 
+#toolbox section {
+  margin: 8px 0px;
+}
+
 #toolbox article {
-  height: 17px;
-  padding: 4px;
-  margin: 2px;
-  background-color: rgb(236, 236, 236);
-  cursor: pointer;
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
+  padding: 8px;
+  background-color:hsla(198, 14%, 21%, 1);
+  outline: 0.5px solid #232b2f;
+  color: #ffffff;
+  cursor: crosshair;
 }
 
 #toolbox article.active {
-  background-color: rgb(137, 184, 216);
+  background-color:hsla(196, 16%, 33%, 1);
 }
 
 #toolbox article:hover {
-  background-color: lightslategrey;
+  background-color:hsla(196, 16%, 33%, 1);
 }
 
 /*
   Layout box
 */
 
-#layoutbox {
-  background-color: lightgrey;
-  border: 2px lightgrey outset;
-}
-
 #layoutbox::before {
   content: "Layoutbox";
+  font-family: 'IBM Plex Mono', monospace;
+  color: white;
+  font-size: 18px;
+  padding-top: 10px;
+  padding-bottom: 8px;
   display: block;
   text-align: center;
 }
 
 #layoutbox article {
-  padding: 4px;
-  margin: 2px;
-  background-color: lightyellow;
+  color:#b6c2c9;
+  padding: 6px;
 }
 
 #layoutbox input {
   margin-top: -1px;
+  margin-left: 2px;
+  color: white;
+  background: hsla(200, 15%, 13%, 1);
   float: right;
+  border: none;
+}
+
+#layoutbox input.load {
+  width: 50px;
+  padding: 2px;
+}
+
+#layoutbox input:hover {
+  background: hsla(198, 15%, 20%, 1);
+}
+
+#layoutbox input.save{
+  margin: 5px;
+  width: calc(100% - 10px);
+  padding: 8px;
 }
 
 /*

@@ -221,7 +221,7 @@ function rcn_update_layoutbox() {
     }));
   }
   rcn_layoutbox.appendChild(rcn_ui_button({
-    value: 'Save',
+    value: 'Save current layout',
     classes: ['save'],
     onclick: function() {
       const layout_name = prompt('Layout name:');
