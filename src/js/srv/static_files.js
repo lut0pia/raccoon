@@ -2,6 +2,8 @@
 
 const fs = require('fs');
 
+const config = require('./config.js');
+
 const ext_to_mime = {
   css: 'text/css',
   html: 'text/html',
@@ -11,7 +13,10 @@ const ext_to_mime = {
   svg: 'image/svg+xml',
 };
 
-exports.http_callback = function(request, response) {
+exports.can_handle_request = function(request) {
+  return config.serve_static_files;
+}
+exports.handle_request = function(request, response) {
   let filepath = request.url.split('?')[0];
 
   if(filepath == '/') {
