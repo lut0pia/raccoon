@@ -205,6 +205,7 @@ function rcn_update_layoutbox() {
 
     layout_article.appendChild(rcn_ui_button({
       value: 'Load',
+      classes: ['load'],
       onclick: function() {
         rcn_window_load_layout(rcn_storage.window_layouts[layout_name]);
       },
@@ -212,6 +213,7 @@ function rcn_update_layoutbox() {
 
     layout_article.appendChild(rcn_ui_button({
       value: 'Delete',
+      classes: ['delete'],
       onclick: function() {
         delete rcn_storage.window_layouts[layout_name];
         rcn_update_layoutbox();
@@ -220,6 +222,7 @@ function rcn_update_layoutbox() {
   }
   rcn_layoutbox.appendChild(rcn_ui_button({
     value: 'Save',
+    classes: ['save'],
     onclick: function() {
       const layout_name = prompt('Layout name:');
       if(layout_name) {
