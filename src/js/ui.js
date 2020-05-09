@@ -8,6 +8,9 @@ function rcn_ui_button(o) {
   button.type = 'button';
   button.value = o.value || 'Button';
   button.classList.toggle('text', o.value !== undefined && rcn_ui_text_regex.test(o.value));
+  for(let class_name of o.classes || []) {
+    button.classList.add(class_name);
+  }
   if(o.onclick) {
     button.addEventListener('click', o.onclick);
   }
