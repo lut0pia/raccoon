@@ -14,7 +14,7 @@ async function rcn_start_editor_mode(params) {
   const create_editor_button = (ed) => {
     const editor_el = document.createElement('article');
     editor_el.innerText = ed.prototype.title;
-    editor_el.ed = ed;
+    ed.prototype.button = editor_el;
     editor_el.addEventListener('click', function() {
       rcn_find_editor(ed, true);
       rcn_update_toolbox();
@@ -187,9 +187,8 @@ const rcn_window_container = document.createElement('main');
 document.body.appendChild(rcn_window_container);
 
 function rcn_update_toolbox() {
-  for(let i = 0; i < rcn_toolbox.childElementCount; i++) {
-    const child = rcn_toolbox.children[i];
-    child.classList.toggle('active', !!rcn_find_editor(child.ed));
+  for(let ed of rcn_editors) {
+    ed.prototype.button.classList.toggle('active', !!rcn_find_editor(ed));
   }
 }
 
