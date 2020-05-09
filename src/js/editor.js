@@ -212,7 +212,7 @@ function rcn_update_layoutbox() {
     }));
 
     layout_article.appendChild(rcn_ui_button({
-      value: 'Delete',
+      value: '✖️',
       classes: ['delete'],
       onclick: function() {
         delete rcn_storage.window_layouts[layout_name];
