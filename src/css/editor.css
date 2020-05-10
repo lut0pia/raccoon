@@ -137,7 +137,7 @@ input[type=text] {
   background-color:hsla(198, 14%, 21%, 1);
   outline: 0.5px solid #232b2f;
   color: #ffffff;
-  cursor: crosshair;
+  cursor: pointer;
 }
 
 #toolbox article.active {
@@ -164,11 +164,13 @@ input[type=text] {
 }
 
 #layoutbox article {
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
   color:#b6c2c9;
   padding: 6px;
 }
 
 #layoutbox input {
+  cursor: pointer;
   margin-top: -1px;
   margin-left: 2px;
   color: white;
@@ -178,6 +180,7 @@ input[type=text] {
 }
 
 #layoutbox input.load {
+  cursor: pointer;
   width: 50px;
   padding: 2px;
 }
@@ -187,6 +190,7 @@ input[type=text] {
 }
 
 #layoutbox input.save{
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
   margin: 5px;
   width: calc(100% - 10px);
   padding: 8px;
