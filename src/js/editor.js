@@ -19,6 +19,17 @@ async function rcn_start_editor_mode(params) {
       rcn_find_editor(ed, true);
       rcn_update_toolbox();
     });
+    editor_el.appendChild(rcn_ui_button({
+      value: '✖️',
+      classes: ['close'],
+      onclick: function(e) {
+        e.stopPropagation();
+        const editor = rcn_find_editor(ed);
+        if(editor) {
+          editor.kill();
+        }
+      },
+    }));
     return editor_el;
   };
 
