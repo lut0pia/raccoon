@@ -4,13 +4,14 @@ const https = require('https');
 
 const config = require('./config.js');
 const utility = require('./utility.js');
-const read_body = utility.read_body;
+const read_json_body = utility.read_json_body;
+const write_json_body = utility.write_json_body;
 
 exports.can_handle_request = function(request) {
   return request.url == '/oauth/github';
 }
 exports.handle_request = async function(request, response) {
-  const params = JSON.parse(await read_body(request));
+  const params = await read_json_body(request);
   const gh_req = https.request({
     hostname: 'github.com',
     path: '/login/oauth/access_token',
@@ -21,9 +22,7 @@ exports.handle_request = async function(request, response) {
     },
   });
   gh_req.on('response', async (gh_res) => {
-    response.setHeader('Content-Type', 'application/json');
-    response.writeHead(200);
-    response.end(await read_body(gh_res));
+    write_json_body(response, await read_json_body(gh_res));
   });
   gh_req.on('error', () => {
     response.writeHead(500);
