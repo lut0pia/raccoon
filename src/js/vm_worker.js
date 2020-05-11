@@ -262,7 +262,7 @@ function rcn_vm_worker_function(rcn) {
       hline(x, y, w, c);
     }
   }
-  line = function(x0, y0, x1, y1, c) {
+  line = l = function(x0, y0, x1, y1, c) {
     x0 = _flr(x0) + 0.5;
     x1 = _flr(x1) + 0.5;
     y0 = _flr(y0) + 0.5;

@@ -293,5 +293,6 @@ Some common functions have one-letter shortcuts, useful for keeping code small.
 
 - `c` = `cls`
 - `p` = `pset`
+- `l` = `line`
 - `r` = `rnd`
 - `b` = `btn`
