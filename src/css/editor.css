@@ -148,6 +148,14 @@ input[type=text] {
   background-color:hsla(196, 16%, 33%, 1);
 }
 
+#toolbox input {
+  float: right;
+}
+
+#toolbox article:not(.active) input {
+  display: none;
+}
+
 /*
   Layout box
 */
