@@ -3,14 +3,20 @@
 process.title = 'raccoon-server';
 
 const http = require('http');
+const ws = require('ws');
 
 const config = require('./config.js');
-const handlers = [
+const http_handlers = [
   require('./oauth.js'),
   require('./static_files.js'),
 ];
+const ws_handlers = [
+  require('./lobby.js'),
+  require('./signal.js'),
+];
 
-async function http_callback(request, response) {
+console.log(`Creating HTTP server on port ${config.port}`);
+const http_server = http.createServer(async (request, response) => {
   try {
     console.log(`Request: ${request.method} ${request.url}`);
 
@@ -24,9 +30,9 @@ async function http_callback(request, response) {
       return;
     }
 
-    for(let handler of handlers) {
+    for(let handler of http_handlers) {
       if(handler.can_handle_request(request)) {
-        return handler.handle_request(request, response);
+        return await handler.handle_request(request, response);
       }
     }
 
@@ -38,7 +44,35 @@ async function http_callback(request, response) {
     response.writeHead(500);
     response.end('Internal Server Error');
   }
-}
+});
+http_server.listen(config.port);
 
-console.log(`Creating HTTP server on port ${config.port}`);
-http.createServer(http_callback).listen(config.port);
+console.log(`Creating WS server on port ${config.port}`);
+let next_conn_id = 0;
+new ws.Server({
+  server: http_server,
+}).on('connection', (conn, request) => {
+  conn.id = next_conn_id++;
+  console.log(`Connection: ${conn.id} (${request.socket.remoteAddress})`);
+  for(let handler of ws_handlers) {
+    if(handler.on_connect) {
+      handler.on_connect(conn);
+    }
+  }
+  conn.on('message', async msg => {
+    const msg_object = JSON.parse(msg);
+    for(let handler of ws_handlers) {
+      if(handler.can_handle_message(conn, msg_object)) {
+        return await handler.handle_message(conn, msg_object);
+      }
+    }
+  });
+  conn.on('close', (code, reason) => {
+    console.log(`Disconnection: ${conn.id} (${code}: ${reason})`);
+    for(let handler of ws_handlers) {
+      if(handler.on_disconnect) {
+        handler.on_disconnect(conn);
+      }
+    }
+  });
+});

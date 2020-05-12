@@ -6,7 +6,9 @@
   "keywords": [
     "fantasyconsole"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "ws": "7.3.x"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Lyatus/raccoon.git"
