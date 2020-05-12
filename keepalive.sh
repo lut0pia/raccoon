@@ -7,7 +7,7 @@ pid=`pgrep raccoon-server`
 
 if test -z "$up_to_date" ; then
 	echo "Server out of date, updating..."
-	git pull
+	git reset --hard origin
 fi
 
 if test -z "$pid" || test -z "$up_to_date" ; then
