@@ -34,8 +34,8 @@ async function rcn_github_login() {
 (async () => {
   if(rcn_get_parameters.code &&
     rcn_get_parameters.state == localStorage.github_state) {
-    const response = JSON.parse(await rcn_online_request({
-      path: '/oauth/github',
+    const response = JSON.parse(await rcn_http_request({
+      url: '/oauth/github',
       post: {
         code: rcn_get_parameters.code,
         state: rcn_get_parameters.state,
