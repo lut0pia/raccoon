@@ -181,7 +181,7 @@ Sprite flags are 192 8bits bitfields.
 
 Sound data is 64 tracks.
 
-- Track: `PPPPPPPPP EEIIIIII 64xNote`
+- Track: `PPPPPPPPP EEIIIIII 32xNote`
     - P: Period
     - E: Envelope
     - I: Instrument
