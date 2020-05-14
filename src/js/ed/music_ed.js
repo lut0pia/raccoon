@@ -38,13 +38,17 @@ function rcn_music_ed() {
     music_row.appendChild(music_index);
     music_index.innerText = String(music).padStart(2, '0');
 
+    // Create play/stop cell
+    const play_cell = document.createElement('td');
+    music_row.appendChild(play_cell);
+
     // Create play button
     const music_play_button = rcn_ui_button({
       value: '▶️',
       onclick: () => music_ed.play(music),
     });
     music_play_button.classList.add('play_button');
-    music_row.appendChild(music_play_button);
+    play_cell.appendChild(music_play_button);
 
     // Create stop button
     const music_stop_button = rcn_ui_button({
@@ -52,7 +56,7 @@ function rcn_music_ed() {
       onclick: () => music_ed.stop(),
     });
     music_stop_button.classList.add('stop_button');
-    music_row.appendChild(music_stop_button);
+    play_cell.appendChild(music_stop_button);
 
     // Create track inputs
     for(let track = 0; track < rcn.music_track_count; track++) {
