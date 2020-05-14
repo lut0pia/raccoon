@@ -2,10 +2,24 @@
 
 const pools = {};
 
+const remove_client = function(conn) {
+  for(let pool of Object.values(pools)) {
+    const index = pool.group.indexOf(conn);
+    if(index >= 0) {
+      pool.group.splice(index, 1);
+      console.log(`Client ${conn.id} leaves pool ${pool.name}`);
+    }
+  }
+}
+exports.on_disconnect = function(conn) {
+  remove_client(conn);
+}
 exports.can_handle_message = function(conn, msg) {
   return msg.type == 'lobby';
 }
 exports.handle_message = async function(conn, msg) {
+  remove_client(conn);
+
   // Get or create pool
   const pool_name = `${msg.game_hash}-${msg.group_size}`;
   if(!pools[pool_name]) {
