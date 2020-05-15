@@ -69,6 +69,8 @@ function rcn_bin_ed() {
     onclick: () => bin_ed.save_bin(),
   }));
 
+  this.add_child(document.createElement('br'));
+
   // Create push button
   this.add_child(this.push_button = rcn_ui_button({
     value: 'Push',
@@ -81,6 +83,8 @@ function rcn_bin_ed() {
     onclick: () => bin_ed.pull_bin(),
   }));
 
+  this.add_child(document.createElement('br'));
+
   // Create force push button
   this.add_child(this.force_push_button = rcn_ui_button({
     value: 'Force Push',
@@ -92,6 +96,8 @@ function rcn_bin_ed() {
     value: 'Force Pull',
     onclick: () => bin_ed.force_pull_bin(),
   }));
+
+  this.add_child(document.createElement('br'));
 
   // Create download as json button
   this.add_child(this.download_json_button = rcn_ui_button({
