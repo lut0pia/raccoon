@@ -29,11 +29,14 @@ rcn_network.prototype.on_vm_message = function(vm, msg) {
   if(msg.subtype == 'connect') {
     this.reset();
     this.connect(msg.group_size, msg.group_match);
-  } else if(this.server_connection) {
-    this.server_connection.channel.send(JSON.stringify(msg));
   } else {
-    for(let client_connection of Object.values(this.client_connections)) {
-      client_connection.channel.send(JSON.stringify(msg));
+    const msg_text = JSON.stringify(msg);
+    if(this.server_connection) {
+      this.server_connection.channel.send(msg_text);
+    } else {
+      for(let client_connection of Object.values(this.client_connections)) {
+        client_connection.channel.send(msg_text);
+      }
     }
   }
 }
