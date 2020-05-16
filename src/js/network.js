@@ -1,7 +1,12 @@
 // Raccoon network
 'use strict';
 
-const rcn_rtc_conf = {iceServers: []};
+const rcn_rtc_conf = {iceServers: [
+  {urls: [
+    'stun:stun.l.google.com:19302',
+    'stun:stun1.l.google.com:19302',
+  ]},
+]};
 
 function rcn_network() {
   this.reset();
