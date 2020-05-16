@@ -666,17 +666,17 @@ function rcn_vm_worker_function(rcn) {
     _network.frame += 1;
   }
   nconn = function(group_size = 0, group_match = 0) {
-    if(group_size > 1 && (_network.group_size != group_size || _network.group_match != group_match)) {
-      _network.group_size = group_size;
-      _network.group_match = group_match;
-      _network.ready = false;
-      _postMessage({
-        type: 'network',
-        subtype: 'connect',
-        group_size: group_size,
-        group_match: group_match,
-      });
-    }
+    _network.ready = false;
+    _network.group_size = group_size;
+    _network.group_match = group_match;
+    _postMessage({
+      type: 'network',
+      subtype: 'connect',
+      group_size: group_size,
+      group_match: group_match,
+    });
+  }
+  nready = function() {
     return _network.ready;
   }
   nindex = function() {
