@@ -71,10 +71,6 @@ rcn_network.prototype.is_connected = function() {
 
 rcn_network.prototype.connect = function(group_size, group_match) {
   const network = this;
-
-  delete this.server_connection;
-  this.client_connections = {};
-
   const wsp = location.protocol == 'http:' ? 'ws:' : 'wss:';
   this.ws = new WebSocket(`${wsp}//${location.host}/ws`);
   this.ws.addEventListener('open', e => {
