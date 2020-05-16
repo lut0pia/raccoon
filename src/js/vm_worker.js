@@ -573,18 +573,19 @@ function rcn_vm_worker_function(rcn) {
     switch(msg.subtype) {
       case 'input':
         _network.input[msg.index] = msg.input;
+        _network.frames[msg.index] = msg.frame;
         break;
       case 'state':
         ram.set(msg.bytes, rcn.mem_network_offset);
         _network.input = msg.input;
         _network.last_input = msg.last_input;
-        _network.sync_frame = msg.frame;
+        _network.frames = msg.frames;
         break;
       case 'update':
         if(!_network.ready && msg.ready) {
           _network.frame = 0;
-          _network.sync_frame = 0;
           _network.input_queue = [];
+          _network.frames = new _Array(_network.group_size);
           _network.input = new _Array(_network.group_size);
           _network.last_input = new _Array(_network.group_size);
         }
@@ -598,23 +599,12 @@ function rcn_vm_worker_function(rcn) {
       return;
     }
 
-    if(_network.sync_frame) {
-      // TODO: handle replay
-      delete _network.sync_frame;
-    }
-
-    if(_network.index == 0) {
+    const index = _network.index;
+    if(index == 0) {
       const saved_input = ram.slice(rcn.mem_gamepad_offset, rcn.mem_gamepad_offset + rcn.mem_gamepad_size);
 
       _network.input[0] = saved_input[0];
       _network.last_input[0] = saved_input[4];
-
-      ram.set(_network.input, rcn.mem_gamepad_offset);
-      ram.set(_network.last_input, rcn.mem_gamepad_offset + 4);
-
-      _execute_user_func(nupdate);
-
-      ram.set(saved_input, rcn.mem_gamepad_offset);
 
       _postMessage({
         type: 'network',
@@ -622,14 +612,55 @@ function rcn_vm_worker_function(rcn) {
         bytes: _Array.from(ram.slice(rcn.mem_network_offset, rcn.mem_network_offset + rcn.mem_network_size)),
         input: _network.input,
         last_input: _network.last_input,
-        frame: frame,
+        frames: _network.frames,
       });
+
+      ram.set(_network.input, rcn.mem_gamepad_offset);
+      ram.set(_network.last_input, rcn.mem_gamepad_offset + 4);
+
+      _execute_user_func(nupdate);
+
+      ram.set(saved_input, rcn.mem_gamepad_offset);
     } else {
+      const input = ram[rcn.mem_gamepad_offset];
       _postMessage({
         type: 'network',
         subtype: 'input',
-        input: ram[rcn.mem_gamepad_offset],
+        frame: _network.frame,
+        input: input,
       });
+      _network.input_queue.push({
+        frame: _network.frame,
+        input: input,
+      });
+
+      const sync_frame = _network.frames[index];
+      if(sync_frame < _network.frame) {
+        _network.input_queue = _network.input_queue.filter(i => i.frame > sync_frame);
+
+        const saved_input = ram.slice(rcn.mem_gamepad_offset, rcn.mem_gamepad_offset + rcn.mem_gamepad_size);
+
+        ram.set(_network.input, rcn.mem_gamepad_offset);
+        ram.set(_network.last_input, rcn.mem_gamepad_offset + 4);
+
+        // Execute exact server frame
+        _execute_user_func(nupdate);
+
+        // Predict future frames
+        for(let input of _network.input_queue) {
+          // Put current input in last input
+          ram.set(ram.slice(rcn.mem_gamepad_offset, rcn.mem_gamepad_offset + 4), rcn.mem_gamepad_offset);
+          // Remove all current input
+          ram.fill(0, rcn.mem_gamepad_offset, rcn.mem_gamepad_offset + 4);
+          // Set our current input with the value from our input queue
+          ram[rcn.mem_gamepad_offset + index] = input.input;
+          _execute_user_func(nupdate);
+        }
+
+        ram.set(saved_input, rcn.mem_gamepad_offset);
+
+        _network.frames[index] = _network.frame;
+      }
     }
 
     _network.frame += 1;
