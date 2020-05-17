@@ -600,9 +600,8 @@ function rcn_vm_worker_function(rcn) {
     }
 
     const index = _network.index;
+    const saved_input = ram.slice(rcn.mem_gamepad_offset, rcn.mem_gamepad_offset + rcn.mem_gamepad_size);
     if(index == 0) {
-      const saved_input = ram.slice(rcn.mem_gamepad_offset, rcn.mem_gamepad_offset + rcn.mem_gamepad_size);
-
       _network.input[0] = saved_input[0];
       _network.last_input[0] = saved_input[4];
       _network.frames[0] = _network.frame;
@@ -620,26 +619,21 @@ function rcn_vm_worker_function(rcn) {
       ram.set(_network.last_input, rcn.mem_gamepad_offset + 4);
 
       _execute_user_func(nupdate);
-
-      ram.set(saved_input, rcn.mem_gamepad_offset);
     } else {
-      const input = ram[rcn.mem_gamepad_offset];
       _postMessage({
         type: 'network',
         subtype: 'input',
         frame: _network.frame,
-        input: input,
+        input: saved_input[0],
       });
       _network.input_queue.push({
         frame: _network.frame,
-        input: input,
+        input: saved_input[0],
       });
 
       const sync_frame = _network.frames[index];
       if(sync_frame < _network.frame) {
         _network.input_queue = _network.input_queue.filter(i => i.frame > sync_frame);
-
-        const saved_input = ram.slice(rcn.mem_gamepad_offset, rcn.mem_gamepad_offset + rcn.mem_gamepad_size);
 
         ram.set(_network.input, rcn.mem_gamepad_offset);
         ram.set(_network.last_input, rcn.mem_gamepad_offset + 4);
@@ -658,11 +652,11 @@ function rcn_vm_worker_function(rcn) {
           _execute_user_func(nupdate);
         }
 
-        ram.set(saved_input, rcn.mem_gamepad_offset);
-
         _network.frames[index] = _network.frame;
       }
     }
+
+    ram.set(saved_input, rcn.mem_gamepad_offset);
 
     _network.frame += 1;
   }
