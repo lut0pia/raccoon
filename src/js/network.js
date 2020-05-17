@@ -28,7 +28,9 @@ rcn_network.prototype.update = function(vm) {
 rcn_network.prototype.on_vm_message = function(vm, msg) {
   if(msg.subtype == 'connect') {
     this.reset();
-    this.connect(msg.group_size, msg.group_match);
+    if(msg.group_size > 1) {
+      this.connect(msg.group_size, msg.group_match);
+    }
   } else {
     const msg_text = JSON.stringify(msg);
     if(this.server_connection) {
