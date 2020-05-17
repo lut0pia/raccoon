@@ -693,8 +693,20 @@ function rcn_vm_worker_function(rcn) {
   read = function(addr) {
     return ram[addr];
   }
+  read16 = function(addr) {
+    return ram_view.getInt16(addr);
+  }
+  read32 = function(addr) {
+    return ram_view.getInt32(addr);
+  }
   write = function(addr, val) {
     ram[addr] = val;
+  }
+  write16 = function(addr, val) {
+    ram_view.setInt16(addr, val);
+  }
+  write32 = function(addr, val) {
+    ram_view.setInt32(addr, val);
   }
 
   // Raccoon debug API
