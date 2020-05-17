@@ -605,6 +605,7 @@ function rcn_vm_worker_function(rcn) {
 
       _network.input[0] = saved_input[0];
       _network.last_input[0] = saved_input[4];
+      _network.frames[0] = _network.frame;
 
       _postMessage({
         type: 'network',
