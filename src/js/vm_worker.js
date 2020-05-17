@@ -585,9 +585,9 @@ function rcn_vm_worker_function(rcn) {
         if(!_network.ready && msg.ready) {
           _network.frame = 0;
           _network.input_queue = [];
-          _network.frames = new _Array(_network.group_size);
-          _network.input = new _Array(_network.group_size);
-          _network.last_input = new _Array(_network.group_size);
+          _network.frames = (new _Array(_network.group_size)).fill(0);
+          _network.input = (new _Array(_network.group_size)).fill(0);
+          _network.last_input = (new _Array(_network.group_size)).fill(0);
         }
         _network.ready = msg.ready;
         _network.index = msg.index;
