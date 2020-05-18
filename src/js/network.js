@@ -44,11 +44,15 @@ rcn_network.prototype.on_vm_message = function(vm, msg) {
 }
 
 rcn_network.prototype.reset = function() {
-  if(this.server_connection) {
-    this.server_connection.close();
-  }
-  for(let connection of Object.values(this.client_connections || {})) {
-    connection.close();
+  const connections = Object.values(this.client_connections || {})
+    .concat([this.server_connection]);
+  for(let connection of connections) {
+    if(connection) {
+      connection.close();
+      if(connection.data) {
+        connection.close();
+      }
+    }
   }
   delete this.index;
   delete this.server_connection;
