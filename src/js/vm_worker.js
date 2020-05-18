@@ -566,7 +566,6 @@ function rcn_vm_worker_function(rcn) {
   const _network = {
     ready: false,
     group_size: 0,
-    group_match: 0,
     index: 0,
   };
   const _network_msg = function(msg) {
@@ -665,7 +664,6 @@ function rcn_vm_worker_function(rcn) {
   nconn = function(group_size = 0, group_match = 0) {
     _network.ready = false;
     _network.group_size = group_size;
-    _network.group_match = group_match;
     _postMessage({
       type: 'network',
       subtype: 'connect',
