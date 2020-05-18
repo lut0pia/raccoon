@@ -576,10 +576,12 @@ function rcn_vm_worker_function(rcn) {
         _network.frames[msg.index] = msg.frame;
         break;
       case 'state':
-        ram.set(msg.bytes, rcn.mem_network_offset);
-        _network.input = msg.input;
-        _network.last_input = msg.last_input;
-        _network.frames = msg.frames;
+        if(_network.frames[0] <= msg.frames[0]) {
+          ram.set(msg.bytes, rcn.mem_network_offset);
+          _network.input = msg.input;
+          _network.last_input = msg.last_input;
+          _network.frames = msg.frames;
+        }
         break;
       case 'update':
         if(!_network.ready && msg.ready) {
