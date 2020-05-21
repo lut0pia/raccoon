@@ -1,3 +1,7 @@
+.window.code_ed {
+  background:hsla(200, 23%, 16%, 1);
+}
+
 .window.code_ed content {
   width: 256px;
   height: 256px;
@@ -25,11 +29,11 @@
 .window.code_ed textarea {
   resize: none;
   color: #00000000;
-  caret-color: black;
+  caret-color: white;
 }
 
 .window.code_ed textarea::selection {
-  background-color: #00000020;
+  background-color: hsla(200, 100%, 78%, 0.15);
   color: #00000000;
 }
 
@@ -65,7 +69,7 @@
 .window.code_ed .textoverlay .keyword_link {
   color: #00000000;
   text-decoration: underline;
-  text-decoration-color: black;
+  text-decoration-color: #9eb5b8;
 }
 
 .window.code_ed .textoverlay .keyword_link:hover {
@@ -75,23 +79,23 @@
 /* Syntax highlighting */
 
 .window.code_ed .textmirror .keyword {
-  color: #0047f2;
+  color: #627aff;
 }
 
 .window.code_ed .textmirror .comment {
-  color: #727272;
+  color: #19d356;
 }
 
 .window.code_ed .textmirror .string {
-  color: #af5836;
+  color: #ff6d34;
 }
 
 .window.code_ed .textmirror .number.dec {
-  color: #579030;
+  color: #7cffb3;
 }
 
 .window.code_ed .textmirror .number.hex {
-  color: #9c9c1e;
+  color: #a1a14e;
 }
 
 /* Error highlighting */
@@ -118,6 +122,8 @@
 
 .window.code_ed .token_count {
   display: inline-block;
-  padding: 0px 2px 0px 2px;
-  border: 1px inset grey;
+  padding: 0px 6px;
+  font-family: 'Roboto Mono';
+  font-size: 14px;
+  color: #dbe7eb;
 }

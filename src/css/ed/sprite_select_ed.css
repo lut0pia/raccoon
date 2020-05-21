@@ -4,14 +4,15 @@
 }
 
 .window.sprite_select_ed .sprite_index {
-  font-family: monospace;
-  border: inset 2px lightgray;
-  padding: 2px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: white;
+  font-size: 16px;
+  padding: 4px;
   margin: auto;
 }
 
 .window.sprite_select_ed .wrapper {
-  height: calc(100% - 26px);
+  height: calc(100% - 32px);
   overflow-y: auto;
 }
 

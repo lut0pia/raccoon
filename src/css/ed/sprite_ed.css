@@ -1,15 +1,15 @@
 .window.sprite_ed content {
-  width: 512px;
-  height: 512px;
+  min-width: 415px;
+  min-height: 350px;
 }
 
 .window.sprite_ed div.panel {
-  float: right;
+  float: left;
 }
 
 
 .window.sprite_ed canvas.draw {
-  width: calc(100% - 48px);
+  width: calc(100% - 55px);
   max-height: 100%;
 }
 

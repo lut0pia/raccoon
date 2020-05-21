@@ -1,18 +1,22 @@
 .window {
   position: absolute;
-  background-color: lightgrey;
-  border: 1px #b4b4b4 solid;
+  background-color: hsla(198, 25%, 24%, 1);
+  border: 1px hsla(198, 20%, 20%, 1) solid;
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
 }
 
 .window header {
   padding: 2px;
-  background-color: grey;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  background-color: hsl(198, 16%, 33%);
   text-align: center;
   cursor: move;
 }
 
 .window:focus header {
   background-color: white;
+  color: #475a62;
 }
 
 .window header icon {

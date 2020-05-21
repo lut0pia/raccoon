@@ -4,6 +4,10 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@1,600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed&display=swap');
 
+* {
+  color: hsla(202, 21%, 90%, 1);
+}
+
 body {
   overflow: hidden;
 }
@@ -30,13 +34,13 @@ main {
 /* Text version */
 
 input[type=button].text {
-  padding: 0px 2px 0px 2px;
-  border: 1px grey outset;
-  background-color: lightgrey;
+  background-color: hsla(198, 15%, 9%, 1);
+  padding: 2px 12px;
+  margin: 2px 2px;
 }
 
 input[type=button].text:hover {
-  background-color: whitesmoke;
+  background-color:hsla(200, 20%, 29%, 1);
 }
 
 input[type=button].text:active, input[type=button].text:disabled {
@@ -59,9 +63,9 @@ input[type=button]:hover {
 */
 
 checkbox.text {
-  padding: 0px 2px 0px 2px;
-  border: 1px grey outset;
-  background-color: lightgrey;
+  padding: 2px 12px;
+  margin: 2px 2px;
+  background-color: #1c2326;
 }
 
 input[type=checkbox] {
@@ -94,7 +98,9 @@ checkbox.text input[type=checkbox]:checked + label::before {
 */
 
 select {
-  border: 1px grey inset;
+  border: 1px hsla(199, 31%, 17%, 1) solid;
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
+  background: hsla(198, 25%, 19%, 1);
 }
 
 select:disabled {
@@ -114,10 +120,6 @@ input[type=text] {
   Toolbox
 */
 
-#toolbox {
-  color: white;
-}
-
 #toolbox::before {
   content: "－ Toolbox －";
   font-family: 'IBM Plex Mono', monospace;
@@ -129,6 +131,7 @@ input[type=text] {
 
 #toolbox section {
   margin: 8px 0px;
+  outline: 1px solid hsla(200, 15%, 14%, 1);
 }
 
 #toolbox article {
@@ -163,7 +166,6 @@ input[type=text] {
 #layoutbox::before {
   content: "－ Layoutbox －";
   font-family: 'IBM Plex Mono', monospace;
-  color: white;
   font-size: 18px;
   padding-top: 10px;
   padding-bottom: 8px;
@@ -181,7 +183,6 @@ input[type=text] {
   cursor: pointer;
   margin-top: -1px;
   margin-left: 2px;
-  color: white;
   background: hsla(200, 15%, 13%, 1);
   float: right;
   border: none;
@@ -218,20 +219,30 @@ input[type=text] {
   z-index: 250;
   top: 40%;
   left: 25%;
-  width: 50%;
-  height: 20%;
   text-align: center;
-  background-color: lightgrey;
+  border: hsla(200, 41%, 35%, 1) solid 1px;
+  background-color: hsla(200, 46%, 20%, 1);
 }
 
 #popup p {
-  margin: 32px;
+  margin: 28px;
+  padding-bottom: 26px;
 }
 
 #popup .buttons {
   position: absolute;
   width: 100%;
   bottom: 8px;
+}
+
+#popup .buttons input{
+  padding: 4px 10px;
+  margin: 2px;
+  background: hsla(199, 52%, 12%, 1);
+}
+
+#popup .buttons input:hover{
+  background: hsla(199, 55%, 14%, 1);
 }
 
 /*
