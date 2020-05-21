@@ -9,6 +9,7 @@ function rcn_bin_ed() {
 
   // Create name input
   this.name_input = document.createElement('input');
+  this.name_input.classList.add('save_name');
   this.name_input.type = 'text';
   this.name_input.placeholder = 'Save name';
   this.name_input.oninput = function() {
@@ -19,6 +20,7 @@ function rcn_bin_ed() {
 
   // Create name input
   this.display_name_input = document.createElement('input');
+  this.display_name_input.classList.add('display_name');
   this.display_name_input.type = 'text';
   this.display_name_input.placeholder = 'Display name';
   this.display_name_input.oninput = function() {
@@ -490,20 +492,7 @@ rcn_bin_ed.prototype.update_name_input = function() {
 }
 
 rcn_bin_ed.prototype.update_bin_save_status = function() {
-  const save_status = rcn_bin_save_status();
-  this.name_input.style.backgroundColor = {
-    saved: 'white',
-    unsaved: '#faa',
-    new: '#faa',
-    default: 'white',
-  }[save_status];
-
-  this.save_button.style.fontWeight = {
-    saved: 'normal',
-    unsaved: 'normal',
-    new: 'bold',
-    default: 'normal',
-  }[save_status];
+  this.section.setAttribute('save_status', rcn_bin_save_status());
 }
 
 rcn_bin_ed.prototype.update_host_select = function() {

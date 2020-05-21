@@ -21,3 +21,13 @@
   height: 28px;
   margin-bottom: 4px;
 }
+
+/* Bin save status */
+
+.window.bin_ed[save_status=new] .save_name {
+  font-weight: bold;
+}
+.window.bin_ed[save_status=new] .save_name,
+.window.bin_ed[save_status=unsaved] .save_name {
+  background-color: rgb(148, 59, 59);
+}
