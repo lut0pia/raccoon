@@ -217,6 +217,7 @@ input[type=text] {
   display: block;
   position: absolute;
   z-index: 250;
+  width: 50%;
   top: 40%;
   left: 25%;
   text-align: center;
