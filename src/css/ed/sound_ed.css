@@ -1,9 +1,10 @@
 .window.sound_ed content {
   height: 256px;
+  min-width: 400px;
 }
 
 .window.sound_ed .wrapper {
-  height: calc(100% - 68px);
+  height: calc(100% - 75px);
   margin-top: 4px;
   overflow: auto;
 }
@@ -17,7 +18,7 @@
 }
 .window.sound_ed td {
   min-width: 10px;
-  border: 1px grey solid;
+  border: 1px hsla(199, 36%, 13%, 1) solid;
   text-align: center;
 }
 .window.sound_ed td.active::before {
@@ -30,7 +31,7 @@
 /* Playing indicator */
 
 .window.sound_ed td.playing {
-  background-color: lightblue;
+  background-color: hsla(198, 30%, 33%, 0.8);
 }
 
 /* Tone markers */
@@ -40,7 +41,7 @@
 .window.sound_ed tr:nth-last-child(12n + 7),
 .window.sound_ed tr:nth-last-child(12n + 9),
 .window.sound_ed tr:nth-last-child(12n + 11) {
-  background-color: #bbb;
+  background-color: hsla(200, 25%, 18%, 1);
 }
 
 /* Beat markers */
@@ -67,12 +68,14 @@
 
 .window.sound_ed td.active[effect=none] {
   background-color: lightblue;
+  color: hsla(198, 14%, 10%, 1);
+  font-family:'IBM Plex Sans Condensed', sans-serif;
 }
 .window.sound_ed td.active[effect=slide] {
-  background-image: linear-gradient(white, lightblue, white);
+  background-image: linear-gradient(#376176 lightblue, #376176);
 }
 .window.sound_ed td.active[effect=vibrato] {
-  background-image: linear-gradient(to right, lightblue, white, lightblue, white, lightblue, white, lightblue, white);
+  background-image: linear-gradient(to right, lightblue, #376176, lightblue, #376176, lightblue, #376176, lightblue, #376176);
 }
 .window.sound_ed td.active[effect=drop] {
   background-image: radial-gradient(lightblue, #00000000);

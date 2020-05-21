@@ -4,9 +4,10 @@
 }
 
 .window.map_ed .map_coords {
-  font-family: monospace;
-  border: inset 2px lightgray;
-  padding: 2px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: white;
+  font-size: 16px;
+  padding: 4px;
   margin: auto;
 }
 

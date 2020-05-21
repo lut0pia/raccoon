@@ -1,6 +1,5 @@
 .window.bin_ed article {
-  padding: 4px;
-  border-bottom: 1px grey solid;
+  background-color: hsla(200, 25%, 20%, 1);
 }
 
 .window.bin_ed article input {
@@ -10,4 +9,15 @@
 .window.bin_ed article .host {
   margin-left: 4px;
   color: grey;
+}
+
+.window.bin_ed input[type=button] {
+  padding: 2px 16px;
+  margin: 2px;
+}
+
+.window.bin_ed article {
+  padding: 0px 8px;
+  height: 28px;
+  margin-bottom: 4px;
 }

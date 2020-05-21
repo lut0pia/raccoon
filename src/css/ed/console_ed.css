@@ -15,7 +15,7 @@
 }
 
 .window.console_ed div article.error {
-  color: #db5b5b;
+  color: hsla(0, 88%, 70%, 1);
 }
 
 .window.console_ed input[type=text] {
