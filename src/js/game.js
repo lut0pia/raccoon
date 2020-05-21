@@ -13,7 +13,9 @@ function rcn_start_game_mode(params) {
   viewport_meta.setAttribute('content', 'user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi');
   document.head.appendChild(viewport_meta);
 
-  const vm = new rcn_vm();
+  const vm = new rcn_vm({
+    no_network: !!params.export,
+  });
   vm.load_bin(params.bin);
   document.title = params.bin.display_name;
   document.body.appendChild(vm.canvas.node);

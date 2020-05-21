@@ -20,6 +20,7 @@ function rcn_vm_worker_function(rcn) {
   const ram = new Uint8Array(ram_buffer);
 
   // Keep parts of the API local
+  const _Array = Array;
   const _console = console;
   const _Function = Function;
   const _Math = Math;
@@ -561,6 +562,122 @@ function rcn_vm_worker_function(rcn) {
     return _String.fromCodePoint([0xe000 + i]);
   }
 
+  // Raccoon network API
+  const _network = {
+    ready: false,
+    group_size: 0,
+    group_match: 0,
+    index: 0,
+  };
+  const _network_msg = function(msg) {
+    switch(msg.subtype) {
+      case 'input':
+        _network.input[msg.index] = msg.input;
+        _network.frames[msg.index] = msg.frame;
+        break;
+      case 'state':
+        ram.set(msg.bytes, rcn.mem_network_offset);
+        _network.input = msg.input;
+        _network.last_input = msg.last_input;
+        _network.frames = msg.frames;
+        break;
+      case 'update':
+        if(!_network.ready && msg.ready) {
+          _network.frame = 0;
+          _network.input_queue = [];
+          _network.frames = (new _Array(_network.group_size)).fill(0);
+          _network.input = (new _Array(_network.group_size)).fill(0);
+          _network.last_input = (new _Array(_network.group_size)).fill(0);
+        }
+        _network.ready = msg.ready;
+        _network.index = msg.index;
+        break;
+    }
+  }
+  const _network_update = function() {
+    if(!_network.ready) {
+      return;
+    }
+
+    const index = _network.index;
+    const saved_input = ram.slice(rcn.mem_gamepad_offset, rcn.mem_gamepad_offset + rcn.mem_gamepad_size);
+    if(index == 0) {
+      _network.input[0] = saved_input[0];
+      _network.last_input[0] = saved_input[4];
+      _network.frames[0] = _network.frame;
+
+      _postMessage({
+        type: 'network',
+        subtype: 'state',
+        bytes: _Array.from(ram.slice(rcn.mem_network_offset, rcn.mem_network_offset + rcn.mem_network_size)),
+        input: _network.input,
+        last_input: _network.last_input,
+        frames: _network.frames,
+      });
+
+      ram.set(_network.input, rcn.mem_gamepad_offset);
+      ram.set(_network.last_input, rcn.mem_gamepad_offset + 4);
+
+      _execute_user_func(nupdate);
+    } else {
+      _postMessage({
+        type: 'network',
+        subtype: 'input',
+        frame: _network.frame,
+        input: saved_input[0],
+      });
+      _network.input_queue.push({
+        frame: _network.frame,
+        input: saved_input[0],
+      });
+
+      const sync_frame = _network.frames[index];
+      if(sync_frame < _network.frame) {
+        _network.input_queue = _network.input_queue.filter(i => i.frame > sync_frame);
+
+        ram.set(_network.input, rcn.mem_gamepad_offset);
+        ram.set(_network.last_input, rcn.mem_gamepad_offset + 4);
+
+        // Execute exact server frame
+        _execute_user_func(nupdate);
+
+        // Predict future frames
+        for(let input of _network.input_queue) {
+          // Put current input in last input
+          ram.set(ram.slice(rcn.mem_gamepad_offset, rcn.mem_gamepad_offset + 4), rcn.mem_gamepad_offset);
+          // Remove all current input
+          ram.fill(0, rcn.mem_gamepad_offset, rcn.mem_gamepad_offset + 4);
+          // Set our current input with the value from our input queue
+          ram[rcn.mem_gamepad_offset + index] = input.input;
+          _execute_user_func(nupdate);
+        }
+
+        _network.frames[index] = _network.frame;
+      }
+    }
+
+    ram.set(saved_input, rcn.mem_gamepad_offset);
+
+    _network.frame += 1;
+  }
+  nconn = function(group_size = 0, group_match = 0) {
+    _network.ready = false;
+    _network.group_size = group_size;
+    _network.group_match = group_match;
+    _postMessage({
+      type: 'network',
+      subtype: 'connect',
+      group_size: group_size,
+      group_match: group_match,
+    });
+  }
+  nready = function() {
+    return _network.ready;
+  }
+  nindex = function() {
+    return _network.index;
+  }
+
   // Raccoon memory API
   memcpy = function(dst, src, len) {
     ram.copyWithin(dst, src, src + len);
@@ -571,8 +688,20 @@ function rcn_vm_worker_function(rcn) {
   read = function(addr) {
     return ram[addr];
   }
+  read16 = function(addr) {
+    return ram_view.getInt16(addr);
+  }
+  read32 = function(addr) {
+    return ram_view.getInt32(addr);
+  }
   write = function(addr, val) {
     ram[addr] = val;
+  }
+  write16 = function(addr, val) {
+    ram_view.setInt16(addr, val);
+  }
+  write32 = function(addr, val) {
+    ram_view.setInt32(addr, val);
   }
 
   // Raccoon debug API
@@ -624,6 +753,7 @@ function rcn_vm_worker_function(rcn) {
   // User-defined functions
   init = undefined;
   update = undefined;
+  nupdate = undefined;
   draw = undefined;
 
   onmessage = function(e) {
@@ -639,11 +769,13 @@ function rcn_vm_worker_function(rcn) {
         break;
       case 'init': _execute_user_func(init); break;
       case 'update':
+        _network_update();
         _execute_user_func(update);
         _mus_update();
         sfx_update();
         break;
       case 'draw': _execute_user_func(draw); break;
+      case 'network': _network_msg(e.data); break;
       case 'write':
         ram.set(e.data.bytes, e.data.offset);
         break;

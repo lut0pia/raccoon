@@ -22,7 +22,9 @@ const rcn = {
   mem_music_size: 0x0100, // 256B = 64x(4x(1+1+6))bits
   // ... 0x0580
   // RAM/ROM limit
-  // ... 0x0fc7
+  mem_network_offset: 0x5000,
+  mem_network_size: 0x0400, // 1024B
+  // ... 0x0bc7
   mem_cam_offset: 0x5fc7,
   mem_cam_size: 0x0004, // 4B = 2x16bits
   mem_soundstate_offset: 0x5fcb,
@@ -173,7 +175,7 @@ window.addEventListener('load', async function() {
       // Raccoon core
       'bin','vm','vm_worker',
       // Utility
-      'audio','canvas','gl','http','utility',
+      'audio','canvas','gl','http','network','utility',
       // Extensions
       'ext/github',
     ]),
