@@ -141,7 +141,10 @@ rcn_network.prototype.create_peer_connection = function(create_channel) {
   const network = this;
   const connection = new RTCPeerConnection(rcn_rtc_conf);
   if(create_channel) {
-    connection.channel = connection.createDataChannel('data');
+    connection.channel = connection.createDataChannel('data', {
+      maxRetransmits: 0, // YOLO
+      ordered: false, // LYOO
+    });
     this.configure_channel(connection.channel);
   }
   connection.addEventListener('datachannel', e => {
