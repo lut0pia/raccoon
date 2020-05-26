@@ -103,7 +103,7 @@ rcn_vm.prototype.update = function() {
   this.worker.postMessage({type: 'update'});
   this.worker.postMessage({type: 'read', name: 'audio', offset: rcn.mem_soundreg_offset, size: rcn.mem_soundreg_size});
 
-  this.gamepad_state.copyWithin(4, 0, 4); // Keep copy of previous frame gamepad state
+  this.gamepad_state.copyWithin(rcn.gamepad_count, 0, rcn.gamepad_count); // Keep copy of previous frame gamepad state
 }
 
 rcn_vm.prototype.draw = function() {
@@ -126,7 +126,7 @@ rcn_vm.prototype.reset = function() {
 
   // Set default gamepad layouts
   this.set_gamepad_layout(0, rcn.gamepad_layout_xcvb); // Keyboard for first player
-  for(let i = 1; i < 4; i++) {
+  for(let i = 1; i < rcn.gamepad_count; i++) {
     this.set_gamepad_layout(i, rcn.gamepad_layout_abxy); // Abxy for the rest
   }
 }
@@ -183,7 +183,7 @@ rcn_vm.prototype.load_memory_from_bin = function(offset, size) {
 
 rcn_vm.prototype.get_player_for_gamepad_id = function(id, layout, create_mapping = false) {
   let player = this.gamepad_mapping.indexOf(id);
-  if(player < 0 && create_mapping && this.gamepad_mapping.length < 4) {
+  if(player < 0 && create_mapping && this.gamepad_mapping.length < rcn.gamepad_count) {
     player = this.gamepad_mapping.length;
     this.gamepad_mapping.push(id);
     this.set_gamepad_layout(player, layout);
@@ -200,7 +200,7 @@ rcn_vm.prototype.set_gamepad_bit = function(player, offset, value) {
 }
 
 rcn_vm.prototype.set_gamepad_layout = function(player, layout) {
-  this.gamepad_state[player + 8] = layout;
+  this.gamepad_state[player + rcn.gamepad_count*2] = layout;
 }
 
 rcn_vm.prototype.set_volume = function(volume) {

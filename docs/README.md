@@ -153,10 +153,11 @@ N.B. Ranges in memory are expressed with their end excluded.
 | `0x3840-0x3900` | [Sprite flags](#sprite-flags-memory) | ROM | 192x8bits
 | `0x3900-0x4980` | [Sound](#sound-memory) | ROM | 64x(8+2+6+(32x(2+6+2+3+3)))bits
 | `0x4980-0x4a80` | [Music](#music-memory) | ROM | 64x(4x(1+1+6))bits
-| `0x5fcb-0x5fdf` | [Sound state](#sound-state-memory) | RAM | 4x(8+8+6+1+3+3)bits
-| `0x5fdf-0x5fe4` | [Music state](#music-state-memory) | RAM | 4x(8+8+6+1+3+3)bits
-| `0x5fe4-0x5ff4` | [Sound registers](#sound-registers-memory) | RAM | 4x(1+7+2+6+2+6+2+3+3)bits
-| `0x5ff4-0x6000` | [Gamepad state](#gamepad-state-memory) | RAM | 2x4x(4+4)bits
+| `0x5f90-0x5fa0` | [Camera state](#camera-state-memory) | RAM | 2x16bits
+| `0x5fa0-0x5fc0` | [Sound state](#sound-state-memory) | RAM | 4x(8+8+6+1+3+3)bits
+| `0x5fc0-0x5fd0` | [Music state](#music-state-memory) | RAM | 4x(8+8+6+1+3+3)bits
+| `0x5fd0-0x5fe0` | [Sound registers](#sound-registers-memory) | RAM | 4x(1+7+2+6+2+6+2+3+3)bits
+| `0x5fe0-0x6000` | [Gamepad state](#gamepad-state-memory) | RAM | 2x8x(4+4)+8x8bits
 | `0x6000-0x8000` | [Screen](#screen-memory) | RAM | 128x128x4bits
 
 ## Spritesheet Memory
@@ -199,6 +200,10 @@ Music data is 64 32bit nodes that connect tracks together via their indices.
     - U: Used
     - T: Track
 
+## Camera State Memory
+
+Camera state data is two 16bit integers used as offset during rendering.
+
 ## Sound State Memory
 
 ## Sound Registers Memory
@@ -217,7 +222,7 @@ Sound registers are 4 32bit registers that are used by the virtual machine to co
 
 ## Gamepad State Memory
 
-Gamepad state data is 4 8bit controllers twice, the first 4 bytes are for the current frame's state while the other 4 bytes are the previous frame's state. The 4 least significant bits of each byte correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons. On the keyboard those action buttons are X, C, V and B respectively, while on a modern gamepad they are the down, right, left and top face buttons respectively.
+Gamepad state data is 8 8bit controllers three times, the first 8 bytes are for the current frame's state while the next 8 bytes are the previous frame's state, and the last 8 bytes are the gamepad's current layout (for display purposes). The 4 least significant bits of each byte correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons. On the keyboard those action buttons are X, C, V and B respectively, while on a modern gamepad they are the down, right, left and top face buttons respectively.
 
 ## Screen Memory
 

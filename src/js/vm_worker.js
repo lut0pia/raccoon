@@ -548,14 +548,14 @@ function rcn_vm_worker_function(rcn) {
 
   // Raccoon input API
   btn = b = function(i, p = 0) { // First player by default
-    return (ram[rcn_mem_gamepad_offset+p] & (1 << i)) != 0;
+    return (ram[rcn_mem_gamepad_offset + p] & (1 << i)) != 0;
   }
   btnp = function(i, p = 0) { // First player by default
-    return (ram[rcn_mem_gamepad_offset+p] & (1 << i)) != 0 &&
-      (ram[rcn_mem_gamepad_offset+p+4] & (1 << i)) == 0;
+    return (ram[rcn_mem_gamepad_offset + p] & (1 << i)) != 0 &&
+      (ram[rcn_mem_gamepad_offset + p + rcn.gamepad_count] & (1 << i)) == 0;
   }
   btns = function(i, p = 0) {
-    const layout = ram[rcn_mem_gamepad_offset+p+8];
+    const layout = ram[rcn_mem_gamepad_offset + p + rcn.gamepad_count * 2];
     if(layout == rcn.gamepad_layout_abxy) {
       i += 8;
     }
@@ -662,7 +662,7 @@ function rcn_vm_worker_function(rcn) {
           confirmed_input = false;
         }
         ram[rcn.mem_gamepad_offset + p] = input;
-        ram[rcn.mem_gamepad_offset + p + 4] = last_input;
+        ram[rcn.mem_gamepad_offset + p + rcn.gamepad_count] = last_input;
       }
 
       _execute_user_func(nupdate);
