@@ -286,8 +286,12 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 
 - `memcpy(dst, src, len)`: Copies `len` bytes in RAM from `src` to `dst`
 - `memset(dst, val, len)`: Sets `len` bytes in RAM to value `val` at `dst`
-- `read(addr)`: Returns the value of the byte at address `addr` in RAM
-- `write(addr, val)`: Writes value `val` to the byte at address `addr` in RAM
+- `read(addr)`: Returns the value of the 8-bit unsigned integer at address `addr` in RAM
+- `read16(addr)`: Returns the value of the 16-bit signed integer at address `addr` in RAM
+- `read32(addr)`: Returns the value of the 32-bit signed integer at address `addr` in RAM
+- `write(addr, val)`: Writes value `val` to the 8-bit unsigned integer at address `addr` in RAM
+- `write16(addr, val)`: Writes value `val` to the 16-bit signed integer at address `addr` in RAM
+- `write32(addr, val)`: Writes value `val` to the 32-bit signed integer at address `addr` in RAM
 
 ## Debug Functions
 - `debug(msg)`: Logs `msg` to the [Console](#console)
