@@ -128,6 +128,8 @@ async function rcn_bootstrap_editor_mode(params) {
   await Promise.all([
     rcn_load_styles([
       'editor', 'window',
+      'ed/header',
+
       'ed/bin_ed',
       'ed/code_ed',
       'ed/console_ed',
@@ -141,6 +143,8 @@ async function rcn_bootstrap_editor_mode(params) {
     ]),
     rcn_load_scripts([
       'editor', 'ui', 'window',
+      'ed/header',
+
       'ed/bin_ed',
       'ed/code_ed',
       'ed/console_ed',

@@ -12,18 +12,21 @@ body {
   overflow: hidden;
 }
 
-aside {
+body > aside {
+  position: absolute;
+  left: 0px;
+  top: 32px;
   width: 180px;
-  height: 100%;
+  height: calc(100% - 32px);
   background-color: #232b2f;
 }
 
-main {
+body > main {
   position: absolute;
-  top: 0px;
   left: 180px;
+  top: 32px;
   width: calc(100% - 180px);
-  height: 100%;
+  height: calc(100% - 32px);
   background-color: #111517;
 }
 
