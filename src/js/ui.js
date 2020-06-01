@@ -85,8 +85,9 @@ async function rcn_ui_popup(o) {
 
     for(let button of o.buttons) {
       const button_el = rcn_ui_button(button);
-      const return_value = button.return_value;
-      button_el.addEventListener('click', () => resolve(return_value));
+      if(!button.onclick) {
+        button_el.addEventListener('click', () => resolve(button.return_value));
+      }
       buttons_el.appendChild(button_el);
     }
     rcn_popup.classList.add('active');
