@@ -224,7 +224,7 @@ rcn_hosts['github'] = {
       type: 'blob',
       content: o.text,
     }]);
-    const commit_message = prompt('Commit message:', 'Commit from raccoon');
+    const commit_message = await rcn_ui_prompt('Commit message:', 'Commit from raccoon');
     const new_commit = await rcn_github_create_commit(owner, repo, [commit_sha], commit_message, new_tree.sha);
     let head_commit_sha = new_commit.sha;
     let head_tree_sha = new_commit.tree.sha;

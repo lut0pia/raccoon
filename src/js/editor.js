@@ -234,8 +234,8 @@ function rcn_update_layoutbox() {
   rcn_layoutbox.appendChild(rcn_ui_button({
     value: 'Save current layout',
     classes: ['save'],
-    onclick: function() {
-      const layout_name = prompt('Layout name:');
+    onclick: async () => {
+      const layout_name = await rcn_ui_prompt('Layout name:');
       if(layout_name) {
         rcn_storage.window_layouts[layout_name] = rcn_window_save_layout();
         rcn_update_layoutbox();
