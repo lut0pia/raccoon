@@ -57,6 +57,7 @@ const rcn_popup = document.createElement('div');
 rcn_popup.id = 'popup';
 document.body.appendChild(rcn_popup);
 
+let rcn_popup_resolve;
 async function rcn_ui_popup(o) {
    // Ensure there is at least a button to close the popup
    if(!o.buttons || o.buttons.length == 0) {
@@ -68,6 +69,8 @@ async function rcn_ui_popup(o) {
   }
 
   const promise = new Promise(function(resolve) {
+    rcn_popup_resolve = resolve;
+
     rcn_overlay_push();
 
     if(o.text) {
