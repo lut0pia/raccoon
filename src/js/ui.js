@@ -129,6 +129,38 @@ async function rcn_ui_alert(text) {
   });
 }
 
+async function rcn_ui_prompt(text, default_text) {
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = default_text || '';
+  input.addEventListener('keydown', e => {
+    if(e.keyCode == 13) { // Enter key
+      rcn_popup_resolve(input.value);
+    }
+  });
+  requestAnimationFrame(() => {
+    input.focus();
+    input.select();
+  });
+  const wrapper = document.createElement('p');
+  const text_el = document.createElement('p');
+  text_el.innerText = text;
+  wrapper.append(text_el, input);
+  return rcn_ui_popup({
+    node: wrapper,
+    buttons: [
+      {
+        value: 'Okay',
+        onclick: () => rcn_popup_resolve(input.value),
+      },
+      {
+        value: 'Cancel',
+        return_value: null,
+      },
+    ],
+  });
+}
+
 const rcn_overlay = document.createElement('div');
 rcn_overlay.id = 'overlay';
 rcn_overlay.stack = 0;
