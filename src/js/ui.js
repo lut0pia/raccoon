@@ -79,6 +79,10 @@ async function rcn_ui_popup(o) {
       rcn_popup.appendChild(text_el);
     }
 
+    if(o.node) {
+      rcn_popup.appendChild(o.node);
+    }
+
     const buttons_el = document.createElement('div');
     buttons_el.classList.add('buttons');
     rcn_popup.appendChild(buttons_el);
