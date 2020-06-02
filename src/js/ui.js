@@ -53,11 +53,10 @@ function rcn_ui_checkbox(o) {
   return checkbox;
 }
 
-const rcn_popup = document.createElement('div');
-rcn_popup.id = 'popup';
-document.body.appendChild(rcn_popup);
-
-let rcn_popup_resolve;
+const rcn_popup_stack = [];
+function rcn_popup_resolve() {
+  rcn_popup_stack[0].resolve(...arguments);
+}
 async function rcn_ui_popup(o) {
    // Ensure there is at least a button to close the popup
    if(!o.buttons || o.buttons.length == 0) {
@@ -69,23 +68,34 @@ async function rcn_ui_popup(o) {
   }
 
   const promise = new Promise(function(resolve) {
-    rcn_popup_resolve = resolve;
+    o.resolve = resolve;
+
+    if(rcn_popup_stack.length > 0) {
+      const previous_popup = rcn_popup_stack[0];
+      previous_popup.el.remove();
+    }
+
+    rcn_popup_stack.unshift(o);
 
     rcn_overlay_push();
+
+    o.el = document.createElement('div');
+    o.el.id = 'popup';
+    document.body.appendChild(o.el);
 
     if(o.text) {
       const text_el = document.createElement('p');
       text_el.innerText = o.text;
-      rcn_popup.appendChild(text_el);
+      o.el.appendChild(text_el);
     }
 
     if(o.node) {
-      rcn_popup.appendChild(o.node);
+      o.el.appendChild(o.node);
     }
 
     const buttons_el = document.createElement('div');
     buttons_el.classList.add('buttons');
-    rcn_popup.appendChild(buttons_el);
+    o.el.appendChild(buttons_el);
 
     for(let button of o.buttons) {
       const button_el = rcn_ui_button(button);
@@ -94,12 +104,12 @@ async function rcn_ui_popup(o) {
       }
       buttons_el.appendChild(button_el);
     }
-    rcn_popup.classList.add('active');
   });
   const close_popup = function() {
-    rcn_popup.classList.remove('active');
-    while(rcn_popup.firstChild) {
-      rcn_popup.removeChild(rcn_popup.firstChild);
+    o.el.remove();
+    rcn_popup_stack.shift();
+    if(rcn_popup_stack.length > 0) {
+      document.body.appendChild(rcn_popup_stack[0].el);
     }
     rcn_overlay_pop();
   }

@@ -209,14 +209,10 @@ input[type=text] {
 }
 
 /*
-  The popup appears above the overlay when it has the active class
+  The popup appears above the overlay
 */
 
 #popup {
-  display: none;
-}
-
-#popup.active {
   display: block;
   position: absolute;
   z-index: 250;
