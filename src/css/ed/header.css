@@ -35,7 +35,7 @@ body > header .container button {
 
 /* Root folders */
 
-body > header > .folder {
+body > header > menu > .folder {
   float: left;
   overflow: hidden;
 }
@@ -58,13 +58,13 @@ body > header .container {
 
 /* First menu container */
 
-body > header > .folder:hover > .container {
+body > header > menu > .folder:hover > .container {
   display: block;
 }
 
 /* Deep menu container */
 
-body > header > div .folder:hover > .container {
+body > header > menu > div .folder:hover > .container {
   display: inline-block;
 }
 

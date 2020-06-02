@@ -8,12 +8,15 @@ const rcn_header_logo = document.createElement('img');
 rcn_header_logo.src = 'src/img/logo.svg';
 rcn_header.appendChild(rcn_header_logo);
 
+const rcn_header_menu = document.createElement('menu');
+rcn_header.appendChild(rcn_header_menu);
+
 const rcn_header_buttons = [];
 
 function rcn_editor_header_button(o) {
   const path_parts = o.path.split('/');
   let parent_children = rcn_header_buttons;
-  let parent_container_el = rcn_header;
+  let parent_container_el = rcn_header_menu;
   while(path_parts.length > 0) {
     const part = path_parts.shift();
     let button = parent_children.find(btn => btn.name == part);
