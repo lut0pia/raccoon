@@ -3,7 +3,6 @@
 1. [Introduction](#introduction)
     1. [Game Loop](#game-loop)
 1. [Editors](#editors)
-    1. [Bin Browser](#bin-browser)
     1. [Virtual Machine](#virtual-machine)
     1. [Code Editor](#code-editor)
     1. [Console](#console)
@@ -46,10 +45,6 @@ It's not mandatory to put your draw code in the draw function, you can work with
 # Editors
 
 Raccoon tools exist in windows that can be moved and resized. Their layout is saved in your local storage.
-
-## Bin Browser
-
-The bin browser allows you to `Save` and `Load` bins, usually from the local storage (a persistent storage space in your browser). It can also be used to `Download` the current bin into a `.rcn.json` file that you can then upload through the file input. Share it with your friends!
 
 ## Virtual Machine
 

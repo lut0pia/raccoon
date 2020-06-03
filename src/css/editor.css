@@ -272,3 +272,33 @@ input[type=text] {
 .window_dragging iframe {
   pointer-events: none;
 }
+
+/*
+  Open bin popup
+*/
+
+.open_popup article {
+  background-color: black;
+  padding: 0px 8px;
+  height: 28px;
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.open_popup article input {
+  float: right;
+}
+
+.open_popup article span {
+  vertical-align: middle;
+}
+
+.open_popup article .host {
+  margin-left: 4px;
+  color: grey;
+}
+
+.open_popup input[type=button] {
+  padding: 2px 16px;
+  margin: 2px;
+}

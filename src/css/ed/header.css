@@ -17,6 +17,30 @@ body > header > img {
   padding: 0px 16px;
 }
 
+/* Bin details */
+
+body > header > #header_bin_details {
+  float: right;
+}
+
+body > header > #header_bin_details > span {
+  padding: 4px;
+  line-height: 32px;
+}
+
+body > header > #header_bin_details > #header_bin_host {
+  color: grey;
+}
+
+[bin_save_status=new] #header_bin_name {
+  font-weight: bold;
+}
+[bin_save_status=new] #header_bin_name,
+[bin_save_status=unsaved] #header_bin_name {
+  background-color: rgb(148, 59, 59);
+}
+
+
 /* All buttons */
 
 body > header button {
