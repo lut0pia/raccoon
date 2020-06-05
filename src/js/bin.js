@@ -98,7 +98,7 @@ rcn_bin.prototype.from_json = function(bin) {
     this.host = bin.host;
     this.link = bin.link;
   } else {
-    rcn_log('Unable to read bin with version: '+bin.version);
+    console.log('Unable to read bin with version: '+bin.version);
   }
 }
 

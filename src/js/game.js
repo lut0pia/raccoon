@@ -2,7 +2,7 @@
 'use strict';
 
 function rcn_start_game_mode(params) {
-  rcn_log('Starting game mode');
+  console.log('Starting game mode');
 
   document.body.classList.add('game');
   document.body.classList.toggle('touch', rcn_is_touch_device);

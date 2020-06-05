@@ -3,8 +3,6 @@
 
 document.title = 'raccoon';
 
-const rcn_log = (location.protocol == 'file:') ? console.log : function() {};
-
 const rcn = {
   rom_size: 0x5000, // = 20KiB
   ram_size: 0x8000, // = 32KiB
@@ -61,14 +59,14 @@ let rcn_storage = {}
 try {
   rcn_storage = JSON.parse(localStorage.rcn);
 } catch(e) {
-  rcn_log('Could not read localStorage');
+  console.log('Could not read localStorage');
   console.log(e);
 }
 window.addEventListener('unload', function() {
   try {
     localStorage.rcn = JSON.stringify(rcn_storage);
   } catch(e) {
-    rcn_log('Could not write to localStorage');
+    console.log('Could not write to localStorage');
     console.log(e);
   }
 })
@@ -113,7 +111,7 @@ function rcn_load_styles(styles) {
 }
 
 async function rcn_bootstrap_game_mode(params) {
-  rcn_log('Bootstrapping game mode');
+  console.log('Bootstrapping game mode');
   if(!params.export) {
     await Promise.all([
       rcn_load_styles(['game']),
@@ -124,7 +122,7 @@ async function rcn_bootstrap_game_mode(params) {
 }
 
 async function rcn_bootstrap_editor_mode(params) {
-  rcn_log('Bootstrapping editor mode');
+  console.log('Bootstrapping editor mode');
   await Promise.all([
     rcn_load_styles([
       'editor', 'window',
@@ -186,7 +184,7 @@ window.addEventListener('load', async function() {
 
   let bin = await rcn_bin_from_env();
   if(bin) {
-    rcn_log('Loaded bin from environment');
+    console.log('Loaded bin from environment');
   }
   if(bin && !rcn_get_parameters.edit) {
     rcn_bootstrap_game_mode({

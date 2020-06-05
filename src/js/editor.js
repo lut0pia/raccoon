@@ -2,7 +2,7 @@
 'use strict';
 
 async function rcn_start_editor_mode(params) {
-  rcn_log('Starting editor mode');
+  console.log('Starting editor mode');
 
   document.body.classList.add('editor');
 

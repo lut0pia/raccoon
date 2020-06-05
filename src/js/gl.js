@@ -6,7 +6,7 @@ function rcn_gl_create_shader(gl, type, source) {
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    rcn_log('GL: Shader compile error: ' + gl.getShaderInfoLog(shader));
+    console.log('GL: Shader compile error: ' + gl.getShaderInfoLog(shader));
     gl.deleteShader(shader);
     return null;
   }
@@ -20,7 +20,7 @@ function rcn_gl_create_program(gl, vs_source, fs_source) {
   gl.attachShader(program, rcn_gl_create_shader(gl, gl.FRAGMENT_SHADER, fs_source));
   gl.linkProgram(program);
   if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    rcn_log('GL: Program link error: ' + gl.getProgramInfoLog(program));
+    console.log('GL: Program link error: ' + gl.getProgramInfoLog(program));
     return null;
   }
   return program;
