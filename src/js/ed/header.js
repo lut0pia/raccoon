@@ -42,8 +42,8 @@ function rcn_editor_header_button(o) {
         button.children = [];
       } else { // Leaf button
         button.el = button_el;
-        if(o.onclick) {
-          button.el.addEventListener('click', o.onclick);
+        if(o.action) {
+          button.el.addEventListener('click', o.action);
         }
         if(o.shortcut) {
           const kbd_el = document.createElement('kbd')
@@ -62,8 +62,8 @@ function rcn_editor_header_button(o) {
 
 function rcn_conditional_keyboard_shortcut(button, e) {
   const shortcut = button.params.shortcut;
-  const onclick = button.params.onclick;
-  if(shortcut && onclick) {
+  const action = button.params.action;
+  if(shortcut && action) {
     const shortcut_keys = shortcut.split('+').sort();
     const pressed_keys = [
       e.key.toUpperCase(),
@@ -73,7 +73,7 @@ function rcn_conditional_keyboard_shortcut(button, e) {
     ].filter(k => k).sort();
 
     if(shortcut_keys.join() == pressed_keys.join()) {
-      onclick(e);
+      action(e);
       e.preventDefault();
       return true;
     }

@@ -360,12 +360,12 @@ async function rcn_start_editor_mode(params) {
   };
   rcn_editor_header_button({
     path: 'File/New',
-    onclick: () => change_bin(new rcn_bin()),
+    action: () => change_bin(new rcn_bin()),
   });
   rcn_editor_header_button({
     path: 'File/Open...',
     shortcut: 'Ctrl+O',
-    onclick: async () => {
+    action: async () => {
       const popup_node = document.createElement('p');
       popup_node.classList.add('open_popup');
       for(let stored_bin of Object.values(rcn_storage.bins)) {
@@ -412,12 +412,12 @@ async function rcn_start_editor_mode(params) {
   rcn_editor_header_button({
     path: 'File/Save',
     shortcut: 'Ctrl+S',
-    onclick: () => save_bin(),
+    action: () => save_bin(),
   });
   rcn_editor_header_button({
     path: 'File/Save As...',
     shortcut: 'Ctrl+Shift+S',
-    onclick: async () => {
+    action: async () => {
       const bin_name = await rcn_ui_prompt('Bin name:', rcn_global_bin.name);
       if(bin_name) {
         rcn_global_bin.name = bin_name;
@@ -427,14 +427,14 @@ async function rcn_start_editor_mode(params) {
   });
   rcn_editor_header_button({
     path: 'File/Export/JSON',
-    onclick: () => rcn_download_file({
+    action: () => rcn_download_file({
       file_name: rcn_global_bin.name + '.rcn.json',
       content: rcn_global_bin.to_json_text(),
     }),
   });
   rcn_editor_header_button({
     path: 'File/Export/HTML',
-    onclick: async () => rcn_download_file({
+    action: async () => rcn_download_file({
       file_name: rcn_global_bin.name + '.rcn.html',
       content: await async function() {
         let scripts = await Promise.all([
@@ -493,7 +493,7 @@ async function rcn_start_editor_mode(params) {
   });
   rcn_editor_header_button({
     path: 'Source Control/Push',
-    onclick: async function() {
+    action: async function() {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
 
@@ -522,7 +522,7 @@ async function rcn_start_editor_mode(params) {
   });
   rcn_editor_header_button({
     path: 'Source Control/Pull',
-    onclick: async function() {
+    action: async function() {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
 
@@ -555,7 +555,7 @@ async function rcn_start_editor_mode(params) {
   });
   rcn_editor_header_button({
     path: 'Source Control/Force Push',
-    onclick: async function() {
+    action: async function() {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
 
@@ -586,7 +586,7 @@ async function rcn_start_editor_mode(params) {
   });
   rcn_editor_header_button({
     path: 'Source Control/Force Pull',
-    onclick: async function() {
+    action: async function() {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
 
