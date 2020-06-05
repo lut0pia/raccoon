@@ -24,6 +24,7 @@ function rcn_editor_header_button(o) {
     if(!button) {
       button = {
         name: part,
+        params: o,
       };
       const button_el = document.createElement('button');
       const span_el = document.createElement('span')
@@ -44,6 +45,11 @@ function rcn_editor_header_button(o) {
         if(o.onclick) {
           button.el.addEventListener('click', o.onclick);
         }
+        if(o.shortcut) {
+          const kbd_el = document.createElement('kbd')
+          kbd_el.innerText = o.shortcut;
+          button_el.appendChild(kbd_el);
+        }
       }
       parent_container_el.appendChild(button.el);
       parent_children.push(button);
@@ -53,3 +59,38 @@ function rcn_editor_header_button(o) {
     parent_container_el = button.container_el;
   }
 }
+
+function rcn_conditional_keyboard_shortcut(button, e) {
+  const shortcut = button.params.shortcut;
+  const onclick = button.params.onclick;
+  if(shortcut && onclick) {
+    const shortcut_keys = shortcut.split('+').sort();
+    const pressed_keys = [
+      e.key.toUpperCase(),
+      e.altKey && 'Alt',
+      e.ctrlKey && 'Ctrl',
+      e.shiftKey && 'Shift',
+    ].filter(k => k).sort();
+
+    if(shortcut_keys.join() == pressed_keys.join()) {
+      onclick(e);
+      e.preventDefault();
+      return true;
+    }
+  }
+
+  for(let child of button.children || []) {
+    if(rcn_conditional_keyboard_shortcut(child, e)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+document.body.addEventListener('keydown', e => {
+  for(let button of rcn_header_buttons) {
+    if(rcn_conditional_keyboard_shortcut(button, e)) {
+      return;
+    }
+  }
+});

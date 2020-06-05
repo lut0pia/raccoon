@@ -99,3 +99,10 @@ body > header .folder:hover > button,
 body > header .folder > div > button:hover {
   background-color: #4e5a52;
 }
+
+/* Keyboard shortcuts */
+
+body > header button > kbd {
+  float: right;
+  color: gray;
+}
