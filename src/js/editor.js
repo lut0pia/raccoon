@@ -365,6 +365,7 @@ async function rcn_start_editor_mode(params) {
   });
   rcn_editor_header_button({
     path: 'File/Open...',
+    shortcut: 'Ctrl+O',
     onclick: async () => {
       const popup_node = document.createElement('p');
       popup_node.classList.add('open_popup');
@@ -411,10 +412,12 @@ async function rcn_start_editor_mode(params) {
   });
   rcn_editor_header_button({
     path: 'File/Save',
+    shortcut: 'Ctrl+S',
     onclick: () => save_bin(),
   });
   rcn_editor_header_button({
     path: 'File/Save As...',
+    shortcut: 'Ctrl+Shift+S',
     onclick: async () => {
       const bin_name = await rcn_ui_prompt('Bin name:', rcn_global_bin.name);
       if(bin_name) {
