@@ -241,7 +241,7 @@ async function rcn_start_editor_mode(params) {
   })
   bin_details.appendChild(bin_details_button);
 
-  document.body.addEventListener('rcn_bin_change', e => {
+  const update_bin_details = e => {
     bin_name.innerText = rcn_global_bin.name;
     if(rcn_global_bin.host && rcn_global_bin.link) {
       bin_host.innerText = `(${rcn_global_bin.host}/${rcn_global_bin.link})`;
@@ -249,10 +249,9 @@ async function rcn_start_editor_mode(params) {
       bin_host.innerText = '';
     }
     document.body.setAttribute('bin_save_status', rcn_bin_save_status());
-  });
-  document.body.addEventListener('rcn_bins_change', e => {
-    document.body.setAttribute('bin_save_status', rcn_bin_save_status());
-  });
+  };
+  document.body.addEventListener('rcn_bin_change', update_bin_details);
+  document.body.addEventListener('rcn_bins_change', update_bin_details);
 
   // Header menu
   const change_bin = async function(new_bin) {
