@@ -18,7 +18,7 @@ body > aside {
   top: 32px;
   width: 180px;
   height: calc(100% - 32px);
-  background-color: #232b2f;
+  background-color: hsl(200deg 23% 14%);
 }
 
 body > main {
@@ -37,13 +37,13 @@ body > main {
 /* Text version */
 
 input[type=button].text {
-  background-color: hsla(198, 15%, 9%, 1);
+  background-color: hsl(199deg 26% 19%);
   padding: 2px 12px;
   margin: 2px 2px;
 }
 
 input[type=button].text:hover {
-  background-color:hsla(200, 20%, 29%, 1);
+  background-color: hsl(199deg 26% 24%);
 }
 
 input[type=button].text:active, input[type=button].text:disabled {
@@ -140,18 +140,18 @@ input[type=text] {
 #toolbox article {
   font-family: 'IBM Plex Sans Condensed', sans-serif;
   padding: 8px;
-  background-color:hsla(198, 14%, 21%, 1);
-  outline: 0.5px solid #232b2f;
+  background-color: hsl(199deg 25% 19%);
+  outline: 0.5px solid hsl(199deg 25% 16%);
   color: #ffffff;
   cursor: pointer;
 }
 
 #toolbox article.active {
-  background-color:hsla(196, 16%, 33%, 1);
+  background-color: hsl(199 26% 24% / 1);
 }
 
 #toolbox article:hover {
-  background-color:hsla(196, 16%, 33%, 1);
+  background-color: hsl(199deg 26% 29%);
 }
 
 #toolbox input {
@@ -186,7 +186,7 @@ input[type=text] {
   cursor: pointer;
   margin-top: -1px;
   margin-left: 2px;
-  background: hsla(200, 15%, 13%, 1);
+  background: hsl(199deg 26% 19%);
   float: right;
   border: none;
 }
@@ -198,7 +198,7 @@ input[type=text] {
 }
 
 #layoutbox input:hover {
-  background: hsla(198, 15%, 20%, 1);
+  background: hsl(199deg 26% 24%);
 }
 
 #layoutbox input.save{

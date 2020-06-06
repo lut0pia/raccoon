@@ -5,7 +5,8 @@ body > header {
   top: 0px;
   width: 100%;
   height: 32px;
-  background-color: #121618;
+  background-color: hsl(201deg 27% 16%);
+  border-bottom: 1px solid rgb(36 53 61);
 }
 
 /* Logo image */
@@ -29,7 +30,7 @@ body > header > #header_bin_details > span {
 }
 
 body > header > #header_bin_details > #header_bin_host {
-  color: grey;
+  color: hsl(199 12% 50% / 1);
 }
 
 [bin_save_status=new] #header_bin_name {
@@ -49,6 +50,7 @@ body > header button {
   padding: 0px 8px;
   vertical-align: top;
   text-align: left;
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
 }
 
 /* Contained buttons */
@@ -75,7 +77,8 @@ body > header .container > .folder > button::after {
 
 body > header .container {
   position: absolute;
-  background-color: #1b1515;
+  background-color: hsl(202deg 27% 19%);
+  outline: #475a62 1px solid;
   min-width: 256px;
   display: none;
 }
@@ -97,12 +100,13 @@ body > header > menu > div .folder:hover > .container {
 body > header button:hover,
 body > header .folder:hover > button,
 body > header .folder > div > button:hover {
-  background-color: #4e5a52;
+  background-color: hsl(199 25% 29% / 1);
 }
 
 /* Keyboard shortcuts */
 
 body > header button > kbd {
   float: right;
-  color: gray;
+  font-style: italic;
+  color: hsl(199 12% 50% / 1);
 }
