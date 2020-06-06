@@ -22,17 +22,17 @@
   width: 24px;
   text-align: center;
   padding: 0px 2px 0px 2px;
-  border: 1px hsla(199, 40%, 15%, 1) solid;
+  border: 1px hsl(201 28% 19% / 1) solid;
 }
 
 /* Rows */
 
 .music_ed tr:nth-child(2n) {
-  background-color: hsla(199, 36%, 19%, 1);
+  background-color: hsl(201 28% 17% / 1);
 }
 
 .music_ed tr.playing {
-  background-color: hsla(198, 25%, 32%, 1);
+  background-color: hsl(199 30% 29% / 1);
 }
 
 /* Play/stop buttons */

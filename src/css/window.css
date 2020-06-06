@@ -1,6 +1,6 @@
 .window {
   position: absolute;
-  background-color: hsla(198, 25%, 24%, 1);
+  background-color: hsl(201deg 24% 14%);
   border: 1px hsla(198, 20%, 20%, 1) solid;
   font-family: 'IBM Plex Sans Condensed', sans-serif;
 }
@@ -9,7 +9,7 @@
   padding: 2px;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 14px;
-  background-color: hsl(198, 16%, 33%);
+  background-color: hsl(199deg 26% 19%);
   text-align: center;
   cursor: move;
 }
