@@ -97,9 +97,9 @@ async function rcn_start_editor_mode(params) {
   }, 100);
 
   // Event history (undo/redo)
-  let event_stack = [];
-  let event_index = 0;
-  let event_mirror = rcn_global_bin.rom.slice();
+  let data_event_stack = [];
+  let data_event_index = 0;
+  let data_event_mirror = rcn_global_bin.rom.slice();
   document.body.addEventListener('keydown', function(e) {
     if(!(e.ctrlKey || e.metaKey)) return;
     if(e.target.type == 'text' || e.target.type == 'textarea') return;
@@ -107,18 +107,18 @@ async function rcn_start_editor_mode(params) {
     let offset;
     let patch;
 
-    if(e.key == 'z' && event_index > 0) { // Undo
-      offset = event_stack[--event_index].offset;
-      patch = event_stack[event_index].before;
-    } else if(e.key == 'y' && event_index < event_stack.length) { // Redo
-      offset = event_stack[event_index].offset;
-      patch = event_stack[event_index++].after;
+    if(e.key == 'z' && data_event_index > 0) { // Undo
+      offset = data_event_stack[--data_event_index].offset;
+      patch = data_event_stack[data_event_index].before;
+    } else if(e.key == 'y' && data_event_index < data_event_stack.length) { // Redo
+      offset = data_event_stack[data_event_index].offset;
+      patch = data_event_stack[data_event_index++].after;
     } else {
       return;
     }
 
     rcn_global_bin.rom.set(patch, offset);
-    event_mirror.set(patch, offset);
+    data_event_mirror.set(patch, offset);
 
     rcn_dispatch_ed_event('rcn_bin_change', {
       begin: offset,
@@ -129,9 +129,9 @@ async function rcn_start_editor_mode(params) {
   document.body.addEventListener('rcn_bin_change', function(e) {
     if(e.detail.undo_redo) return; // This event was trigger by an undo/redo
     if(e.detail.load) { // Complete bin load, clear undo stack
-      event_stack = [];
-      event_index = 0;
-      event_mirror = rcn_global_bin.rom.slice();
+      data_event_stack = [];
+      data_event_index = 0;
+      data_event_mirror = rcn_global_bin.rom.slice();
       return;
     }
 
@@ -144,15 +144,15 @@ async function rcn_start_editor_mode(params) {
     let event = {
       offset: mem_begin,
       after: rcn_global_bin.rom.slice(mem_begin, mem_end),
-      before: event_mirror.slice(mem_begin, mem_end),
+      before: data_event_mirror.slice(mem_begin, mem_end),
       first_time: now,
       last_time: now,
     };
 
     if(event.after.join() === event.before.join()) return; // Nothing changed
 
-    event_stack.splice(event_index);
-    const prev_event = event_index > 0 && event_stack[event_index - 1];
+    data_event_stack.splice(data_event_index);
+    const prev_event = data_event_index > 0 && data_event_stack[data_event_index - 1];
 
     if(prev_event && prev_event.last_time > now - 500 && prev_event.first_time > now - 5000) {
       // Extend previous event
@@ -161,16 +161,16 @@ async function rcn_start_editor_mode(params) {
       event.offset = new_begin;
       event.first_time = prev_event.first_time;
       event.after = rcn_global_bin.rom.slice(new_begin, new_end);
-      event.before = event_mirror.slice(new_begin, new_end);
+      event.before = data_event_mirror.slice(new_begin, new_end);
       event.before.set(prev_event.before, prev_event.offset - new_begin);
-      event_stack[event_index - 1] = event;
+      data_event_stack[data_event_index - 1] = event;
     } else {
       // Create new event
-      event_stack.push(event);
-      event_index++;
+      data_event_stack.push(event);
+      data_event_index++;
     }
 
-    event_mirror.set(event.after, event.offset);
+    data_event_mirror.set(event.after, event.offset);
   });
 
   // Header bin details
