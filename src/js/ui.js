@@ -83,14 +83,18 @@ async function rcn_ui_popup(o) {
     o.el.id = 'popup';
     document.body.appendChild(o.el);
 
+    const popup_content = document.createElement('div');
+    popup_content.id = 'popup_content';
+    o.el.appendChild(popup_content);
+
     if(o.text) {
       const text_el = document.createElement('p');
       text_el.innerText = o.text;
-      o.el.appendChild(text_el);
+      popup_content.appendChild(text_el);
     }
 
-    if(o.node) {
-      o.el.appendChild(o.node);
+    for(let node of o.nodes || (o.node && [o.node]) || []) {
+      popup_content.appendChild(node);
     }
 
     const buttons_el = document.createElement('div');

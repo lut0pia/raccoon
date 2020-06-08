@@ -435,8 +435,7 @@ async function rcn_start_editor_mode(params) {
     path: 'File/Open...',
     shortcut: 'Ctrl+O',
     action: async () => {
-      const popup_node = document.createElement('p');
-      popup_node.classList.add('open_popup');
+      const nodes = [];
       for(let stored_bin of Object.values(rcn_storage.bins)) {
         const bin_node = document.createElement('article');
 
@@ -471,10 +470,10 @@ async function rcn_start_editor_mode(params) {
           bin_node.appendChild(bin_host);
         }
 
-        popup_node.appendChild(bin_node);
+        nodes.push(bin_node);
       }
       return await rcn_ui_popup({
-        node: popup_node,
+        nodes: nodes,
       });
     },
   });

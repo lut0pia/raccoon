@@ -217,32 +217,52 @@ input[type=text] {
   position: absolute;
   z-index: 250;
   width: 50%;
-  top: 40%;
+  max-height: 30%;
+  top: 35%;
   left: 25%;
   text-align: center;
   border: hsla(200, 41%, 35%, 1) solid 1px;
   background-color: hsla(200, 46%, 20%, 1);
+  padding: 16px;
 }
 
-#popup p {
-  margin: 28px;
-  padding-bottom: 26px;
+#popup > #popup_content {
+  max-height: calc(30vh - 44px);
+  overflow: auto;
 }
 
-#popup .buttons {
-  position: absolute;
+#popup > .buttons {
   width: 100%;
-  bottom: 8px;
+  margin-top: 16px;
 }
 
-#popup .buttons input{
+#popup > .buttons input{
   padding: 4px 10px;
   margin: 2px;
   background: hsla(199, 52%, 12%, 1);
 }
 
-#popup .buttons input:hover{
+#popup > .buttons input:hover{
   background: hsla(199, 55%, 14%, 1);
+}
+
+#popup article {
+  padding: 8px 8px;
+  text-align: left;
+}
+
+#popup article:nth-child(2n) {
+  background-color: #17303c;
+}
+
+#popup article input {
+  float: right;
+  margin-top: -2px;
+}
+
+#popup article .host {
+  margin-left: 4px;
+  color: grey;
 }
 
 /*
@@ -271,34 +291,4 @@ input[type=text] {
 
 .window_dragging iframe {
   pointer-events: none;
-}
-
-/*
-  Open bin popup
-*/
-
-.open_popup article {
-  background-color: black;
-  padding: 0px 8px;
-  height: 28px;
-  margin-bottom: 4px;
-  text-align: left;
-}
-
-.open_popup article input {
-  float: right;
-}
-
-.open_popup article span {
-  vertical-align: middle;
-}
-
-.open_popup article .host {
-  margin-left: 4px;
-  color: grey;
-}
-
-.open_popup input[type=button] {
-  padding: 2px 16px;
-  margin: 2px;
 }
