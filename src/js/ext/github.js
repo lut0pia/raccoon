@@ -166,6 +166,7 @@ async function rcn_github_get_blob(owner, repo, sha) {
 }
 
 rcn_hosts['github'] = {
+  display_name: 'GitHub',
   get_param: 'gh',
   read: async function(o) {
     const pair = o.link.split('/');

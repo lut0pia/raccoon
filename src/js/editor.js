@@ -283,7 +283,7 @@ async function rcn_start_editor_mode(params) {
       host_select.appendChild(none_option);
       for(let host_id in rcn_hosts) {
         const option = document.createElement('option');
-        option.innerText = host_id;
+        option.innerText = rcn_hosts[host_id].display_name;
         option.value = host_id;
         host_select.appendChild(option);
       }
