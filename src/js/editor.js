@@ -559,6 +559,63 @@ async function rcn_start_editor_mode(params) {
       }(),
     }),
   });
+  for(let host_id in rcn_hosts) {
+    const host = rcn_hosts[host_id]
+    if(!host.import) {
+      continue;
+    }
+    rcn_editor_header_button({
+      path: `File/Import/${host.display_name}...`,
+      action: async () => {
+        rcn_overlay_push();
+        const bins = await host.import();
+        rcn_overlay_pop();
+
+        const nodes = [];
+        for(let bin_desc of bins) {
+          const bin_node = document.createElement('article');
+
+          const bin_name = document.createElement('span');
+          bin_name.innerText = bin_desc.name;
+          bin_node.appendChild(bin_name);
+
+          bin_node.appendChild(rcn_ui_button({
+            value: 'Import',
+            onclick: async () => {
+              rcn_overlay_push();
+              try {
+                const data = await host.read({
+                  link: bin_desc.link,
+                  latest: true,
+                });
+                const bin = new rcn_bin();
+                bin.from_json(JSON.parse(data.text));
+                bin.name = bin_desc.name;
+                bin.host = data.host;
+                bin.link = data.link;
+                await change_bin(bin);
+              } catch(e) {
+                await rcn_ui_alert(`Failed to import bin ${bin_desc.name}: ${e}`);
+              } finally {
+                rcn_overlay_pop();
+              }
+              rcn_popup_resolve();
+            },
+          }));
+
+          const bin_host = document.createElement('span');
+          bin_host.classList.add('host');
+          bin_host.innerText += `(${host_id}/${bin_desc.link})`;
+          bin_node.appendChild(bin_host);
+
+          nodes.push(bin_node);
+        }
+        return await rcn_ui_popup({
+          nodes: nodes,
+        });
+      },
+    });
+  }
   rcn_editor_header_button({
     path: 'Source Control/Push',
     action: async function() {

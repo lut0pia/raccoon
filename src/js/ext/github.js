@@ -256,4 +256,13 @@ rcn_hosts['github'] = {
       link: `${owner}/${repo}/${head_commit_sha}`,
     };
   },
+  import: async function() {
+    return (await rcn_github_request({
+      url: '/user/repos',
+      requires_token: true,
+    })).map(r => ({
+      name: r.name,
+      link: r.full_name,
+    }));
+  },
 }
