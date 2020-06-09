@@ -734,14 +734,13 @@ async function rcn_start_editor_mode(params) {
       }
     },
   });
-
-  // Global keyboard shortcuts
-  document.body.addEventListener('keydown', function(e) {
-    if((e.ctrlKey || e.metaKey) && e.altKey && e.key == 'Enter') {
+  rcn_editor_header_button({
+    path: 'Virtual Machine/Reboot',
+    shortcut: 'Ctrl+Alt+Enter',
+    action: function() {
       const vm_ed = rcn_find_editor(rcn_vm_ed);
       vm_ed && vm_ed.reboot();
-      e.preventDefault();
-    }
+    },
   });
 
   // Trigger bin change event
