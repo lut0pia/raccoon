@@ -66,7 +66,7 @@ function rcn_conditional_keyboard_shortcut(button, e) {
   if(shortcut && action) {
     const shortcut_keys = shortcut.split('+').sort();
     const pressed_keys = [
-      e.key.toUpperCase(),
+      e.key[0].toUpperCase() + e.key.slice(1),
       e.altKey && 'Alt',
       e.ctrlKey && 'Ctrl',
       e.shiftKey && 'Shift',
