@@ -78,8 +78,8 @@ async function rcn_start_editor_mode(params) {
     // Default window layout
     'default_docs_ed': {
       ctor: 'rcn_docs_ed',
-      top: '0px', left: '256px',
-      width: (window.innerWidth-512)+'px', height: (window.innerHeight-64)+'px',
+      top: '0px', left: '0px',
+      width: window.innerWidth+'px', height: window.innerHeight+'px',
     },
   });
 
