@@ -567,9 +567,7 @@ async function rcn_start_editor_mode(params) {
     rcn_editor_header_button({
       path: `File/Import/${host.display_name}...`,
       action: async () => {
-        rcn_overlay_push();
         const bins = await host.import();
-        rcn_overlay_pop();
 
         const nodes = [];
         for(let bin_desc of bins) {
@@ -582,12 +580,12 @@ async function rcn_start_editor_mode(params) {
           bin_node.appendChild(rcn_ui_button({
             value: 'Import',
             onclick: async () => {
-              rcn_overlay_push();
+              rcn_popup_resolve();
               try {
-                const data = await host.read({
+                const data = await rcn_overlay_wrap(() => host.read({
                   link: bin_desc.link,
                   latest: true,
-                });
+                }));
                 const bin = new rcn_bin();
                 bin.from_json(JSON.parse(data.text));
                 bin.name = bin_desc.name;
@@ -596,10 +594,7 @@ async function rcn_start_editor_mode(params) {
                 await change_bin(bin);
               } catch(e) {
                 await rcn_ui_alert(`Failed to import bin ${bin_desc.name}: ${e}`);
-              } finally {
-                rcn_overlay_pop();
               }
-              rcn_popup_resolve();
             },
           }));
 
@@ -622,12 +617,11 @@ async function rcn_start_editor_mode(params) {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
 
-      rcn_overlay_push();
       try {
-        const data = await host.sync({
+        const data = await rcn_overlay_wrap(() => host.sync({
           link: rcn_global_bin.link,
           text: rcn_global_bin.to_json_text(),
-        });
+        }));
         const bin = new rcn_bin();
         bin.from_json(JSON.parse(data.text));
         bin.name = rcn_global_bin.name;
@@ -640,8 +634,6 @@ async function rcn_start_editor_mode(params) {
         } else {
           await rcn_ui_alert(`Failed to push bin ${rcn_global_bin.name}: ${e}`);
         }
-      } finally {
-        rcn_overlay_pop();
       }
     },
   });
@@ -651,16 +643,15 @@ async function rcn_start_editor_mode(params) {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
 
-      rcn_overlay_push();
       try {
         const local_json = rcn_global_bin.to_json();
-        const ref_data = await host.read({
+        const ref_data = await rcn_overlay_wrap(() => host.read({
           link: rcn_global_bin.link,
-        });
-        const latest_data = await host.read({
+        }));
+        const latest_data = await rcn_overlay_wrap(() => host.read({
           link: rcn_global_bin.link,
           latest: true,
-        });
+        }));
         ref_data.json = JSON.parse(ref_data.text);
         latest_data.json = JSON.parse(latest_data.text);
 
@@ -673,8 +664,6 @@ async function rcn_start_editor_mode(params) {
         await change_bin(bin);
       } catch(e) {
         await rcn_ui_alert(`Failed to pull bin ${rcn_global_bin.name}: ${e}`);
-      } finally {
-        rcn_overlay_pop();
       }
     },
   });
@@ -689,13 +678,12 @@ async function rcn_start_editor_mode(params) {
         `\nThis is a destructive action.`)) {
         return;
       }
-      rcn_overlay_push();
       try {
-        const data = await host.write({
+        const data = await rcn_overlay_wrap(() => host.write({
           link: rcn_global_bin.link,
           text: rcn_global_bin.to_json_text(),
           name: 'bin.rcn.json'
-        });
+        }));
         const bin = new rcn_bin();
         bin.from_json(JSON.parse(data.text));
         bin.name = rcn_global_bin.name;
@@ -704,8 +692,6 @@ async function rcn_start_editor_mode(params) {
         await change_bin(bin);
       } catch(e) {
         await rcn_ui_alert(`Failed to force push bin ${rcn_global_bin.name}: ${e}`);
-      } finally {
-        rcn_overlay_pop();
       }
     },
   });
@@ -715,12 +701,11 @@ async function rcn_start_editor_mode(params) {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
 
-      rcn_overlay_push();
       try {
-        const data = await host.read({
+        const data = await rcn_overlay_wrap(() => host.read({
           link: rcn_global_bin.link,
           latest: true,
-        });
+        }));
         const bin = new rcn_bin();
         bin.from_json(JSON.parse(data.text));
         bin.name = rcn_global_bin.name;
@@ -729,8 +714,6 @@ async function rcn_start_editor_mode(params) {
         await change_bin(bin);
       } catch(e) {
         await rcn_ui_alert(`Failed to force pull bin ${rcn_global_bin.name}: ${e}`);
-      } finally {
-        rcn_overlay_pop();
       }
     },
   });
