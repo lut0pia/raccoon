@@ -43,7 +43,7 @@ function rcn_editor_header_button(o) {
       } else { // Leaf button
         button.el = button_el;
         if(o.action) {
-          button.el.addEventListener('click', o.action);
+          button.el.addEventListener('click', e => rcn_overlay_wrap(() => o.action(e)));
         }
         if(o.shortcut) {
           const kbd_el = document.createElement('kbd')
@@ -73,7 +73,7 @@ function rcn_conditional_keyboard_shortcut(button, e) {
     ].filter(k => k).sort();
 
     if(shortcut_keys.join() == pressed_keys.join()) {
-      action(e);
+      rcn_overlay_wrap(() => action(e));
       e.preventDefault();
       return true;
     }
