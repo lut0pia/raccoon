@@ -191,3 +191,14 @@ function rcn_overlay_pop() {
     rcn_overlay.classList.remove('active');
   }
 }
+
+async function rcn_overlay_wrap(f) {
+  rcn_overlay_push();
+  try {
+    return await Promise.resolve(f());
+  } catch(e) {
+    throw e;
+  } finally {
+    rcn_overlay_pop();
+  }
+}
