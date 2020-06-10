@@ -195,7 +195,13 @@ rcn_hosts['github'] = {
 
     try {
       await rcn_github_create_repo(repo);
-    } catch(e) {} // Repository already exists
+    } catch(e) {
+      if(e.status == 422 && e.responseText.search('name already exists') >= 0) {
+        // Repository already exists
+      } else {
+        throw e;
+      }
+    }
 
     const new_tree = await rcn_github_create_tree(owner, repo, undefined, [{
       path: o.name,
@@ -232,13 +238,13 @@ rcn_hosts['github'] = {
     try { // Attempt fast-forward
       await rcn_github_update_ref(owner, repo, 'heads/master', head_commit_sha);
     } catch(e) {
-      if(e == 422) { // Update ref failed, try merging
+      if(e.status == 422) { // Update ref failed, try merging
         try {
           const merge = await rcn_github_merge(owner, repo, 'master', head_commit_sha);
           head_commit_sha = merge.sha;
           head_tree_sha = merge.commit.tree.sha;
         } catch(e) {
-          if(e == 409) {
+          if(e.status == 409) {
             throw 'conflict';
           } else {
             throw `Merge failure: ${e}`;

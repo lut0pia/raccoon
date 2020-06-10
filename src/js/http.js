@@ -12,7 +12,8 @@ async function rcn_http_request(p) {
         if(xhr.status >= 200 && xhr.status < 300) {
           resolve(xhr.responseText);
         } else {
-          reject(xhr.status);
+          xhr.toString = () => this.statusText;
+          reject(xhr);
         }
       }
     };
