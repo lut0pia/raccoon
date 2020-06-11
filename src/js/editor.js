@@ -56,6 +56,73 @@ async function rcn_start_editor_mode(params) {
   }
   rcn_toolbox.appendChild(create_editor_group());
 
+  // Create default layouts if necessary
+  if(Object.values(rcn_storage.window_layouts).length == 0) {
+    rcn_storage.window_layouts['Code editing'] = {
+      'code_ed': {
+        ctor: 'rcn_code_ed',
+        top: '0%', left: '0%',
+        width: '70%', height: '100%',
+      },
+      'vm_ed': {
+        ctor: 'rcn_vm_ed',
+        top: '0%', left: '70%',
+        width: '30%', height: '60%',
+      },
+      'console_ed': {
+        ctor: 'rcn_console_ed',
+        top: '60%', left: '70%',
+        width: '30%', height: '40%',
+      },
+    };
+    rcn_storage.window_layouts['Sprite editing'] = {
+      'sprite_ed': {
+        ctor: 'rcn_sprite_ed',
+        top: '0%', left: '0%',
+        width: '70%', height: '100%',
+      },
+      'vm_ed': {
+        ctor: 'rcn_vm_ed',
+        top: '0%', left: '70%',
+        width: '30%', height: '60%',
+      },
+      'sprite_select_ed': {
+        ctor: 'rcn_sprite_select_ed',
+        top: '60%', left: '70%',
+        width: '30%', height: '40%',
+      },
+    };
+    rcn_storage.window_layouts['Map editing'] = {
+      'map_ed': {
+        ctor: 'rcn_map_ed',
+        top: '0%', left: '0%',
+        width: '70%', height: '100%',
+      },
+      'vm_ed': {
+        ctor: 'rcn_vm_ed',
+        top: '0%', left: '70%',
+        width: '30%', height: '60%',
+      },
+      'sprite_select_ed': {
+        ctor: 'rcn_sprite_select_ed',
+        top: '60%', left: '70%',
+        width: '30%', height: '40%',
+      },
+    };
+    rcn_storage.window_layouts['Sound editing'] = {
+      'sound_ed': {
+        ctor: 'rcn_sound_ed',
+        top: '0%', left: '0%',
+        width: '80%', height: '100%',
+      },
+      'music_ed': {
+        ctor: 'rcn_music_ed',
+        top: '0%', left: '80%',
+        width: '20%', height: '100%',
+      },
+    };
+  }
+
   // Fill layout box
   rcn_update_layoutbox();
 
@@ -78,8 +145,8 @@ async function rcn_start_editor_mode(params) {
     // Default window layout
     'default_docs_ed': {
       ctor: 'rcn_docs_ed',
-      top: '0px', left: '0px',
-      width: window.innerWidth+'px', height: window.innerHeight+'px',
+      top: '0%', left: '0%',
+      width: '100%', height: '100%',
     },
   });
 
