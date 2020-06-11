@@ -184,14 +184,18 @@ function rcn_get_windows() {
 function rcn_window_save_layout() {
   const layout = {};
 
+  const to_percent = d => (v, o = 0) => `${(parseFloat(v)+o)*100/d}%`;
+  const to_percent_x = to_percent(rcn_window_container.clientWidth);
+  const to_percent_y = to_percent(rcn_window_container.clientHeight);
+
   for(let window of rcn_get_windows()) {
     layout[window.section.id] = {
       ctor: window.constructor.name,
-      left: window.section.style.left,
-      top: window.section.style.top,
+      left: to_percent_x(window.section.style.left),
+      top: to_percent_y(window.section.style.top),
       z_index: window.section.style.zIndex,
-      width: window.content.style.width,
-      height: window.content.style.height,
+      width: to_percent_x(window.content.style.width, 2),
+      height: to_percent_y(window.content.style.height, 32),
     }
   }
   return layout;
@@ -205,6 +209,10 @@ function rcn_window_load_layout(layout) {
     rcn_window_container.removeChild(rcn_window_container.firstChild);
   }
 
+  const to_pixel = d => (v, o = 0) => v.endsWith('%') ? `${parseFloat(v)*d/100+o}px` : v;
+  const to_pixel_x = to_pixel(rcn_window_container.clientWidth);
+  const to_pixel_y = to_pixel(rcn_window_container.clientHeight);
+
   for(let id in layout) {
     const save = layout[id];
     if(!window[save.ctor]) {
@@ -213,11 +221,11 @@ function rcn_window_load_layout(layout) {
     }
     const editor = new window[save.ctor]();
     editor.section.id = id;
-    editor.section.style.left = save.left;
-    editor.section.style.top = save.top;
+    editor.section.style.left = to_pixel_x(save.left);
+    editor.section.style.top = to_pixel_y(save.top);
     editor.section.style.zIndex = save.z_index;
-    editor.content.style.width = save.width;
-    editor.content.style.height = save.height;
+    editor.content.style.width = to_pixel_x(save.width, -2);
+    editor.content.style.height = to_pixel_y(save.height, -32);
   }
 
   if(!rcn_has_loaded_window_layout_once) {
