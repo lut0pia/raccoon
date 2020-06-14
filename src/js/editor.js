@@ -626,6 +626,23 @@ async function rcn_start_editor_mode(params) {
       }(),
     }),
   });
+
+  rcn_editor_header_button({
+    path: `File/Import/File...`,
+    action: async () => {
+      const file = await rcn_upload_file();
+      if(!file) {
+        return;
+      }
+      if(file.name.match(/\.rcn\.json$/i)) {
+        const bin = new rcn_bin();
+        bin.from_json(JSON.parse(file.contents));
+        change_bin(bin);
+      } else {
+        await rcn_ui_alert(`Unable to load file: ${file.name}`);
+      }
+    },
+  });
   for(let host_id in rcn_hosts) {
     const host = rcn_hosts[host_id]
     if(!host.import) {
