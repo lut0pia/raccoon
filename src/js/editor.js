@@ -929,3 +929,36 @@ function rcn_find_editor(ed, create = false) {
   }
   return null;
 }
+
+async function rcn_upload_file() {
+  return new Promise((resolve, reject) => {
+    let focus_callback;
+    let focus_timeout = null;
+    const file_input = document.createElement('input');
+    file_input.type = 'file';
+    file_input.onchange = async e => {
+      clearTimeout(focus_timeout);
+      if(file_input.files.length > 0) {
+        const file = file_input.files[0];
+        const file_reader = new FileReader();
+        file_reader.onload = function() {
+          file.contents = this.result;
+          resolve(file);
+        }
+        file_reader.readAsText(file);
+      } else {
+        resolve(null);
+      }
+    }
+    focus_callback = e => {
+      focus_timeout = setTimeout(() => {
+        if(file_input.files.length == 0) {
+          resolve(null);
+        }
+        window.removeEventListener('focus', focus_callback);
+      }, 100);
+    };
+    window.addEventListener('focus', focus_callback);
+    file_input.click();
+  });
+}
