@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed&display=swap');
+
+* {
+  color: hsla(202, 21%, 90%, 1);
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
+}
+
+body {
+  background-color: hsl(201deg 24% 14%);
+}
+
+/* Titles */
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 1em;
+}
+
+h1:first-child {
+  margin-top: 0px;
+}
+
+h1 {
+  font-size: 48px;
+}
+
+h2 {
+  font-size: 32px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+/* Lists */
+
+ol, ul {
+  margin-left: 2em;
+}
+
+ol li {
+  list-style-type: decimal;
+}
+
+ol li li {
+  list-style-type: lower-latin;
+}
+
+ul li {
+  list-style-type: disc;
+}
+
+/* Tables */
+
+table {
+  width: 100%;
+}
+
+td {
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+}
+
+/* Misc */
+
+code {
+  font-family: 'Roboto Mono', monospace;
+  padding: .2em .4em;
+  font-size: 85%;
+  background-color: rgba(9, 83, 157, 0.35);
+  border-radius: 6px;
+}
+
+p {
+  margin: 1em;
+}

@@ -1,0 +1,334 @@
+<html><head> <title>Documentation</title> <meta charset="UTF-8"> <link rel="stylesheet" type="text/css" href="/src/css/reset.css"> <link rel="stylesheet" type="text/css" href="/src/css/ed/docs.css"> </head><body>
+<h1 id="table-of-contents">Table of contents</h1>
+<ol>
+<li><a href="#introduction">Introduction</a><ol>
+<li><a href="#game-loop">Game Loop</a></li>
+</ol>
+</li>
+<li><a href="#editors">Editors</a><ol>
+<li><a href="#virtual-machine">Virtual Machine</a></li>
+<li><a href="#code-editor">Code Editor</a></li>
+<li><a href="#console">Console</a></li>
+<li><a href="#sprite-editor">Sprite Editor</a></li>
+<li><a href="#sprite-selector">Sprite Selector</a></li>
+<li><a href="#map-editor">Map Editor</a></li>
+<li><a href="#sound-editor">Sound Editor</a></li>
+<li><a href="#music-editor">Music Editor</a></li>
+</ol>
+</li>
+<li><a href="#memory">Memory</a><ol>
+<li><a href="#spritesheet-memory">Spritesheet Memory</a></li>
+<li><a href="#map-memory">Map Memory</a></li>
+<li><a href="#palette-memory">Palette Memory</a></li>
+<li><a href="#sprite-flags-memory">Sprite Flags Memory</a></li>
+<li><a href="#gamepad-state-memory">Gamepad State Memory</a></li>
+<li><a href="#screen-memory">Screen Memory</a></li>
+</ol>
+</li>
+<li><a href="#functions">Functions</a><ol>
+<li><a href="#rendering-functions">Rendering Functions</a></li>
+<li><a href="#sound-functions">Sound Functions</a></li>
+<li><a href="#math-functions">Math Functions</a></li>
+<li><a href="#input-functions">Input Functions</a></li>
+<li><a href="#memory-functions">Memory Functions</a></li>
+<li><a href="#function-shortcuts">Function Shortcuts</a></li>
+</ol>
+</li>
+</ol>
+<h1 id="introduction">Introduction</h1>
+<p>Raccoon is a browser-based fantasy console. It&#39;s a tool to make, share and play small games. Its capabilities are purposefully limited to allow you, the creator, not to be overwhelmed by the possibilities. Although the console is limited, the tools are carefully crafted to give you a smooth creating experience. Raccoon games are contained in bins, they&#39;re a virtual equivalent to console cartridges. Programming is done in <a href="https://developer.mozilla.org/docs/Web/JavaScript/A_re-introduction_to_JavaScript">JavaScript</a>.</p>
+<h2 id="game-loop">Game Loop</h2>
+<p>There are three special functions that you can define in your code: <code>init</code>, <code>update</code> and <code>draw</code>.</p>
+<p><code>init</code> will be called at the very beginning of the game. It won&#39;t be called again if you live edit code from the editor. It will be called again if you reboot the virtual machine.</p>
+<p><code>update</code> will be called every frame while the virtual machine is not paused. This is generally where most of the game logic goes.</p>
+<p><code>draw</code> will be called every frame, even if the virtual machine is paused. That means that in editor you can pause your game on a specific animation frame, and still live edit your draw code and data, and see the result on the virtual machine&#39;s screen.</p>
+<p>It&#39;s not mandatory to put your draw code in the draw function, you can work with <code>update</code> only if you want, but it&#39;s encouraged because it usually forces you to write better code.</p>
+<h1 id="editors">Editors</h1>
+<p>Raccoon tools exist in windows that can be moved and resized. Their layout is saved in your local storage.</p>
+<h2 id="virtual-machine">Virtual Machine</h2>
+<p>The virtual machine is where your game actually comes to life.</p>
+<p>The <code>Reboot</code> button will wipe everything and load the current bin again, useful to check what happens with a fresh start of your game.</p>
+<p>The <code>Step</code> button triggers a single frame update. It is useful when paused, to see what happens frame after frame.</p>
+<p>The <code>Paused</code> checkbox controls whether the virtual machine is currently paused. You can toggle it by pressing <code>Space</code> while focusing the virtual machine.</p>
+<p>The <code>Autoapply</code> checkbox indicates whether or not data changes made to the current bin should be replicated directly inside the virtual machine. You may want to disable it if your game code modifies sprite or map data in realtime.</p>
+<h2 id="code-editor">Code Editor</h2>
+<p>The code editor is a text editor with syntax highlighting. Clicking on underlined symbols while holding <code>Control</code> will take you to their definition.</p>
+<p>Pressing the <code>Apply</code> button or <code>Control+Enter</code> (while focusing the text input) will send the current code to the virtual machine, so you can see changes happen right away.</p>
+<ul>
+<li>Use <code>Control+Left-Click</code> on function names to go to their definition (or documentation).</li>
+</ul>
+<h2 id="console">Console</h2>
+<p>The console displays messages, errors and callstacks in chronological order.</p>
+<p>You can use the text input to execute code in the <a href="#virtual-machine">Virtual Machine</a> by pressing <code>Enter</code>.</p>
+<h2 id="sprite-editor">Sprite Editor</h2>
+<p>The sprite editor allows you to draw small images that you will then be able to render into your game.</p>
+<p>The canvas displays the currently selected sprites (see <a href="#sprite-selector">Sprite Selector</a> for more information).</p>
+<p>To select a drawing color, either use <code>Left-Click</code> on the palette on the right or use <code>1-8</code> to select the first 8 colors and <code>Shift+1-8</code> to select the last 8 colors. You can double click on a color to change it.</p>
+<ul>
+<li>Use <code>Left-Click</code> to set the texel color to the current color.</li>
+<li>Use <code>Right-Click</code> to change the current color to be the color of the clicked texel (color picking).</li>
+<li>Use <code>Control+Left-Click</code> to fill with the current color.</li>
+<li>Use <code>Shift+Left-Click</code> to select texels.</li>
+<li>Use <code>Control+C</code> to copy selected texels.</li>
+<li>Use <code>Control+V</code> to paste copied texels.</li>
+</ul>
+<h2 id="sprite-selector">Sprite Selector</h2>
+<p>The canvas displays the spritesheet. The index of the currently selected sprite is displayed above.</p>
+<ul>
+<li>Use <code>Left-Click</code> to select the sprites you want to edit in the <a href="#sprite-editor">Sprite Editor</a> or draw in the <a href="#map-editor">Map Editor</a>.</li>
+<li>Use <code>Control+C</code> to copy selected sprites.</li>
+<li>Use <code>Control+V</code> to paste copied sprites.</li>
+</ul>
+<h2 id="map-editor">Map Editor</h2>
+<p>The map editor allows you to edit a 128x64 tilemap for your game. We&#39;ll be using the word tile in this document, any 1x1 sprite is a tile, there is no separate memory for either tiles or sprites.</p>
+<p>The canvas displays a view of the map. The coordinates of the currently hovered tile are displayed above.</p>
+<ul>
+<li>Use <code>Left-Click</code> to set the tile under your cursor to the current tile.</li>
+<li>Use <code>Right-Click</code> to change the current tile to be the tile under your cursor.</li>
+<li>Use <code>Middle-Click</code> to drag your view of the map to edit different parts of the map.</li>
+<li>Use <code>Mouse Wheel</code> to change the zoom level.</li>
+<li>Use <code>Shift+Left-Click</code> to select tiles.</li>
+<li>Use <code>Control+C</code> to copy selected tiles.</li>
+<li>Use <code>Control+V</code> to paste copied tiles.</li>
+</ul>
+<h2 id="sound-editor">Sound Editor</h2>
+<p>The sound editor allows you to create sound effects and music patterns for your game.</p>
+<p>The tempo determines how fast the sound track will play, the instrument determines the basic sound it will make, and the envelope determines an ADSR volume envelope.</p>
+<p>The table represents time on the x-axis and note pitches on the y-axis. You can only have one note at a time on a single sound track.</p>
+<ul>
+<li>Use <code>Left-Click</code> to either place notes or remove them.</li>
+<li>Use <code>Right-Click</code> to change a note&#39;s volume.</li>
+<li>Use <code>Middle-Click</code> to change a note&#39;s effect.</li>
+<li>Use <code>Up/Down-Arrow</code> to transpose one semitone.</li>
+<li>Use <code>Control+Up/Down-Arrow</code> to transpose one octave.</li>
+<li>Use <code>Space</code> to play/stop the current sound.</li>
+</ul>
+<h2 id="music-editor">Music Editor</h2>
+<p>The music editor allows you to orchestrate multiple sound tracks at once and in sequence.</p>
+<p>Each row is a list of 4 optional sound effect indices which will be played simultaneously.</p>
+<p>When a row is done playing, the subsequent row is played, unless 🛑 is set, in which case playback stops, or ⤴️ is set, in which case we go back up to the closest ⤵️.</p>
+<ul>
+<li>Use ▶️/⏹️ to play/stop the music.</li>
+</ul>
+<h1 id="memory">Memory</h1>
+<p>Read-only memory (abbreviated ROM) is 20KiB long (<code>0x0000-0x5000</code>) and is contained in the bin. It is loaded in the random access memory (abbreviated RAM), which is 32KiB long (<code>0x0000-0x8000</code>) at startup. A program accesses only RAM during its execution.</p>
+<p>N.B. Ranges in memory are expressed with their end excluded.</p>
+<table>
+<thead>
+<tr>
+<th>Memory range</th>
+<th>Usage</th>
+<th>Lifetime</th>
+<th>Breakdown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x0000-0x1800</code></td>
+<td><a href="#spritesheet-memory">Spritesheet</a></td>
+<td>ROM</td>
+<td>128x96x4bits</td>
+</tr>
+<tr>
+<td><code>0x1800-0x3800</code></td>
+<td><a href="#map-memory">Map</a></td>
+<td>ROM</td>
+<td>128x64x8bits</td>
+</tr>
+<tr>
+<td><code>0x3800-0x3840</code></td>
+<td><a href="#palette-memory">Palette</a></td>
+<td>ROM</td>
+<td>16x(24+1+3+4)bits</td>
+</tr>
+<tr>
+<td><code>0x3840-0x3900</code></td>
+<td><a href="#sprite-flags-memory">Sprite flags</a></td>
+<td>ROM</td>
+<td>192x8bits</td>
+</tr>
+<tr>
+<td><code>0x3900-0x4980</code></td>
+<td><a href="#sound-memory">Sound</a></td>
+<td>ROM</td>
+<td>64x(8+2+6+(32x(2+6+2+3+3)))bits</td>
+</tr>
+<tr>
+<td><code>0x4980-0x4a80</code></td>
+<td><a href="#music-memory">Music</a></td>
+<td>ROM</td>
+<td>64x(4x(1+1+6))bits</td>
+</tr>
+<tr>
+<td><code>0x5f90-0x5fa0</code></td>
+<td><a href="#camera-state-memory">Camera state</a></td>
+<td>RAM</td>
+<td>2x16bits</td>
+</tr>
+<tr>
+<td><code>0x5fa0-0x5fc0</code></td>
+<td><a href="#sound-state-memory">Sound state</a></td>
+<td>RAM</td>
+<td>4x(8+8+6+1+3+3)bits</td>
+</tr>
+<tr>
+<td><code>0x5fc0-0x5fd0</code></td>
+<td><a href="#music-state-memory">Music state</a></td>
+<td>RAM</td>
+<td>4x(8+8+6+1+3+3)bits</td>
+</tr>
+<tr>
+<td><code>0x5fd0-0x5fe0</code></td>
+<td><a href="#sound-registers-memory">Sound registers</a></td>
+<td>RAM</td>
+<td>4x(1+7+2+6+2+6+2+3+3)bits</td>
+</tr>
+<tr>
+<td><code>0x5fe0-0x6000</code></td>
+<td><a href="#gamepad-state-memory">Gamepad state</a></td>
+<td>RAM</td>
+<td>2x8x(4+4)+8x8bits</td>
+</tr>
+<tr>
+<td><code>0x6000-0x8000</code></td>
+<td><a href="#screen-memory">Screen</a></td>
+<td>RAM</td>
+<td>128x128x4bits</td>
+</tr>
+</tbody>
+</table>
+<h2 id="spritesheet-memory">Spritesheet Memory</h2>
+<p>Spritesheet data is 128x96 pixels, arranged in 192 8x8 sprites from left to right, top to bottom.</p>
+<h2 id="map-memory">Map Memory</h2>
+<p>Map data is 128x64 tiles, where each tile is a byte-sized sprite index.</p>
+<h2 id="palette-memory">Palette Memory</h2>
+<p>Palette data is 16 colors represented in 4 bytes each: 3 bytes for the red, green and blue channels, and a fourth byte with extra data. The fourth byte&#39;s 4 lowest bits are used as an indirection index (to render another color instead of this one), and its highest bit is used for transparency.</p>
+<ul>
+<li>Color: <code>RRRRRRRR GGGGGGGG BBBBBBBBB T___IIII</code></li>
+</ul>
+<h2 id="sprite-flags-memory">Sprite Flags Memory</h2>
+<p>Sprite flags are 192 8bits bitfields.</p>
+<h2 id="sound-memory">Sound Memory</h2>
+<p>Sound data is 64 tracks.</p>
+<ul>
+<li>Track: <code>PPPPPPPPP EEIIIIII 32xNote</code><ul>
+<li>P: Period</li>
+<li>E: Envelope</li>
+<li>I: Instrument</li>
+</ul>
+</li>
+<li>Note: <code>__TTTTTT __EEEVVV</code><ul>
+<li>T: Tone</li>
+<li>E: Effect</li>
+<li>V: Volume</li>
+</ul>
+</li>
+</ul>
+<h2 id="music-memory">Music Memory</h2>
+<p>Music data is 64 32bit nodes that connect tracks together via their indices.</p>
+<ul>
+<li>Music: <code>FUTTTTTT FUTTTTTT FUTTTTTTT _UTTTTTT</code><ul>
+<li>F: Flags</li>
+<li>U: Used</li>
+<li>T: Track</li>
+</ul>
+</li>
+</ul>
+<h2 id="camera-state-memory">Camera State Memory</h2>
+<p>Camera state data is two 16bit integers used as offset during rendering.</p>
+<h2 id="sound-state-memory">Sound State Memory</h2>
+<h2 id="sound-registers-memory">Sound Registers Memory</h2>
+<p>Sound registers are 4 32bit registers that are used by the virtual machine to communicate to the sound chip.</p>
+<ul>
+<li>Register: <code>SPPPPPPP EEIIIIII OOTTTTTT __EEEVVV</code><ul>
+<li>S: Switch</li>
+<li>P: Period</li>
+<li>E: Envelope</li>
+<li>I: Instrument</li>
+<li>O: Offset</li>
+<li>T: Tone</li>
+<li>E: Effect</li>
+<li>V: Volume</li>
+</ul>
+</li>
+</ul>
+<h2 id="gamepad-state-memory">Gamepad State Memory</h2>
+<p>Gamepad state data is 8 8bit controllers three times, the first 8 bytes are for the current frame&#39;s state while the next 8 bytes are the previous frame&#39;s state, and the last 8 bytes are the gamepad&#39;s current layout (for display purposes). The 4 least significant bits of each byte correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons. On the keyboard those action buttons are X, C, V and B respectively, while on a modern gamepad they are the down, right, left and top face buttons respectively.</p>
+<h2 id="screen-memory">Screen Memory</h2>
+<p>Screen data is 128x128 pixels.</p>
+<h1 id="functions">Functions</h1>
+<h2 id="rendering-functions">Rendering Functions</h2>
+<p>Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), which is the bottom-down pixel.</p>
+<p>🎥: Affected by <code>cam</code> calls</p>
+<ul>
+<li><code>cls(c=0)</code>: Clears the whole screen to the <code>c</code> color</li>
+<li><code>cam(x, y)</code>: Offsets all further rendering by (<code>-x</code>;<code>-y</code>)</li>
+<li><code>palset(c, r, g, b)</code>: Sets the <code>c</code> palette color to have the RGB values <code>r</code>, <code>g</code> and <code>b</code> (0-255)</li>
+<li><code>pset(x, y, c)</code>: Sets the pixel at coordinates (<code>x</code>;<code>y</code>) to the <code>c</code> color</li>
+<li><code>pget(x, y)</code>: Returns the color of the pixel at coordinates (<code>x</code>;<code>y</code>)</li>
+<li><code>palm(c0, c1)</code>: Sets the palette permutation for color <code>c0</code> to <code>c1</code></li>
+<li><code>palt(c, t)</code>: Sets the color <code>c</code> as transparent if <code>t</code></li>
+<li><code>fget(n, f?)</code>: Returns whether the flag <code>f</code> is set to true for the sprite <code>n</code>; if <code>f</code> is undefined, returns the flags for the sprite <code>n</code> as a bitfield</li>
+<li><code>fset(n, f?, v)</code>: Sets the flag <code>f</code> to <code>v</code> (boolean) for the sprite <code>n</code>; if <code>f</code> is undefined, uses <code>v</code> as a bitfield to set the flags for the sprite <code>n</code></li>
+<li><code>mget(celx, cely)</code>: Returns the sprite index at map coordinates (<code>celx</code>;<code>cely</code>)</li>
+<li><code>mset(celx, cely, n)</code>: Set the sprite index at map coordinates (<code>celx</code>;<code>cely</code>) to <code>n</code></li>
+<li>🎥 <code>spr(n, x, y, w=1.0, h=1.0, fx=false, fy=false)</code>: Draws the <code>n</code>th sprite at screen coordinates (<code>x</code>;<code>y</code>) where <code>w</code> and <code>h</code> are the width and height of the drawing in sprite length (8 pixels per unit), and <code>fx</code> and <code>fy</code> indicate whether to flip the drawing horizontally and vertically</li>
+<li>🎥 <code>map(celx, cely, sx, sy, celw, celh)</code>: Draws a rectangle of the map starting at (<code>celx</code>;<code>cely</code>) with an extent of (<code>celw</code>;<code>celh</code>) at the pixel (<code>sx</code>;<code>sy</code>)</li>
+<li>🎥 <code>print(x, y, text, c)</code>: Prints the <code>text</code> in color <code>c</code> starting at screen coordinates (<code>x</code>;<code>y</code>), returns the width of the text in pixels</li>
+<li>🎥 <code>line(x0, y0, x1, y1, c)</code>: Draws straight line in color <code>c</code> between screen coordinates (<code>x0</code>;<code>y0</code>) and (<code>x1</code>;<code>y1</code>)</li>
+<li>🎥 <code>rect(x, y, w, h, c)</code>: Draws a hollow rectangle at screen coordinates (<code>x</code>;<code>y</code>) of width <code>w</code>, height <code>h</code>, and color <code>c</code></li>
+<li>🎥 <code>rectfill(x, y, w, h, c)</code>: Draws a filled rectangle at screen coordinates (<code>x</code>;<code>y</code>) of width <code>w</code>, height <code>h</code>, and color <code>c</code></li>
+<li>🎥 <code>circ(x, y, r, c)</code>: Draws a hollow circle of radius <code>r</code> with its center at screen coordinates (<code>x</code>;<code>y</code>) in color <code>c</code></li>
+<li>🎥 <code>circfill(x, y, r, c)</code>: Draws a filled circle (disk) of radius <code>r</code> with its center at screen coordinates (<code>x</code>;<code>y</code>) in color <code>c</code></li>
+</ul>
+<h2 id="sound-functions">Sound Functions</h2>
+<ul>
+<li><code>sfx(n, chan=-1, off=0, len=32)</code>: Plays sfx <code>n</code> in channel <code>chan</code> (first free if <code>-1</code>) from note <code>off</code> for <code>len</code> notes</li>
+<li><code>mus(n)</code>: Start playing music at index <code>n</code></li>
+</ul>
+<h2 id="math-functions">Math Functions</h2>
+<ul>
+<li><code>flr(x)</code>: Returns closest lesser integer to <code>x</code></li>
+<li><code>ceil(x)</code>: Returns closest greater integer to <code>x</code></li>
+<li><code>abs(x)</code>: Returns the absolute value of <code>x</code></li>
+<li><code>sign(x)</code>: Returns -1 if <code>x&lt;0</code>, 1 if <code>x&gt;0</code> and 0 otherwise</li>
+<li><code>max(a, b)</code>: Returns the greater number between <code>a</code> and <code>b</code></li>
+<li><code>min(a, b)</code>: Returns the lesser number between <code>a</code> and <code>b</code></li>
+<li><code>mid(a, b, c)</code>: Returns the middle number between <code>a</code>, <code>b</code> and <code>c</code></li>
+<li><code>sqrt(x)</code>: Returns the square root of <code>x</code></li>
+<li><code>rnd(x?)</code>: Returns a random integer between 0 and <code>x</code> excluded if <code>x</code> is specified, otherwise a random number between 0 and 1</li>
+<li><code>sin(x)</code>: Returns the sine of <code>x</code></li>
+<li><code>cos(x)</code>: Returns the cosine of <code>x</code></li>
+<li><code>atan2(y, x)</code>: Returns the counterclockwise angle (in radians) between the positive x-axis and the ray that starts from the origin and passes through (<code>x</code>;<code>y</code>)</li>
+</ul>
+<h2 id="input-functions">Input Functions</h2>
+<ul>
+<li><code>btn(i, p=0)</code>: Returns true if button <code>i</code> is pressed for player <code>p</code></li>
+<li><code>btnp(i, p=0)</code>: Returns true if button <code>i</code> is pressed but wasn&#39;t pressed in previous frame for player <code>p</code></li>
+<li><code>btns(i, p=0)</code>: Returns a string to represent the button <code>i</code> for player <code>p</code></li>
+</ul>
+<h2 id="memory-functions">Memory Functions</h2>
+<ul>
+<li><code>memcpy(dst, src, len)</code>: Copies <code>len</code> bytes in RAM from <code>src</code> to <code>dst</code></li>
+<li><code>memset(dst, val, len)</code>: Sets <code>len</code> bytes in RAM to value <code>val</code> at <code>dst</code></li>
+<li><code>read(addr)</code>: Returns the value of the 8-bit unsigned integer at address <code>addr</code> in RAM</li>
+<li><code>read16(addr)</code>: Returns the value of the 16-bit signed integer at address <code>addr</code> in RAM</li>
+<li><code>read32(addr)</code>: Returns the value of the 32-bit signed integer at address <code>addr</code> in RAM</li>
+<li><code>write(addr, val)</code>: Writes value <code>val</code> to the 8-bit unsigned integer at address <code>addr</code> in RAM</li>
+<li><code>write16(addr, val)</code>: Writes value <code>val</code> to the 16-bit signed integer at address <code>addr</code> in RAM</li>
+<li><code>write32(addr, val)</code>: Writes value <code>val</code> to the 32-bit signed integer at address <code>addr</code> in RAM</li>
+</ul>
+<h2 id="debug-functions">Debug Functions</h2>
+<ul>
+<li><code>debug(msg)</code>: Logs <code>msg</code> to the <a href="#console">Console</a></li>
+</ul>
+<h2 id="function-shortcuts">Function Shortcuts</h2>
+<p>Some common functions have one-letter shortcuts, useful for keeping code small.</p>
+<ul>
+<li><code>c</code> = <code>cls</code></li>
+<li><code>p</code> = <code>pset</code></li>
+<li><code>l</code> = <code>line</code></li>
+<li><code>r</code> = <code>rnd</code></li>
+<li><code>b</code> = <code>btn</code></li>
+</ul>
+</body></html>
