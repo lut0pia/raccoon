@@ -260,7 +260,9 @@ function rcn_vm_worker_function(rcn) {
       w += _min(0, x);
       x = _max(0, x);
       w -= _max(128, x + w) - 128;
-      hline(x, y, w, c);
+      if(w > 0) {
+        hline(x, y, w, c);
+      }
     }
   }
   line = l = function(x0, y0, x1, y1, c) {
