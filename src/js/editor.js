@@ -388,6 +388,7 @@ async function rcn_start_editor_mode(params) {
   };
   document.body.addEventListener('rcn_bin_change', update_bin_details);
   document.body.addEventListener('rcn_bins_change', update_bin_details);
+  update_bin_details();
 
   // Header menu
   const change_bin = async function(new_bin) {
@@ -808,13 +809,6 @@ async function rcn_start_editor_mode(params) {
       const vm_ed = rcn_find_editor(rcn_vm_ed);
       vm_ed && vm_ed.reboot();
     },
-  });
-
-  // Trigger bin change event
-  rcn_dispatch_ed_event('rcn_bin_change', {
-    begin: 0,
-    end: rcn.rom_size,
-    code: true,
   });
 }
 
