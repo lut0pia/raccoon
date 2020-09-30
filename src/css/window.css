@@ -15,8 +15,7 @@
 }
 
 .window:focus header {
-  background-color: white;
-  color: #475a62;
+  background-color: hsl(199deg 26% 29%);
 }
 
 .window header icon {
