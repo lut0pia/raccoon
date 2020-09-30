@@ -31,6 +31,34 @@ body > main {
 }
 
 /*
+  Scrollbars
+*/
+
+/* Firefox */
+
+* {
+  scrollbar-color: hsl(199deg 26% 19%) #171d22;
+}
+
+/* Chrome */
+
+::-webkit-scrollbar {
+  background: #171d22;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(199deg 26% 19%);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2f434d;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #557787;
+}
+
+/*
   Input button
 */
 
