@@ -884,6 +884,12 @@ function rcn_dispatch_ed_event(type, detail) {
   document.body.dispatchEvent(event);
 }
 
+function rcn_mem_changed(e, range_name) {
+  const mem_begin = rcn[`mem_${range_name}_offset`];
+  const mem_end = mem_begin + rcn[`mem_${range_name}_size`];
+  return e.detail.begin < mem_end && e.detail.end > mem_begin;
+}
+
 function rcn_bin_save_status() {
   const saved_bin = rcn_storage.bins[rcn_global_bin.name];
   const current_json = JSON.stringify(rcn_global_bin.to_json());

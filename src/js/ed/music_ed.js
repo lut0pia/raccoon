@@ -113,10 +113,7 @@ function rcn_music_ed() {
   }
 
   this.addEventListener('rcn_bin_change', function(e) {
-    // Music update
-    const mem_music_begin = rcn.mem_music_offset;
-    const mem_music_end = rcn.mem_music_offset + rcn.mem_music_size;
-    if(e.detail.begin < mem_music_end && e.detail.end > mem_music_begin) {
+    if(rcn_mem_changed(e, 'music')) {
       music_ed.update_tracks();
     }
     if(e.detail.begin < e.detail.end) {

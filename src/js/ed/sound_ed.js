@@ -157,10 +157,7 @@ function rcn_sound_ed() {
   }
 
   this.addEventListener('rcn_bin_change', function(e) {
-    // Sound update
-    const mem_sound_begin = rcn.mem_sound_offset;
-    const mem_sound_end = rcn.mem_sound_offset + rcn.mem_sound_size;
-    if(e.detail.begin < mem_sound_end && e.detail.end > mem_sound_begin) {
+    if(rcn_mem_changed(e, 'sound')) {
       sound_ed.update_period();
       sound_ed.update_envelope();
       sound_ed.update_instrument();

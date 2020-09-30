@@ -126,25 +126,16 @@ function rcn_sprite_ed() {
   this.add_child(this.draw_canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
-    // Palette update
-    const mem_palette_begin = rcn.mem_palette_offset;
-    const mem_palette_end = rcn.mem_palette_offset + rcn.mem_palette_size;
-    if(e.detail.begin < mem_palette_end && e.detail.end > mem_palette_begin) {
+    if(rcn_mem_changed(e, 'palette')) {
       sprite_ed.update_color_inputs();
       sprite_ed.update_draw_canvas();
     }
 
-    // Spritesheet update
-    const mem_spritesheet_begin = rcn.mem_spritesheet_offset;
-    const mem_spritesheet_end = rcn.mem_spritesheet_offset + rcn.mem_spritesheet_size;
-    if(e.detail.begin < mem_spritesheet_end && e.detail.end > mem_spritesheet_begin) {
+    if(rcn_mem_changed(e, 'spritesheet')) {
       sprite_ed.update_draw_canvas();
     }
 
-    // Sprite flags update
-    const mem_spriteflags_begin = rcn.mem_spriteflags_offset;
-    const mem_spriteflags_end = rcn.mem_spriteflags_offset + rcn.mem_spriteflags_size;
-    if(e.detail.begin < mem_spriteflags_end && e.detail.end > mem_spriteflags_begin) {
+    if(rcn_mem_changed(e, 'spriteflags')) {
       sprite_ed.update_flag_inputs();
     }
   });

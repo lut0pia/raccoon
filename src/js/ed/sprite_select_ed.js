@@ -42,17 +42,7 @@ function rcn_sprite_select_ed() {
   this.spritesheet_wrapper.appendChild(this.spritesheet_canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
-    // Palette update
-    const mem_palette_begin = rcn.mem_palette_offset;
-    const mem_palette_end = rcn.mem_palette_offset + rcn.mem_palette_size;
-    if(e.detail.begin < mem_palette_end && e.detail.end > mem_palette_begin) {
-      sprite_sel_ed.update_spritesheet_canvas();
-    }
-
-    // Spritesheet update
-    const mem_spritesheet_begin = rcn.mem_spritesheet_offset;
-    const mem_spritesheet_end = rcn.mem_spritesheet_offset + rcn.mem_spritesheet_size;
-    if(e.detail.begin < mem_spritesheet_end && e.detail.end > mem_spritesheet_begin) {
+    if(rcn_mem_changed(e, 'palette') || rcn_mem_changed(e, 'spritesheet')) {
       sprite_sel_ed.update_spritesheet_canvas();
     }
   });

@@ -150,10 +150,7 @@ function rcn_palette_ed() {
   }));
 
   this.addEventListener('rcn_bin_change', function(e) {
-    // Palette update
-    const mem_palette_begin = rcn.mem_palette_offset;
-    const mem_palette_end = rcn.mem_palette_offset + rcn.mem_palette_size;
-    if(e.detail.begin < mem_palette_end && e.detail.end > mem_palette_begin) {
+    if(rcn_mem_changed(e, 'palette')) {
       palette_ed.update_palette_select();
     }
   });
