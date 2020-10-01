@@ -17,6 +17,31 @@ function rcn_ui_button(o) {
   return button;
 }
 
+function rcn_ui_number(o) {
+  const number_id = 'number_' + Math.random().toString().substr(2);
+  const number_input = document.createElement('input');
+  number_input.id = number_id;
+  number_input.type = 'number';
+  number_input.value = o.value;
+  number_input.max = o.max;
+  number_input.min = o.min;
+  number_input.step = o.step;
+  if(o.onchange) {
+    number_input.onchange = o.onchange;
+  }
+
+  const number_label = document.createElement('label');
+  number_label.htmlFor = number_id;
+  number_label.innerText = o.label;
+
+  const number = document.createElement('number');
+  number.classList.toggle('text', o.label !== undefined && rcn_ui_text_regex.test(o.label));
+  number.number = number_input;
+  number.appendChild(number_label);
+  number.appendChild(number_input);
+  return number;
+}
+
 function rcn_ui_select(o) {
   let select = document.createElement('select');
   for(let i in o.options) {

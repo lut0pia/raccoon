@@ -125,6 +125,21 @@ checkbox.text input[type=checkbox]:checked + label::before {
 }
 
 /*
+  Input number
+*/
+
+number.text {
+  padding: 2px 0px 2px 12px;
+  margin: 2px 2px;
+  background-color: hsl(199deg 26% 19%);
+}
+
+number input[type=number] {
+  width: 34px;
+  margin-left: 4px;
+}
+
+/*
   Input select
 */
 
