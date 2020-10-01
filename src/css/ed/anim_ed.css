@@ -1,0 +1,9 @@
+.window.anim_ed content {
+  min-width: 300px;
+}
+
+.window.anim_ed canvas {
+  width: 100%;
+  height: calc(100% - 22px);
+  margin-top: 4px;
+}

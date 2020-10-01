@@ -8,6 +8,7 @@
     1. [Console](#console)
     1. [Sprite Editor](#sprite-editor)
     1. [Sprite Selector](#sprite-selector)
+    1. [Animation Viewer](#animation-viewer)
     1. [Map Editor](#map-editor)
     1. [Sound Editor](#sound-editor)
     1. [Music Editor](#music-editor)
@@ -94,6 +95,14 @@ The canvas displays the spritesheet. The index of the currently selected sprite 
 - Use `Left-Click` to select the sprites you want to edit in the [Sprite Editor](#sprite-editor) or draw in the [Map Editor](#map-editor).
 - Use `Control+C` to copy selected sprites.
 - Use `Control+V` to paste copied sprites.
+
+## Animation Viewer
+
+The animation viewer allows you to preview an animation from your current spritesheet selection. The spritesheet selection is traversed horizontally left to right and then vertically top to down.
+
+The `Width` and `Height` inputs control the width and height of the animated sprite.
+
+The `Interval` input controls the amount of frame between each animation frame.
 
 ## Map Editor
 

@@ -128,6 +128,7 @@ async function rcn_bootstrap_editor_mode(params) {
       'editor', 'window',
       'ed/header',
 
+      'ed/anim_ed',
       'ed/code_ed',
       'ed/console_ed',
       'ed/docs_ed',
@@ -142,6 +143,7 @@ async function rcn_bootstrap_editor_mode(params) {
       'editor', 'ui', 'window',
       'ed/header',
 
+      'ed/anim_ed',
       'ed/code_ed',
       'ed/console_ed',
       'ed/docs_ed',
