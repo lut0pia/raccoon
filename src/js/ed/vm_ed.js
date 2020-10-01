@@ -72,6 +72,11 @@ function rcn_vm_ed() {
     }
   });
 
+  this.addEventListener('rcn_mute_request', function(e) {
+    vm_ed.muted_checkbox.checkbox.checked = true;
+    vm_ed.update_volume();
+  });
+
   this.vm.load_bin(rcn_global_bin);
   this.set_paused(false);
 }

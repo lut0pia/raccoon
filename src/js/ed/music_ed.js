@@ -121,6 +121,10 @@ function rcn_music_ed() {
     }
   });
 
+  this.addEventListener('rcn_mute_request', function(e) {
+    music_ed.stop();
+  });
+
   this.vm.load_memory(rcn_global_bin.rom);
   this.update_tracks();
 }
@@ -181,6 +185,7 @@ rcn_music_ed.prototype.update_tracks = function() {
 }
 
 rcn_music_ed.prototype.play = function(music) {
+  rcn_dispatch_ed_event('rcn_mute_request');
   this.vm.load_code(`mus(${music});`);
 }
 

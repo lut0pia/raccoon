@@ -168,6 +168,10 @@ function rcn_sound_ed() {
     }
   });
 
+  this.addEventListener('rcn_mute_request', function(e) {
+    sound_ed.stop();
+  });
+
   this.section.addEventListener('keydown', function(e) {
     if(!e.target.rcn_window) {
       return;
@@ -310,12 +314,19 @@ rcn_sound_ed.prototype.transpose = function(delta) {
 }
 
 rcn_sound_ed.prototype.toggle_play = function() {
+  rcn_dispatch_ed_event('rcn_mute_request');
   this.vm.load_code(`
     if(read(${rcn.mem_soundstate_offset + 2}) == 0) {
       sfx(${this.current_sound}, 0);
     } else {
       sfx(0, 0, 0, 0); // Reset sound
     }
+  `);
+}
+
+rcn_sound_ed.prototype.stop = function() {
+  this.vm.load_code(`
+    sfx(0, 0, 0, 0); // Reset sound
   `);
 }
 
