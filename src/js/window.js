@@ -9,6 +9,7 @@ function rcn_window() {
 
   this.section = document.createElement('section');
   this.section.id = ((Math.random() * 0x10000000) >>> 0).toString(16);
+  this.section.ctor = this.constructor.name;
   this.section.tabIndex = 0;
   this.section.classList.add('window');
   this.section.classList.add(this.type);
@@ -204,9 +205,13 @@ function rcn_window_save_layout() {
 let rcn_has_loaded_window_layout_once = false;
 
 function rcn_window_load_layout(layout) {
-  // Clear all windows
-  while(rcn_window_container.firstChild) {
-    rcn_window_container.removeChild(rcn_window_container.firstChild);
+  // Remove unwanted windows
+  for(let i = 0; i < rcn_window_container.childElementCount; i++) {
+    const window = rcn_window_container.children[i];
+    if(!Object.values(layout).find(w => window.ctor == w.ctor)) {
+      rcn_window_container.removeChild(window);
+      i--;
+    }
   }
 
   const to_pixel = d => (v, o = 0) => v.endsWith('%') ? `${parseFloat(v)*d/100+o}px` : v;
@@ -219,7 +224,7 @@ function rcn_window_load_layout(layout) {
       console.log(`Unable to load window with ctor: ${save.ctor}`);
       continue;
     }
-    const editor = new window[save.ctor]();
+    const editor = rcn_find_editor(window[save.ctor], true);
     editor.section.id = id;
     editor.section.style.left = to_pixel_x(save.left);
     editor.section.style.top = to_pixel_y(save.top);
