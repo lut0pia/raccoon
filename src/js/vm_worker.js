@@ -50,6 +50,13 @@ function rcn_vm_worker_function(rcn) {
           ? ((ram[index] & 0xf0) | c)
           : ((ram[index] & 0x0f) | (c << 4));
   }
+  const pset_internal_safe = function(x, y, c) {
+    // No color palette support
+    if(x < 0 || x >= 128 || y < 0 || y >= 128) {
+      return;
+    }
+    pset_internal(x, y, c);
+  }
   const cam_x = function() {
     return ram_view.getInt16(rcn.mem_cam_offset + 0);
   }
@@ -77,10 +84,12 @@ function rcn_vm_worker_function(rcn) {
 
   // Raccoon rendering API
   const _pset = pset = p = function(x, y, c) {
+    x -= cam_x();
+    y -= cam_y();
     if(x < 0 || x >= 128 || y < 0 || y >= 128) {
       return;
     }
-    pset_internal(x, y, _palmget(c));
+    pset_internal_safe(x, y, _palmget(c));
   }
   pget = function(x, y) {
     if(x < 0 || x >= 128 || y < 0 || y >= 128) {
@@ -119,7 +128,6 @@ function rcn_vm_worker_function(rcn) {
     ram_view.setInt16(rcn.mem_cam_offset + 2, y);
   }
   const _spr = spr = function(n, x, y, ow = 1.0, oh = 1.0, fx = false, fy = false) {
-    // Camera
     x -= cam_x();
     y -= cam_y();
 
@@ -209,9 +217,9 @@ function rcn_vm_worker_function(rcn) {
   const font_min_y = font_ys.reduce((a, b) => _min(a, b));
   const font_max_y = font_ys.reduce((a, b) => _max(a, b));
   print = function(x, y, text, c) {
-    // Camera
     x -= cam_x();
     y -= cam_y();
+    c = _palmget(c);
 
     text = _String(text);
 
@@ -233,7 +241,7 @@ function rcn_vm_worker_function(rcn) {
         for(let j = 0; j < g.length - 1; j += 2) {
           const gx = g[j+0] + x;
           const gy = g[j+1] + y;
-          _pset(gx, gy, c);
+          pset_internal_safe(gx, gy, c);
         }
       }
       x += advance;
@@ -271,16 +279,16 @@ function rcn_vm_worker_function(rcn) {
     y0 = _flr(y0) + 0.5;
     y1 = _flr(y1) + 0.5;
 
-    // Camera
     x0 -= cam_x();
     y0 -= cam_y();
     x1 -= cam_x();
     y1 -= cam_y();
+    c = _palmget(c);
 
     const dx = _flr(x1 - x0);
     const dy = _flr(y1 - y0);
     if(dx == 0 && dy == 0) {
-      _pset(x0, y0, c);
+      pset_internal_safe(x0, y0, c);
     } else if(_abs(dx) >= _abs(dy)) {
       if(x1 < x0) {
         let tmp = x1;
@@ -293,7 +301,7 @@ function rcn_vm_worker_function(rcn) {
       const de = dy / dx;
       let y = y0;
       for(let x = x0; x <= x1; x++) {
-        _pset(x, y, c);
+        pset_internal_safe(x, y, c);
         y += de;
       }
     } else {
@@ -308,31 +316,30 @@ function rcn_vm_worker_function(rcn) {
       const de = dx / dy;
       let x = x0;
       for(let y = y0; y <= y1; y++) {
-        _pset(x, y, c);
+        pset_internal_safe(x, y, c);
         x += de;
       }
     }
   }
   rect = function(x, y, w, h, c) {
-    // Camera
     x -= cam_x();
     y -= cam_y();
+    c = _palmget(c);
 
     x <<= 0;
     y <<= 0;
     w <<= 0;
     h <<= 0;
     for(let i = 0; i < w; i++) {
-      _pset(x + i, y, c);
-      _pset(x + i, y + h - 1, c);
+      pset_internal_safe(x + i, y, c);
+      pset_internal_safe(x + i, y + h - 1, c);
     }
     for(let i = 1; i < h - 1; i++) {
-      _pset(x, y + i, c);
-      _pset(x + w - 1, y + i, c);
+      pset_internal_safe(x, y + i, c);
+      pset_internal_safe(x + w - 1, y + i, c);
     }
   }
   rectfill = function(x, y, w, h, c) {
-    // Camera
     x -= cam_x();
     y -= cam_y();
 
@@ -354,9 +361,9 @@ function rcn_vm_worker_function(rcn) {
     }
   }
   circ = function(x, y, r, c) {
-    // Camera
     x -= cam_x();
     y -= cam_y();
+    c = _palmget(c);
 
     x <<= 0;
     y <<= 0;
@@ -368,14 +375,14 @@ function rcn_vm_worker_function(rcn) {
     let oy = r;
 
     while(ox <= oy) {
-      _pset(x + ox, y + oy, c);
-      _pset(x + ox, y - oy, c);
-      _pset(x - ox, y + oy, c);
-      _pset(x - ox, y - oy, c);
-      _pset(x + oy, y + ox, c);
-      _pset(x + oy, y - ox, c);
-      _pset(x - oy, y + ox, c);
-      _pset(x - oy, y - ox, c);
+      pset_internal_safe(x + ox, y + oy, c);
+      pset_internal_safe(x + ox, y - oy, c);
+      pset_internal_safe(x - ox, y + oy, c);
+      pset_internal_safe(x - ox, y - oy, c);
+      pset_internal_safe(x + oy, y + ox, c);
+      pset_internal_safe(x + oy, y - ox, c);
+      pset_internal_safe(x - oy, y + ox, c);
+      pset_internal_safe(x - oy, y - ox, c);
 
       ox++;
       if(d < 0) {
@@ -387,9 +394,9 @@ function rcn_vm_worker_function(rcn) {
     }
   }
   circfill = function(x, y, r, c) {
-    // Camera
     x -= cam_x();
     y -= cam_y();
+    c = _palmget(c);
 
     x <<= 0;
     y <<= 0;
@@ -399,7 +406,6 @@ function rcn_vm_worker_function(rcn) {
     let d = 3 - (2 * r);
     let ox = 0;
     let oy = r;
-    c = _palmget(c);
 
     while(ox <= oy) {
       hline_safe(x - ox, y + oy, (ox << 1) + 1, c);
