@@ -68,12 +68,22 @@ async function rcn_github_get_commit(owner, repo, sha) {
   return rcn_github_request('/repos/'+owner+'/'+repo+'/git/commits/'+sha);
 }
 
-async function rcn_github_get_ref(owner, repo, ref) {
-  return rcn_github_request('/repos/'+owner+'/'+repo+'/git/refs/'+ref);
-}
-
 async function rcn_github_get_tree(owner, repo, sha) {
   return rcn_github_request('/repos/'+owner+'/'+repo+'/git/trees/'+sha);
+}
+
+async function rcn_github_get_branches(owner, repo) {
+  return rcn_github_request('/repos/'+owner+'/'+repo+'/branches');
+}
+
+async function rcn_github_get_main_branch(owner, repo) {
+  const branches = await rcn_github_get_branches(owner, repo);
+  const main_branch = branches.find(b => b.name == 'main' || b.name == 'master');
+  if(main_branch) {
+    return main_branch;
+  } else {
+    throw 'Cannot find main branch!';
+  }
 }
 
 async function rcn_github_create_repo(repo) {
@@ -174,8 +184,8 @@ rcn_hosts['github'] = {
     const repo = pair[1];
     let commit_sha = pair[2];
     if(o.latest || (!commit_sha && o.any)) {
-      const ref = await rcn_github_get_ref(owner, repo, 'heads/master');
-      commit_sha = ref.object.sha;
+      const branch = await rcn_github_get_main_branch(owner, repo);
+      commit_sha = branch.commit.sha;
     } else if(!commit_sha) {
       throw 'Incomplete link to read';
     }
@@ -210,7 +220,8 @@ rcn_hosts['github'] = {
       content: o.text,
     }]);
     const new_commit = await rcn_github_create_commit(owner, repo, undefined, 'Push from raccoon', new_tree.sha);
-    await rcn_github_update_ref(owner, repo, 'heads/master', new_commit.sha, true);
+    const branch = await rcn_github_get_main_branch(owner, repo);
+    await rcn_github_update_ref(owner, repo, 'heads/'+branch.name, new_commit.sha, true);
     return {
       text: o.text,
       host: 'github',
@@ -233,14 +244,15 @@ rcn_hosts['github'] = {
     }]);
     const commit_message = await rcn_ui_prompt('Commit message:', 'Commit from raccoon');
     const new_commit = await rcn_github_create_commit(owner, repo, [commit_sha], commit_message, new_tree.sha);
+    const branch = await rcn_github_get_main_branch(owner, repo);
     let head_commit_sha = new_commit.sha;
     let head_tree_sha = new_commit.tree.sha;
     try { // Attempt fast-forward
-      await rcn_github_update_ref(owner, repo, 'heads/master', head_commit_sha);
+      await rcn_github_update_ref(owner, repo, 'heads/'+branch.name, head_commit_sha);
     } catch(e) {
       if(e.status == 422) { // Update ref failed, try merging
         try {
-          const merge = await rcn_github_merge(owner, repo, 'master', head_commit_sha);
+          const merge = await rcn_github_merge(owner, repo, branch.name, head_commit_sha);
           head_commit_sha = merge.sha;
           head_tree_sha = merge.commit.tree.sha;
         } catch(e) {
