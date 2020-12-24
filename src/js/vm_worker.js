@@ -425,15 +425,17 @@ function rcn_vm_worker_function(rcn) {
 
   // Raccoon sound API
   const _sfx_stop = function(channel) {
-    const ram_offset = rcn_mem_soundstate_offset + channel * 5;
-    ram.fill(0, ram_offset, ram_offset + 5);
+    const ram_offset = rcn_mem_soundstate_offset + channel * 6;
+    ram.fill(0, ram_offset, ram_offset + 6);
   }
   const sfx_update = function() {
     for(let i = 0; i < 4; i++) {
       const sreg_offset = rcn_mem_soundreg_offset + i * 4;
-      const state_ram_offset = rcn_mem_soundstate_offset + i * 5;
+      const state_ram_offset = rcn_mem_soundstate_offset + i * 6;
       const state_length = ram[state_ram_offset + 2];
-      if(state_length == 0) {
+      const state_loops = ram[state_ram_offset + 3];
+      const state_full_length = state_length * state_loops;
+      if(state_full_length == 0) {
         ram[sreg_offset + 0] &= 0x7f; // Switch off
         continue;
       }
@@ -442,14 +444,14 @@ function rcn_vm_worker_function(rcn) {
       const snd_offset = rcn_mem_sound_offset + state_n * 66;
       const period = ram[snd_offset + 0] + 4; // In audio frames
 
-      const state_time = ram_view.getUint16(state_ram_offset + 3);
-      const next_note_index = _ceil(state_time / period);
-      const next_note_time = next_note_index * period;
+      const state_time = ram_view.getUint16(state_ram_offset + 4);
+      const next_note_full_index = _ceil(state_time / period);
+      const next_note_time = next_note_full_index * period;
       if(state_time <= next_note_time && next_note_time < state_time + 4) {
         // Next note should be triggered in the next frame
         const offset = next_note_time - state_time;
 
-        if(next_note_index >= state_length) {
+        if(next_note_full_index >= state_full_length) {
           // We've reached the end of the sfx, stop
           ram[sreg_offset + 0] = 0x80; // Switch on and period 0
           ram[sreg_offset + 2] = (offset << 6); // Offset and pitch
@@ -458,6 +460,7 @@ function rcn_vm_worker_function(rcn) {
           continue;
         } else {
           const state_offset = ram[state_ram_offset + 1];
+          const next_note_index = next_note_full_index % state_length;
           const note_offset = snd_offset + 2 + (state_offset + next_note_index) * 2;
           const note_1 = ram[note_offset + 0];
           const note_2 = ram[note_offset + 1];
@@ -470,18 +473,19 @@ function rcn_vm_worker_function(rcn) {
         ram[sreg_offset + 0] &= 0x7f; // Switch off
       }
 
-      ram_view.setUint16(state_ram_offset + 3, state_time + 4);
+      ram_view.setUint16(state_ram_offset + 4, state_time + 4);
     }
   }
-  const _sfx = sfx = function(n, channel = -1, offset = 0, length = 32) {
+  const _sfx = sfx = function(n, channel = -1, offset = 0, length = 32, loops = 1) {
     if(channel < 0) {
-      while(++channel < 3 && ram[rcn_mem_soundstate_offset + channel * 5 + 2] != 0);
+      while(++channel < 3 && ram[rcn_mem_soundstate_offset + channel * 6 + 2] != 0);
     }
-    const ram_offset = rcn_mem_soundstate_offset + channel * 5;
+    const ram_offset = rcn_mem_soundstate_offset + channel * 6;
     ram[ram_offset] = n; // Sfx index
     ram[ram_offset + 1] = offset; // In notes
     ram[ram_offset + 2] = length; // In notes
-    ram_view.setUint16(ram_offset + 3, 0); // In audio frames (120 per second)
+    ram[ram_offset + 3] = loops;
+    ram_view.setUint16(ram_offset + 4, 0); // In audio frames (120 per second)
   }
   const _mus_state = {
     get is_playing() { return !!(ram[rcn_mem_musicstate_offset] & 0x80); },
@@ -519,15 +523,22 @@ function rcn_vm_worker_function(rcn) {
 
     if(time == 0) {
       const mus_index = rcn.mem_music_offset + n * 4;
+      let tracks = [];
       max_time = 0;
-      for(let track = 0; track < rcn.music_track_count; track++) {
-        if(ram[mus_index + track] & 0x40) {
-          const track_sound = ram[mus_index + track] & 0x3f;
-          _sfx(track_sound, track);
+      for(let i = 0; i < rcn.music_track_count; i++) {
+        if(ram[mus_index + i] & 0x40) {
+          const track_sound = ram[mus_index + i] & 0x3f;
           const sound_offset = rcn_mem_sound_offset + track_sound * 66;
           const period = ram[sound_offset + 0] + 4;
           max_time = _max(max_time, period * 32);
+          tracks.push({
+            sound: track_sound,
+            period: period * 32,
+          });
         }
+      }
+      for(let i = 0; i < tracks.length; i++) {
+        _sfx(tracks[i].sound, i, 0, 32, _flr(max_time / tracks[i].period));
       }
       _mus_state.max_time = max_time;
     }

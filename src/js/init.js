@@ -26,7 +26,7 @@ const rcn = {
   mem_cam_offset: 0x5f90,
   mem_cam_size: 0x0004, // 4B = 2x16bits
   mem_soundstate_offset: 0x5fa0,
-  mem_soundstate_size: 0x0014, // 20B = 4x(8+8+8+16)bits (8b index + 8b offset + 8b length + 16b time)
+  mem_soundstate_size: 0x0018, // 20B = 4x(8+8+8+8+16)bits (8b index + 8b offset + 8b length + 8b loops + 16b time)
   mem_musicstate_offset: 0x5fc0,
   mem_musicstate_size: 0x0005, // 5B = 1+7+16+16bits (1b playing + 7b index + 16b time + 16b max_time)
   mem_soundreg_offset: 0x5fd0,

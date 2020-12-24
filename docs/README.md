@@ -137,7 +137,7 @@ The table represents time on the x-axis and note pitches on the y-axis. You can 
 
 The music editor allows you to orchestrate multiple sound tracks at once and in sequence.
 
-Each row is a list of 4 optional sound effect indices which will be played simultaneously.
+Each row is a list of 4 optional sound effect indices which will be played simultaneously. If a sound effect's duration is shorter than the max of the row, it will be played multiple times to account for that.
 
 When a row is done playing, the subsequent row is played, unless 🛑 is set, in which case playback stops, or ⤴️ is set, in which case we go back up to the closest ⤵️.
 
@@ -262,7 +262,7 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 
 ## Sound Functions
 
-- `sfx(n, chan=-1, off=0, len=32)`: Plays sfx `n` in channel `chan` (first free if `-1`) from note `off` for `len` notes
+- `sfx(n, chan=-1, off=0, len=32, loops=1)`: Plays sfx `n` in channel `chan` (first free if `-1`) from note `off` for `len` notes `loops` times
 - `mus(n)`: Start playing music at index `n`
 
 ## Math Functions

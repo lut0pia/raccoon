@@ -110,7 +110,7 @@
 </ul>
 <h2 id="music-editor">Music Editor</h2>
 <p>The music editor allows you to orchestrate multiple sound tracks at once and in sequence.</p>
-<p>Each row is a list of 4 optional sound effect indices which will be played simultaneously.</p>
+<p>Each row is a list of 4 optional sound effect indices which will be played simultaneously. If a sound effect&#39;s duration is shorter than the max of the row, it will be played multiple times to account for that.</p>
 <p>When a row is done playing, the subsequent row is played, unless 🛑 is set, in which case playback stops, or ⤴️ is set, in which case we go back up to the closest ⤵️.</p>
 <ul>
 <li>Use ▶️/⏹️ to play/stop the music.</li>
@@ -288,7 +288,7 @@
 </ul>
 <h2 id="sound-functions">Sound Functions</h2>
 <ul>
-<li><code>sfx(n, chan=-1, off=0, len=32)</code>: Plays sfx <code>n</code> in channel <code>chan</code> (first free if <code>-1</code>) from note <code>off</code> for <code>len</code> notes</li>
+<li><code>sfx(n, chan=-1, off=0, len=32, loops=1)</code>: Plays sfx <code>n</code> in channel <code>chan</code> (first free if <code>-1</code>) from note <code>off</code> for <code>len</code> notes <code>loops</code> times</li>
 <li><code>mus(n)</code>: Start playing music at index <code>n</code></li>
 </ul>
 <h2 id="math-functions">Math Functions</h2>

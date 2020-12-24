@@ -38,6 +38,14 @@ function rcn_sound_ed() {
     },
   }));
 
+  // Create loop checkbox
+  this.add_child(this.loop_checkbox = rcn_ui_checkbox({
+    label: 'Loop',
+    onchange: function() {
+      sound_ed.set_loop(this.checked);
+    },
+  }));
+
   this.add_child(document.createElement('br'));
 
   // Create speed select
@@ -205,6 +213,7 @@ rcn_sound_ed.prototype.set_current_sound = function(i) {
   this.update_envelope();
   this.update_instrument();
   this.update_notes();
+  this.stop();
 }
 
 rcn_sound_ed.prototype.get_current_sound_offset = function() {
@@ -314,20 +323,35 @@ rcn_sound_ed.prototype.transpose = function(delta) {
 }
 
 rcn_sound_ed.prototype.toggle_play = function() {
+  if(!this.is_playing()) {
+    this.play();
+  } else {
+    this.stop();
+  }
+}
+
+rcn_sound_ed.prototype.play = function() {
   rcn_dispatch_ed_event('rcn_mute_request');
-  this.vm.load_code(`
-    if(read(${rcn.mem_soundstate_offset + 2}) == 0) {
-      sfx(${this.current_sound}, 0);
-    } else {
-      sfx(0, 0, 0, 0); // Reset sound
-    }
-  `);
+  this.vm.load_code(`sfx(${this.current_sound}, 0, 0, 32, ${this.loop ? 255 : 1});`);
 }
 
 rcn_sound_ed.prototype.stop = function() {
-  this.vm.load_code(`
-    sfx(0, 0, 0, 0); // Reset sound
-  `);
+  this.vm.load_code(`sfx(0, 0, 0, 0);`);
+}
+
+rcn_sound_ed.prototype.is_playing = function() {
+  return this.note_playing >= 0;
+}
+
+rcn_sound_ed.prototype.set_loop = function(loop) {
+  this.loop = loop;
+  if(this.is_playing()) { // Already playing
+    if(this.loop) {
+      this.play();
+    } else {
+      this.stop();
+    }
+  }
 }
 
 rcn_sound_ed.prototype.onmessage = function(e) {
@@ -336,8 +360,11 @@ rcn_sound_ed.prototype.onmessage = function(e) {
       this.vm.worker.postMessage({type: 'read', name: 'sound', offset: rcn.mem_soundstate_offset, size: rcn.mem_soundstate_size});
       break;
     case 'sound':
-      const time = (new DataView(e.data.bytes.buffer).getUint16(3));
-      const note = time > 0 ? Math.floor(time / this.get_period()) : -1;
+      const time = (new DataView(e.data.bytes.buffer).getUint16(4));
+      let note = time > 0 ? Math.floor(time / this.get_period()) : -1;
+      if(this.loop) {
+        note %= 32;
+      }
       if(this.note_playing != note) {
         this.note_playing = note;
         this.update_notes();
