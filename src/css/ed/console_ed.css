@@ -22,6 +22,16 @@
   color: hsla(0, 88%, 70%, 1);
 }
 
+.window.console_ed div article.error line {
+  color: hsla(0, 88%, 70%, 1);
+  display: block;
+}
+
+.window.console_ed div article.error line:hover {
+  font-weight: bold;
+  cursor: pointer;
+}
+
 .window.console_ed input[type=text] {
   width: 100%;
 }
