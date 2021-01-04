@@ -102,13 +102,11 @@
   background-color: rgba(255, 0, 0, 0.295);
   display: block;
   margin: 0px;
-  width: 1000%; /* That's a hack alright */
 }
 
-.window.code_ed .textmirror .error::after {
-  content: attr(title);
+.window.code_ed .textmirror .error_message {
   margin-left: 16px;
-  color: rgb(63, 63, 63);
+  color: black;
 }
 
 .window.code_ed .textmirror .error + br {

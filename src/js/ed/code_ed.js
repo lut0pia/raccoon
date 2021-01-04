@@ -213,7 +213,7 @@ rcn_code_ed.prototype.update_mirror = function() {
     const regen = line_content_changed || line_error_changed;
 
     if(regen) {
-      const line_html = html_encode(lines[i])
+      let line_html = html_encode(lines[i])
         .replace(/ /gi, '&nbsp;')
         .replace(keyword_regexp, classify('keyword'))
         .replace(/\b0x[\da-f]+\b/gi, classify('number hex'))
@@ -223,7 +223,7 @@ rcn_code_ed.prototype.update_mirror = function() {
 
       if(is_error_line) {
         line_node.classList.add('error');
-        line_node.title = this.error.message;
+        line_html += `<span class="error_message">${this.error.message}</span>`;
       } else {
         line_node.classList.remove('error');
       }
