@@ -14,6 +14,10 @@
   font-family: 'Roboto Mono';
 }
 
+.window.console_ed div article:hover {
+  background-color: #2d434d;
+}
+
 .window.console_ed div article.error {
   color: hsla(0, 88%, 70%, 1);
 }
