@@ -769,39 +769,56 @@ function rcn_vm_worker_function(rcn) {
 
   const _firefox_stack_line_exp = /^([^@]+)@.+:([0-9]+):[0-9]+$/i;
   const _chrome_stack_line_exp = /^    at ([^\()]+) \(.+:([0-9]+):[0-9]+\)$/i;
+  const _handle_user_error = function(e) {
+    let stack = [];
+    if(e.stack) {
+      stack = (new _String(e.stack)).split('\n')
+        .map(function(line) {
+          const match =
+            line.match(_firefox_stack_line_exp) ||
+            line.match(_chrome_stack_line_exp);
+          return match && {
+            func: match[1],
+            line: match[2] - 2, // Line numbers are off by 2 for some reason
+          };
+        })
+        // Filter out VM functions
+        .filter(l => l && ![
+          'EventHandlerNonNull*rcn_vm_worker_function',
+          'onmessage',
+          '_execute_user_func',
+          '_make_user_func',
+        ].includes(l.func));
+      for(let i = 0; i < stack.length - 1; i++) {
+        if(stack[i].func == '__'+stack[i+1].func) {
+          stack[i].func = stack[i+1].func;
+          stack.splice(i+1, 1);
+        }
+      }
+    }
+    _postMessage({
+      type: 'error',
+      message: e.message,
+      stack: stack,
+      line: stack.length > 0 && stack[0].line || e.lineNumber - 2,
+    });
+  }
+  const _make_user_func = function(code) {
+    try {
+      return new _Function(code);
+    } catch(e) {
+      _handle_user_error(e);
+      return null
+    }
+  }
   const _execute_user_func = function(user_func) {
-    if(typeof user_func === 'undefined') {
+    if(typeof user_func === 'undefined' || !user_func) {
       return;
     }
     try {
       user_func();
     } catch(e) {
-      let stack = [];
-      if(e.stack) {
-        stack = (new _String(e.stack)).split('\n')
-          .map(function(line) {
-            const match =
-              line.match(_firefox_stack_line_exp) ||
-              line.match(_chrome_stack_line_exp);
-            return match && {
-              func: match[1],
-              line: match[2] - 2, // Line numbers are off by 2 for some reason
-            };
-          })
-          .filter(l => l && !['onmessage', '_execute_user_func'].includes(l.func));
-        for(let i = 0; i < stack.length - 1; i++) {
-          if(stack[i].func == '__'+stack[i+1].func) {
-            stack[i].func = stack[i+1].func;
-            stack.splice(i+1, 1);
-          }
-        }
-      }
-      _postMessage({
-        type: 'error',
-        message: e.message,
-        stack: stack,
-        line: stack.length > 0 && stack[0].line || e.lineNumber - 2,
-      });
+      _handle_user_error(e);
     }
   }
 
@@ -820,7 +837,7 @@ function rcn_vm_worker_function(rcn) {
         // Also create an indirection to allow hot reload to work
         // even when function has been saved somewhere as a value
         code = code.replace(/function (\w+)(\s*)(\([^\)]*\))/gim, '$1 = function$3 { return __$1$3; }; __$1 = function$3');
-        _execute_user_func(new _Function(code));
+        _execute_user_func(_make_user_func(code));
         break;
       case 'init': _execute_user_func(init); break;
       case 'update':
