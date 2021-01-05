@@ -141,6 +141,7 @@ async function rcn_bootstrap_editor_mode(params) {
     ]),
     rcn_load_scripts([
       'editor', 'ui', 'window',
+      'ed/fill',
       'ed/header',
 
       'ed/anim_ed',
