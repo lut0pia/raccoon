@@ -270,20 +270,19 @@ rcn_code_ed.prototype.update_overlay = function() {
 }
 
 rcn_code_ed.prototype.update_keyword_link = function() {
-  const lines = this.textarea.value.split('\n');
   const keyword_link = {};
+
+  // Link keywords to native raccoon functions
   for(let doc_section in rcn_code_ed_doc_functions) {
     for(let func of rcn_code_ed_doc_functions[doc_section]) {
       keyword_link[func] = doc_section;
     }
   }
 
-  // Look for symbol definitions
-  for(let i = 0; i < lines.length; i++) {
-    const match = lines[i].match(/function\s+(\w+)/i);
-    if(match) {
-      keyword_link[match[1]] = i + 1;
-    }
+  // Link keywords to globals declared in code
+  const globals = rcn_code_ed_parse_globals();
+  for(let name in globals) {
+    keyword_link[name] = globals[name].line;
   }
 
   const code_ed = this;
@@ -343,6 +342,26 @@ function rcn_code_ed_textarea_insert_text(textarea, text) {
     textarea.selectionStart = previous_selection_start + text.length;
     textarea.selectionEnd = textarea.selectionStart;
   }
+}
+
+function rcn_code_ed_parse_globals() {
+  const lines = rcn_global_bin.code.split('\n');
+  let globals = {};
+  let scope = 0;
+  for(let i = 0; i < lines.length; i++) {
+    if(scope == 0) {
+      const function_match = lines[i].match(/^[^{]*(const|function|let|var)\s+(\w+).*$/);
+      if(function_match) {
+        globals[function_match[2]] = {
+          type: function_match[1],
+          line: i + 1,
+        };
+      }
+    }
+    scope += (lines[i].match(/{/g) || []).length;
+    scope -= (lines[i].match(/}/g) || []).length;
+  }
+  return globals;
 }
 
 rcn_editors.push(rcn_code_ed);
