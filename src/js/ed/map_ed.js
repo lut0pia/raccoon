@@ -25,8 +25,12 @@ function rcn_map_ed() {
     if(map_ed.selection.event(e, tex_coords)) {
       return;
     }
-    if(e.buttons == 1) { // Left button: draw
-      map_ed.set_tile(tex_coords.x >> 3, tex_coords.y >> 3);
+    if(e.buttons == 1) { // Left button: draw or fill
+      if(e.ctrlKey) {
+        map_ed.fill_tile(tex_coords.x >> 3, tex_coords.y >> 3);
+      } else {
+        map_ed.set_tile(tex_coords.x >> 3, tex_coords.y >> 3);
+      }
     } else if(e.buttons == 2) { // Right button: tile pick
       rcn_current_sprite = map_ed.get_tile(tex_coords.x >> 3, tex_coords.y >> 3);
       rcn_current_sprite_columns = rcn_current_sprite_rows = 1;
@@ -119,13 +123,28 @@ rcn_map_ed.prototype.get_tile_index = function(rel_x, rel_y) {
   return rcn.mem_map_offset + (y << 7) + (x << 0);
 }
 
-rcn_map_ed.prototype.set_tile = function(map_x, map_y) {
-  const tile_index = this.get_tile_index(map_x, map_y);
-  rcn_global_bin.rom[tile_index] = rcn_current_sprite;
-
+rcn_map_ed.prototype.set_tile = function(x, y) {
+  const tile_index = this.set_tile_internal(x, y);
   rcn_dispatch_ed_event('rcn_bin_change', {
     begin: tile_index,
     end: tile_index+1,
+  });
+}
+
+rcn_map_ed.prototype.set_tile_internal = function(x, y) {
+  const tile_index = this.get_tile_index(x, y);
+  rcn_global_bin.rom[tile_index] = rcn_current_sprite;
+  return tile_index;
+}
+
+rcn_map_ed.prototype.fill_tile = function(x, y) {
+  const map_ed = this;
+  rcn_editor_fill({
+    start_x: x,
+    start_y: y,
+    get_value: (x, y) => map_ed.get_tile(x, y),
+    set_value: (x, y) => map_ed.set_tile_internal(x, y),
+    is_in_selection: (x, y) => x >= 0 && y >= 0 && x < map_ed.get_viewport_width() && y < map_ed.get_viewport_height(),
   });
 }
 
