@@ -96,15 +96,33 @@
   color: #a1a14e;
 }
 
+/* Line hightlighting */
+
+@keyframes line_highlight {
+  from {
+    background-color: rgba(83, 108, 163, 0.295);
+  }
+  to {
+    background-color: rgba(83, 108, 163, 0);
+  }
+}
+
+.window.code_ed .textmirror line.highlight {
+  animation-name: line_highlight;
+  animation-duration: 4s;
+  display: block;
+  margin: 0px;
+}
+
 /* Error highlighting */
 
-.window.code_ed .textmirror .error {
+.window.code_ed .textmirror line.error {
   background-color: rgba(255, 0, 0, 0.295);
   display: block;
   margin: 0px;
 }
 
-.window.code_ed .textmirror .error_message {
+.window.code_ed .textmirror line .error_message {
   margin-left: 16px;
   color: black;
 }

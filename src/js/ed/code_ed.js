@@ -322,6 +322,19 @@ rcn_code_ed.prototype.set_error = function(e) {
 }
 
 rcn_code_ed.prototype.scroll_to_line = function(line) {
+  // Remove highlight from every line
+  for(let line_node of [...this.textmirror.childNodes]) {
+    line_node.classList.remove('highlight');
+  }
+
+  // Highlight line if not an error line (already highlighted)
+  const is_error_line = !!(this.error && this.error.line == line);
+  if(!is_error_line) {
+    // Slight delay needed for animation to trigger on same line (class off and on again)
+    setTimeout(() => this.textmirror.childNodes[line - 1].classList.add('highlight'), 0);
+  }
+
+  // Compute y coordinate of line
   let target = (line - 1) * 20;
   target -= this.textarea.clientHeight >> 1;
 
