@@ -334,14 +334,18 @@ rcn_code_ed.prototype.scroll_to_line = function(line) {
     setTimeout(() => this.textmirror.childNodes[line - 1].classList.add('highlight'), 0);
   }
 
+  // Move textarea cursor to line to avoid focus scrolling back
+  const lines = this.textarea.value.split('\n');
+  let line_start = 0;
+  for(let i = 0; i < line - 1; i++) {
+    line_start += lines[i].length + 1;
+  }
+  this.textarea.selectionStart = this.textarea.selectionEnd = line_start;
+
   // Compute y coordinate of line
   let target = (line - 1) * 20;
   target -= this.textarea.clientHeight >> 1;
-
-  this.textarea.scrollBy({
-    top: target - this.textarea.scrollTop,
-    behavior: 'smooth',
-  });
+  this.textarea.scrollTo({top: target});
 }
 
 function rcn_code_ed_textarea_insert_text(textarea, text) {
