@@ -9,6 +9,8 @@ function rcn_anim_ed() {
   this.sprite_h = 1;
   this.frame = 0;
   this.interval = 4;
+  this.frame_sprites = [];
+  this.ping_pong = false;
 
   const anim_ed = this;
 
@@ -48,6 +50,13 @@ function rcn_anim_ed() {
     },
   }));
 
+  // Create ping-pong input
+  this.add_child(this.ping_pong_input = rcn_ui_checkbox({
+    label: 'Ping-pong',
+    onchange: function() {
+      anim_ed.set_ping_pong(this.checked);
+    },
+  }));
 
   // Create canvas
   this.canvas = new rcn_canvas();
@@ -60,12 +69,15 @@ function rcn_anim_ed() {
   });
 
   this.addEventListener('rcn_current_sprite_change', function(e) {
+    anim_ed.update_frame_sprites();
     anim_ed.update_canvas();
   });
 
   this.addEventListener('rcn_window_resize', function() {
     anim_ed.canvas.flush();
   });
+
+  this.update_frame_sprites();
 
   this.last_tick = 0;
   const tick = function() {
@@ -90,17 +102,24 @@ rcn_anim_ed.prototype.group = 'visual';
 
 rcn_anim_ed.prototype.set_sprite_width = function(w) {
   this.sprite_w = Math.max(1, Math.min(16, w));
+  this.update_frame_sprites();
   this.update_canvas();
 }
 
 rcn_anim_ed.prototype.set_sprite_height = function(h) {
   this.sprite_h = Math.max(1, Math.min(16, h));
+  this.update_frame_sprites();
   this.update_canvas();
 }
 
 rcn_anim_ed.prototype.set_interval = function(i) {
   this.interval = Math.max(1, Math.min(16, i));
   this.update_canvas();
+}
+
+rcn_anim_ed.prototype.set_ping_pong = function(ping_pong) {
+  this.ping_pong = ping_pong;
+  this.update_frame_sprites();
 }
 
 rcn_anim_ed.prototype.get_current_frame = function() {
@@ -112,11 +131,25 @@ rcn_anim_ed.prototype.get_frame_count = function() {
 }
 
 rcn_anim_ed.prototype.get_frame_spr = function(i) {
-  const span_x = (rcn_current_sprite_columns / this.sprite_w) << 0;
-  const span_y = (rcn_current_sprite_rows / this.sprite_h) << 0;
-  const frame_x = (i % span_x) * this.sprite_w;
-  const frame_y = (((i / span_x) << 0) % span_y) * this.sprite_h;
-  return rcn_current_sprite + frame_x + (frame_y << 4);
+  return this.frame_sprites[i % this.frame_sprites.length];
+}
+
+rcn_anim_ed.prototype.update_frame_sprites = function() {
+  this.frame_sprites = [];
+  const frame_count = this.get_frame_count();
+  for(let i = 0; i < frame_count; i++) {
+    const span_x = (rcn_current_sprite_columns / this.sprite_w) << 0;
+    const span_y = (rcn_current_sprite_rows / this.sprite_h) << 0;
+    const frame_x = (i % span_x) * this.sprite_w;
+    const frame_y = (((i / span_x) << 0) % span_y) * this.sprite_h;
+
+    this.frame_sprites.push(rcn_current_sprite + frame_x + (frame_y << 4));
+  }
+  if(this.ping_pong) {
+    for(let i = this.frame_sprites.length - 2; i > 0; i--) {
+      this.frame_sprites.push(this.frame_sprites[i]);
+    }
+  }
 }
 
 rcn_anim_ed.prototype.update_canvas = function() {
