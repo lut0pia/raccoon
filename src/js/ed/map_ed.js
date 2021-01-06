@@ -76,6 +76,25 @@ function rcn_map_ed() {
     }
     map_ed.update_map_canvas();
   }
+  this.map_canvas.onpostflush.push(() => {
+    if(this.zoom == 0) {
+      return;
+    }
+    // Draw minimap
+    const w = rcn.map_width;
+    const h = rcn.map_height;
+    const x = this.map_canvas.node.width - w - 10;
+    const y = this.map_canvas.node.height - h - 10;
+    this.map_canvas.draw_quad(x, y, w, h, 0, 0, 0, 1);
+    this.map_canvas.draw_quad(
+      x + this.offset_x,
+      y + this.offset_y,
+      this.get_viewport_width(),
+      this.get_viewport_height(),
+      1, 1, 1, 1,
+    );
+    this.map_canvas.draw_outline(x, y, w, h, 2, 1, 1, 1, 1);
+  });
   this.add_child(this.map_canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
