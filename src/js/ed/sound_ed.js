@@ -208,6 +208,12 @@ rcn_sound_ed.prototype.group = 'sound';
 rcn_editors.push(rcn_sound_ed);
 
 rcn_sound_ed.prototype.set_current_sound = function(i) {
+  if(this.current_sound == i) {
+    return; // Nothing to do
+  }
+  if(this.sound_select.value != i) {
+    this.sound_select.value = i;
+  }
   this.current_sound = i;
   this.update_period();
   this.update_envelope();
