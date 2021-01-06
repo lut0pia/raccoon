@@ -23,6 +23,10 @@ function rcn_code_ed() {
   rcn_window.call(this);
   const code_ed = this;
 
+  this.linenumbers = document.createElement('div');
+  this.linenumbers.classList.add('linenumbers');
+  this.add_child(this.linenumbers);
+
   this.textmirror = document.createElement('div');
   this.textmirror.classList.add('textmirror');
   this.add_child(this.textmirror);
@@ -108,7 +112,7 @@ function rcn_code_ed() {
     rcn_dispatch_ed_event('rcn_bin_change', {code: true});
   });
   this.textarea.onscroll = function(e) {
-    code_ed.textmirror.scrollTop = code_ed.textoverlay.scrollTop = code_ed.textarea.scrollTop;
+    code_ed.textmirror.scrollTop = code_ed.textoverlay.scrollTop = code_ed.linenumbers.scrollTop = code_ed.textarea.scrollTop;
     code_ed.textmirror.scrollLeft = code_ed.textoverlay.scrollLeft = code_ed.textarea.scrollLeft;
   }
   this.textarea.oninput = function() {
@@ -199,11 +203,19 @@ rcn_code_ed.prototype.update_mirror = function() {
   while(this.textmirror.childElementCount >= lines.length) {
     this.textmirror.removeChild(this.textmirror.lastChild);
   }
+  while(this.linenumbers.childElementCount >= lines.length) {
+    this.linenumbers.removeChild(this.linenumbers.lastChild);
+  }
 
   for(let i = 0; i < lines.length; i++) {
     // Add missing line
     if(this.textmirror.childElementCount <= i) {
       this.textmirror.appendChild(document.createElement('line'));
+    }
+    if(this.linenumbers.childElementCount <= i) {
+      const line_number = document.createElement('line');
+      line_number.innerHTML = (new String(i + 1)).padStart(4, 0);
+      this.linenumbers.appendChild(line_number);
     }
 
     const line_node = this.textmirror.childNodes[i];

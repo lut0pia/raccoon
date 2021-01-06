@@ -1,18 +1,36 @@
-
+:root {
+  --code_ed_line_numbers_width: 40px;
+}
 
 .window.code_ed content {
   width: 256px;
   height: 256px;
+  min-width: 256px;
 }
 
 .window.code_ed textarea,
-.window.code_ed .textmirror {
-  width: 100%;
+.window.code_ed .textmirror,
+.window.code_ed .linenumbers {
+  width: calc(100% - var(--code_ed_line_numbers_width));
   height: calc(100% - 32px);
+  margin-left: var(--code_ed_line_numbers_width);
   overflow: auto;
 }
 
+.window.code_ed .linenumbers {
+  position: absolute;
+  overflow: hidden;
+  float: left;
+  width: var(--code_ed_line_numbers_width);
+  margin-left: 0px;
+}
+.window.code_ed .linenumbers line {
+  display: block;
+  color: rgba(255, 255, 255, 0.2);
+}
+
 .window.code_ed textarea,
+.window.code_ed .linenumbers line,
 .window.code_ed .textmirror,
 .window.code_ed .textmirror line,
 .window.code_ed .textmirror span {
@@ -35,8 +53,9 @@
   color: #00000000;
 }
 
+.window.code_ed .linenumbers,
 .window.code_ed .textmirror {
-  width: calc(100% - 16px);
+  width: calc(100% - var(--code_ed_line_numbers_width) - 16px);
   height: calc(100% - 69px);
   position: absolute;
   z-index: -1;
