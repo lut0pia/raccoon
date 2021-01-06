@@ -81,6 +81,16 @@ function rcn_music_ed() {
           this.onfocus();
         }
       }
+      track_input.onmousedown = function(e) {
+        if(e.ctrlKey) { // Go to sound
+          e.preventDefault();
+          const sound_ed = rcn_find_editor(rcn_sound_ed);
+          const sound_index = music_ed.get_track(music, track);
+          if(sound_ed && sound_index >= 0) {
+            sound_ed.set_current_sound(sound_index);
+          }
+        }
+      }
       input_cell.appendChild(track_input);
 
       this.track_input.push(track_input);
