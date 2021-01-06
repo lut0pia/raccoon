@@ -9,9 +9,7 @@ function rcn_vm_ed() {
 
   this.vm = new rcn_vm();
   this.vm.canvas.node.addEventListener('keydown', function(e) {
-    const key_code = e.keyCode || e.which;
-
-    if(key_code == 32) { // Space key
+    if(e.key == ' ') { // Space key
       vm_ed.set_paused(!vm_ed.vm.paused)
     }
   });

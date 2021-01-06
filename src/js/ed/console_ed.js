@@ -12,7 +12,7 @@ function rcn_console_ed() {
   this.add_child(this.input = document.createElement('input'));
   this.input.type = 'text';
   this.input.addEventListener('keydown', function(e) {
-    if(e.keyCode === 13) { // Enter key
+    if(e.key == 'Enter') { // Enter key
       console_ed.execute();
     }
   });

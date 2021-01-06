@@ -46,7 +46,6 @@ function rcn_code_ed() {
   this.textarea.setAttribute('wrap', 'off');
   this.textarea.setAttribute('spellcheck', 'false');
   this.textarea.addEventListener('keydown', function(e) {
-    const key_code = e.keyCode || e.which;
     const tab_size = 2;
 
     const start = this.selectionStart;
@@ -55,7 +54,7 @@ function rcn_code_ed() {
     const start_line_end = (this.value.indexOf('\n', start) + 1 || this.value.length) - 1;
     const start_line_last_space = Math.max(0, this.value.substr(start_line_beg).search(/[^ ]/))+start_line_beg;
 
-    if(key_code == 13) { // Enter key
+    if(e.key == 'Enter') {
       if(e.ctrlKey) { // CTRL + Enter
         code_ed.apply();
       } else if(!e.shiftKey) { // Simple Enter
@@ -66,7 +65,7 @@ function rcn_code_ed() {
         }
         rcn_code_ed_textarea_insert_text(this, '\n'+' '.repeat(next_line_indent));
       }
-    } else if (key_code == 9) { // Tab key
+    } else if (e.key == 'Tab') {
       e.preventDefault();
 
       const line_begs = [start_line_beg];

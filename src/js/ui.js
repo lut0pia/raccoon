@@ -173,7 +173,7 @@ async function rcn_ui_prompt(text, default_text) {
   input.type = 'text';
   input.value = default_text || '';
   input.addEventListener('keydown', e => {
-    if(e.keyCode == 13) { // Enter key
+    if(e.key == 'Enter') {
       rcn_popup_resolve(input.value);
     }
   });

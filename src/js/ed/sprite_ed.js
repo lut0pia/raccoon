@@ -151,6 +151,7 @@ function rcn_sprite_ed() {
 
   this.addEventListener('keydown', function(e) {
     const ctrl = e.ctrlKey || e.metaKey;
+    const digits = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8'];
     if(e.key == 'ArrowLeft') {
       sprite_ed.move_selection(-1, 0);
     } else if(e.key == 'ArrowRight') {
@@ -163,8 +164,8 @@ function rcn_sprite_ed() {
       sprite_ed.copy_selection();
     } else if(ctrl && e.key == 'v') {
       sprite_ed.paste_selection();
-    } else if (e.keyCode >= 49 && e.keyCode <= 56) {
-      let new_color = e.keyCode - 49;
+    } else if (digits.includes(e.code)) {
+      let new_color = digits.indexOf(e.code);
       if(e.shiftKey) {
         new_color += 8;
       }

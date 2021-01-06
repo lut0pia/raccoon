@@ -2,9 +2,10 @@
 // This is the client that spawns the web worker
 'use strict';
 
-const rcn_keycode_to_gamepad = {
-  37: 0, 39: 1, 38: 2, 40: 3, // Left Right Up Down
-  88: 4, 67: 5, 86: 6, 66: 7, // X C V B
+const rcn_key_to_gamepad = {
+  'ArrowLeft': 0, 'ArrowRight': 1, 'ArrowUp': 2, 'ArrowDown': 3,
+  'x': 4, 'c': 5, 'v': 6, 'b': 7,
+  'X': 4, 'C': 5, 'V': 6, 'B': 7,
 };
 
 function rcn_vm(params = {}) {
@@ -15,20 +16,20 @@ function rcn_vm(params = {}) {
     this.canvas.set_size(128, 128);
     this.canvas.node.tabIndex = 0; // Means we can focus the canvas and receive input
     this.canvas.node.addEventListener('keydown', function(e) {
-      if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
+      if(rcn_key_to_gamepad[e.key] != undefined) {
         e.preventDefault();
         const player = vm.get_player_for_gamepad_id('keyboard', rcn.gamepad_layout_xcvb, true);
         if(player >= 0) {
-          vm.set_gamepad_bit(player, rcn_keycode_to_gamepad[e.keyCode], true);
+          vm.set_gamepad_bit(player, rcn_key_to_gamepad[e.key], true);
         }
       }
     });
     this.canvas.node.addEventListener('keyup', function(e) {
-      if(rcn_keycode_to_gamepad[e.keyCode] != undefined) {
+      if(rcn_key_to_gamepad[e.key] != undefined) {
         e.preventDefault();
         const player = vm.get_player_for_gamepad_id('keyboard', rcn.gamepad_layout_xcvb, true);
         if(player >= 0) {
-          vm.set_gamepad_bit(player, rcn_keycode_to_gamepad[e.keyCode], false);
+          vm.set_gamepad_bit(player, rcn_key_to_gamepad[e.key], false);
         }
       }
     });
