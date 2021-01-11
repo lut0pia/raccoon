@@ -1,6 +1,10 @@
 .music_ed content {
-  min-width: 269px;
+  min-width: 400px;
   height: 256px;
+}
+
+.music_ed table {
+  width: 100%;
 }
 
 .music_ed, .music_ed td, .music_ed td div {
@@ -11,9 +15,10 @@
 .music_ed td:first-child {
   padding-right: 8px;
   padding-left: 10px;
+  width: 26px;
 }
 
-.music_ed td:nth-child(2) {
+.music_ed td:nth-child(n+2):nth-child(-n+6) {
   width: 26px;
   text-align: center;
 }
