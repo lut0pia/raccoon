@@ -8,6 +8,8 @@ function rcn_music_ed() {
   this.music_row = [];
   this.track_input = [];
   this.flag_checkbox = [];
+  this.speed_info = [];
+  this.chord_info = [];
   this.play_index = -1;
 
   const music_ed = this;
@@ -120,11 +122,25 @@ function rcn_music_ed() {
     music_row.appendChild(begin_flag);
     music_row.appendChild(end_flag);
     music_row.appendChild(stop_flag);
+
+    // Create music information
+    const speed_info = document.createElement('info');
+    const chord_info = document.createElement('info');
+    speed_info.classList.add('speed');
+    chord_info.classList.add('chord');
+    this.speed_info.push(speed_info);
+    this.chord_info.push(chord_info);
+    music_row.appendChild(speed_info);
+    music_row.appendChild(chord_info);
   }
 
   this.addEventListener('rcn_bin_change', function(e) {
     if(rcn_mem_changed(e, 'music')) {
       music_ed.update_tracks();
+      music_ed.update_information();
+    }
+    if(rcn_mem_changed(e, 'sound')) {
+      music_ed.update_information();
     }
     if(e.detail.begin < e.detail.end) {
       music_ed.vm.load_memory(rcn_global_bin.rom.slice(e.detail.begin, e.detail.end), e.detail.begin);
@@ -137,6 +153,7 @@ function rcn_music_ed() {
 
   this.vm.load_memory(rcn_global_bin.rom);
   this.update_tracks();
+  this.update_information();
 }
 
 rcn_music_ed.prototype.title = 'Music Editor';
@@ -191,6 +208,40 @@ rcn_music_ed.prototype.update_tracks = function() {
     this.flag_checkbox[music * 3 + 0].checked = rcn_global_bin.rom[music_offset + 0] & 0x80;
     this.flag_checkbox[music * 3 + 1].checked = rcn_global_bin.rom[music_offset + 1] & 0x80;
     this.flag_checkbox[music * 3 + 2].checked = rcn_global_bin.rom[music_offset + 2] & 0x80;
+  }
+}
+
+rcn_music_ed.prototype.update_information = function() {
+  for(let i = 0; i < rcn.music_count; i++) {
+    // Detect track speeds
+    let speed_info = '';
+    let speed_info_title = '';
+    const track_periods = rcn_music_tracks(i)
+      .filter(t => t != -1)
+      .map(t => rcn_sound_details(t).period);
+    const max_period = track_periods.reduce((a,c) => Math.max(a, c), 0);
+    for(let period of track_periods) {
+      if(!Number.isInteger(max_period / period)) {
+        speed_info = '⏲️⚠️';
+        speed_info_title = 'Not all tracks have compatible periods/tempos';
+      }
+    }
+    this.speed_info[i].innerText = speed_info;
+    this.speed_info[i].setAttribute('title', speed_info_title);
+
+    // Detect music chords
+    let chord_info = '';
+    let chord_info_title = '';
+    const chords = rcn_detect_chord_for_music(i);
+    if(chords.length > 0) {
+      chord_info = '🎶' + chords[0].name;
+      if(chords[0].score < 0.99) {
+        chord_info += '?';
+      }
+      chord_info_title = chords[0].tonelist.map(t => rcn_note_names[t]).join('');
+    }
+    this.chord_info[i].innerText = chord_info;
+    this.chord_info[i].setAttribute('title', chord_info_title);
   }
 }
 

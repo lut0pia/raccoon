@@ -42,6 +42,7 @@ const rcn = {
   music_count: 64,
   music_track_count: 4,
   sound_count: 64,
+  sound_note_count: 32,
   sound_pitch_count: 64,
 
   gamepad_layout_xcvb: 0,
@@ -143,6 +144,7 @@ async function rcn_bootstrap_editor_mode(params) {
       'editor', 'ui', 'window',
       'ed/fill',
       'ed/header',
+      'ed/music',
 
       'ed/anim_ed',
       'ed/code_ed',

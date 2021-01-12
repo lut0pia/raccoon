@@ -63,3 +63,15 @@
 .music_ed tr:hover .stop_button {
   visibility: visible;
 }
+
+/* Info */
+
+.music_ed info:empty {
+  display: none;
+}
+
+.music_ed info {
+  padding: 0px 2px 0px 2px;
+  margin: 0px 2px 0px 2px;
+  background-color: hsl(199deg 26% 30%);
+}
