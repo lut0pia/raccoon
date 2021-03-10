@@ -652,7 +652,12 @@ async function rcn_start_editor_mode(params) {
     rcn_editor_header_button({
       path: `File/Import/${host.display_name}...`,
       action: async () => {
-        const bins = await host.import();
+        let bins;
+        try {
+          bins = await host.import();
+        } catch(e) {
+          return await rcn_ui_alert(`Failed to list importable bins: ${e}`);
+        }
 
         const nodes = [];
         for(let bin_desc of bins) {
