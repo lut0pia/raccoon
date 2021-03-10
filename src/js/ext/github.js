@@ -5,6 +5,8 @@ async function rcn_github_login() {
   return new Promise((resolve, reject) => {
     localStorage.github_state = `github_${Math.random().toString().substr(2)}`;
     localStorage.github_token = 'pending';
+    delete localStorage.github_error;
+
     const popup = window.open('https://github.com/login/oauth/authorize'
       +'?client_id=b5fd66cdee41f04ff6d3'
       +'&scope=public_repo'
@@ -14,36 +16,47 @@ async function rcn_github_login() {
       rcn_overlay_push();
       let interval;
       interval = setInterval(function() {
-        if(localStorage.github_token != 'pending') {
+        if(popup.closed) {
           delete localStorage.github_state;
-          if(localStorage.github_token) {
-            resolve();
+          if(localStorage.github_token != 'pending') {
+            if(localStorage.github_token) {
+              resolve();
+            } else {
+              reject({
+                'access_denied': 'Cancelled authentication',
+              }[localStorage.github_error] || localStorage.github_error);
+            }
           } else {
-            reject('Unknown error');
+            reject('Closed authentication window');
           }
           rcn_overlay_pop();
           clearInterval(interval);
         }
       }, 200);
     } else {
-      reject(`Unable to open login popup`);
+      reject(`Unable to open authentication window`);
     }
   });
 }
 
 (async () => {
-  if(rcn_get_parameters.code &&
-    rcn_get_parameters.state == localStorage.github_state) {
-    const response = JSON.parse(await rcn_http_request({
-      url: '/oauth/github',
-      post: {
-        code: rcn_get_parameters.code,
-        state: rcn_get_parameters.state,
-      },
-    }));
-    if(response.access_token) {
-      localStorage.github_token = response.access_token;
-    } else {
+  if(localStorage.github_state && rcn_get_parameters.state == localStorage.github_state) {
+    if(rcn_get_parameters.code) {
+      const response = JSON.parse(await rcn_http_request({
+        url: '/oauth/github',
+        post: {
+          code: rcn_get_parameters.code,
+          state: rcn_get_parameters.state,
+        },
+      }));
+      if(response.access_token) {
+        localStorage.github_token = response.access_token;
+      } else {
+        localStorage.github_error = response.error_description;
+        delete localStorage.github_token;
+      }
+    } else { // There was an error or user cancelled
+      localStorage.github_error = rcn_get_parameters.error;
       delete localStorage.github_token;
     }
     window.close();
