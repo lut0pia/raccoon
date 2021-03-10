@@ -143,12 +143,6 @@ for(let i = 0; i < rcn_max_pitch; i++) {
   rcn_pitch_to_freq[i] =  440 * Math.pow(2, (i-45) / 12);
 }
 
-function rcn_pitch_to_name(pitch) {
-  const octave = Math.floor(pitch / 12) + 1;
-  const names = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-'];
-  return names[pitch % 12] + octave;
-}
-
 function rcn_note_waveform(t, note, previous_note) {
   if(!note) {
     return 0;

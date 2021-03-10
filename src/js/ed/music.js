@@ -104,6 +104,12 @@ const rcn_chords = [
   },
 ];
 
+function rcn_pitch_to_name(pitch) {
+  const octave = Math.floor(pitch / 12) + 1;
+  const names = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-'];
+  return names[pitch % 12] + octave;
+}
+
 function rcn_sound_notes_total(sound) {
   const notes = new Array(rcn.sound_pitch_count).fill(0);
   const sound_offset = rcn.mem_sound_offset + sound * 66;
