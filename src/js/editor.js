@@ -697,7 +697,7 @@ async function rcn_start_editor_mode(params) {
     });
   }
   rcn_editor_header_button({
-    path: 'Source Control/Push',
+    path: 'Version Control/Push',
     action: async function() {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
@@ -723,7 +723,7 @@ async function rcn_start_editor_mode(params) {
     },
   });
   rcn_editor_header_button({
-    path: 'Source Control/Pull',
+    path: 'Version Control/Pull',
     action: async function() {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
@@ -753,7 +753,7 @@ async function rcn_start_editor_mode(params) {
     },
   });
   rcn_editor_header_button({
-    path: 'Source Control/Force Push',
+    path: 'Version Control/Force Push',
     action: async function() {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
@@ -781,7 +781,7 @@ async function rcn_start_editor_mode(params) {
     },
   });
   rcn_editor_header_button({
-    path: 'Source Control/Force Pull',
+    path: 'Version Control/Force Pull',
     action: async function() {
       const host = await get_bin_host(rcn_global_bin);
       if(!host) return;
