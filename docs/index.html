@@ -3,6 +3,7 @@
 <ol>
 <li><a href="#introduction">Introduction</a><ol>
 <li><a href="#game-loop">Game Loop</a></li>
+<li><a href="#input">Input</a></li>
 </ol>
 </li>
 <li><a href="#editors">Editors</a><ol>
@@ -17,6 +18,7 @@
 <li><a href="#music-editor">Music Editor</a></li>
 </ol>
 </li>
+<li><a href="#version-control">Version Control</a></li>
 <li><a href="#memory">Memory</a><ol>
 <li><a href="#spritesheet-memory">Spritesheet Memory</a></li>
 <li><a href="#map-memory">Map Memory</a></li>
@@ -35,6 +37,7 @@
 <li><a href="#function-shortcuts">Function Shortcuts</a></li>
 </ol>
 </li>
+<li><a href="#tips-and-tricks">Tips and Tricks</a></li>
 </ol>
 <h1 id="introduction">Introduction</h1>
 <p>Raccoon is a browser-based fantasy console. It&#39;s a tool to make, share and play small games. Its capabilities are purposefully limited to allow you, the creator, not to be overwhelmed by the possibilities. Although the console is limited, the tools are carefully crafted to give you a smooth creating experience. Raccoon games are contained in bins, they&#39;re a virtual equivalent to console cartridges. Programming is done in <a href="https://developer.mozilla.org/docs/Web/JavaScript/A_re-introduction_to_JavaScript">JavaScript</a>.</p>
@@ -43,9 +46,42 @@
 <p><code>init</code> will be called at the very beginning of the game. It won&#39;t be called again if you live edit code from the editor. It will be called again if you reboot the virtual machine.</p>
 <p><code>update</code> will be called every frame while the virtual machine is not paused. This is generally where most of the game logic goes.</p>
 <p><code>draw</code> will be called every frame, even if the virtual machine is paused. That means that in editor you can pause your game on a specific animation frame, and still live edit your draw code and data, and see the result on the virtual machine&#39;s screen.</p>
-<p>It&#39;s not mandatory to put your draw code in the draw function, you can work with <code>update</code> only if you want, but it&#39;s encouraged because it usually forces you to write better code.</p>
+<p>Both <code>update</code> and <code>draw</code> run at 30 frames per second.</p>
+<h2 id="input">Input</h2>
+<p>Raccoon supports four players with gamepads having 8 buttons each: four directions (left, right, up and down, indexed 0 to 3) and four general buttons (indexed 4 to 7). All those buttons can be accessed via the <a href="#input-functions">input functions</a> during gameplay.</p>
+<p>Physically, gamepads can be actual gamepads or the keyboard. Here is a map of Raccoon buttons to physical buttons depending on device:</p>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Directions</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Keyboard</td>
+<td>Arrow keys</td>
+<td>X</td>
+<td>C</td>
+<td>V</td>
+<td>B</td>
+</tr>
+<tr>
+<td>Xbox 360 Gamepad</td>
+<td>Left joystick</td>
+<td>A</td>
+<td>B</td>
+<td>X</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table>
 <h1 id="editors">Editors</h1>
-<p>Raccoon tools exist in windows that can be moved and resized. Their layout is saved in your local storage.</p>
+<p>Raccoon tools exist in windows that can be moved and resized. They can be opened and closed via the <code>Toolbox</code> on the left-side panel. Their layout is saved in your local storage. You can create multiple layouts in your <code>Layoutbox</code> and load them up anytime you want. A few basic layouts are already included when you first open Raccoon.</p>
 <h2 id="virtual-machine">Virtual Machine</h2>
 <p>The virtual machine is where your game actually comes to life.</p>
 <p>The <code>Reboot</code> button will wipe everything and load the current bin again, useful to check what happens with a fresh start of your game.</p>
@@ -56,7 +92,7 @@
 <p>The code editor is a text editor with syntax highlighting. Clicking on underlined symbols while holding <code>Control</code> will take you to their definition.</p>
 <p>Pressing the <code>Apply</code> button or <code>Control+Enter</code> (while focusing the text input) will send the current code to the virtual machine, so you can see changes happen right away.</p>
 <ul>
-<li>Use <code>Control+Left-Click</code> on function names to go to their definition (or documentation).</li>
+<li>Use <code>Control+Left-Click</code> on function/global names to go to their definition (or documentation).</li>
 </ul>
 <h2 id="console">Console</h2>
 <p>The console displays messages, errors and callstacks in chronological order.</p>
@@ -65,6 +101,7 @@
 <p>The sprite editor allows you to draw small images that you will then be able to render into your game.</p>
 <p>The canvas displays the currently selected sprites (see <a href="#sprite-selector">Sprite Selector</a> for more information).</p>
 <p>To select a drawing color, either use <code>Left-Click</code> on the palette on the right or use <code>1-8</code> to select the first 8 colors and <code>Shift+1-8</code> to select the last 8 colors. You can double click on a color to change it.</p>
+<p>Below the palette is a list of generic sprite flags (indexed 0 to 7) as checkboxes. The values of those flags can be accessed via the <a href="#rendering-functions">fget and fset functions</a> during gameplay.</p>
 <ul>
 <li>Use <code>Left-Click</code> to set the texel color to the current color.</li>
 <li>Use <code>Right-Click</code> to change the current color to be the color of the clicked texel (color picking).</li>
@@ -84,6 +121,7 @@
 <p>The animation viewer allows you to preview an animation from your current spritesheet selection. The spritesheet selection is traversed horizontally left to right and then vertically top to down.</p>
 <p>The <code>Width</code> and <code>Height</code> inputs control the width and height of the animated sprite.</p>
 <p>The <code>Interval</code> input controls the amount of frame between each animation frame.</p>
+<p>The <code>Ping-pong</code> checkbox controls whether the animation starts back at the beginning for each loop or goes back and forth.</p>
 <h2 id="map-editor">Map Editor</h2>
 <p>The map editor allows you to edit a 128x64 tilemap for your game. We&#39;ll be using the word tile in this document, any 1x1 sprite is a tile, there is no separate memory for either tiles or sprites.</p>
 <p>The canvas displays a view of the map. The coordinates of the currently hovered tile are displayed above.</p>
@@ -92,6 +130,7 @@
 <li>Use <code>Right-Click</code> to change the current tile to be the tile under your cursor.</li>
 <li>Use <code>Middle-Click</code> to drag your view of the map to edit different parts of the map.</li>
 <li>Use <code>Mouse Wheel</code> to change the zoom level.</li>
+<li>Use <code>Control+Left-Click</code> to fill with the current tile.</li>
 <li>Use <code>Shift+Left-Click</code> to select tiles.</li>
 <li>Use <code>Control+C</code> to copy selected tiles.</li>
 <li>Use <code>Control+V</code> to paste copied tiles.</li>
@@ -114,7 +153,40 @@
 <p>When a row is done playing, the subsequent row is played, unless 🛑 is set, in which case playback stops, or ⤴️ is set, in which case we go back up to the closest ⤵️.</p>
 <ul>
 <li>Use ▶️/⏹️ to play/stop the music.</li>
+<li>Use <code>Control+Left-Click</code> on cells to select sounds in <a href="#sound-editor">Sound Editor</a>.</li>
+<li>Use <code>Tab</code> and <code>Shift+Tab</code> to navigate between cells.</li>
 </ul>
+<h1 id="version-control">Version Control</h1>
+<p>Raccoon has integrated version control support. Any bin may be linked to a remote storage, you can check a bin&#39;s link by opening the bin details popup via the 🏷️ button at the top-right of the screen.</p>
+<p>Version control has multiple uses in raccoon:</p>
+<ul>
+<li>Working together on the same bin, synchronizing your work every so often</li>
+<li>Sharing your bin via a link to the remote storage</li>
+</ul>
+<h2 id="creating-a-new-remote-storage">Creating a new remote storage</h2>
+<p>If your bin has no linked remote storage yet, then the easiest way to create one is to select your host in the 🏷️ popup, write the link in the link field, and then click on <code>Version Control &gt; Force Push</code>. This will effectively create or replace the remote storage with the current bin, ignoring all potential history.</p>
+<h3 id="github">GitHub</h3>
+<p>GitHub links start with the owner of the repository, then a slash followed by the name of the repository, then potentially another slash followed a specific commit hash:</p>
+<p><code>owner/repo[/commit_sha]</code></p>
+<p>When first trying to write to or import from a GitHub account, you will have to authenticate via a popup.</p>
+<h2 id="importing-from-an-existing-remote-storage">Importing from an existing remote storage</h2>
+<p>There are two ways to import from an existing remote storage.</p>
+<h3 id="using-the-import-menu">Using the import menu</h3>
+<p>The easier and recommended way is to go into the <code>File &gt; Import &gt; ...</code> menu for the relevant host and choose from the list.</p>
+<h3 id="using-the-link-field">Using the link field</h3>
+<p>If the first method does not work for you, then you can start by creating a new bin via <code>File &gt; New</code>, then fill the link field in the 🏷️ popup, then click on <code>Version Control &gt; Force Pull</code>.</p>
+<h2 id="synchronizing">Synchronizing</h2>
+<p>Once you have a bin with a linked remote storage, you can synchronize your changes and the remote changes on a regular basis. There are two methods to do this.</p>
+<h3 id="pulling">Pulling</h3>
+<p>You can pull by clicking on <code>Version Control &gt; Pull</code>. It will look at the remote changes that happened since you last synchronized, compare them to your local changes, and try to merge everything into your local bin. If any conflict arises, then a popup will appear with three options:</p>
+<ul>
+<li><code>Keep local X</code>: Keep your changes, ignore remote changes (slightly dangerous, you don&#39;t know what you lose)</li>
+<li><code>Take latest X</code>: Overwrite your changes with remote changes (slightly safer, you know what you lose)</li>
+<li><code>Cancel</code>: Abort the whole operation, your bin won&#39;t have changed at all</li>
+</ul>
+<p>At the end of the process, your current bin will be replaced by the merged bin.</p>
+<h3 id="pushing">Pushing</h3>
+<p>You can push by clicking on <code>Version Control &gt; Push</code>. It will try to merge your changes with the remote changes, and if no conflict arises, it will replace the remote bin and your local bin with the merged bin.</p>
 <h1 id="memory">Memory</h1>
 <p>Read-only memory (abbreviated ROM) is 20KiB long (<code>0x0000-0x5000</code>) and is contained in the bin. It is loaded in the random access memory (abbreviated RAM), which is 32KiB long (<code>0x0000-0x8000</code>) at startup. A program accesses only RAM during its execution.</p>
 <p>N.B. Ranges in memory are expressed with their end excluded.</p>
@@ -258,7 +330,7 @@
 </li>
 </ul>
 <h2 id="gamepad-state-memory">Gamepad State Memory</h2>
-<p>Gamepad state data is 8 8bit controllers three times, the first 8 bytes are for the current frame&#39;s state while the next 8 bytes are the previous frame&#39;s state, and the last 8 bytes are the gamepad&#39;s current layout (for display purposes). The 4 least significant bits of each byte correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons. On the keyboard those action buttons are X, C, V and B respectively, while on a modern gamepad they are the down, right, left and top face buttons respectively.</p>
+<p>Gamepad state data is 8 8bit controllers three times, the first 8 bytes are for the current frame&#39;s state while the next 8 bytes are the previous frame&#39;s state, and the last 8 bytes are the gamepad&#39;s current layout (for display purposes). The 4 least significant bits of each byte correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons.</p>
 <h2 id="screen-memory">Screen Memory</h2>
 <p>Screen data is 128x128 pixels.</p>
 <h1 id="functions">Functions</h1>
@@ -301,7 +373,7 @@
 <li><code>min(a, b)</code>: Returns the lesser number between <code>a</code> and <code>b</code></li>
 <li><code>mid(a, b, c)</code>: Returns the middle number between <code>a</code>, <code>b</code> and <code>c</code></li>
 <li><code>sqrt(x)</code>: Returns the square root of <code>x</code></li>
-<li><code>rnd(x?)</code>: Returns a random integer between 0 and <code>x</code> excluded if <code>x</code> is specified, otherwise a random number between 0 and 1</li>
+<li><code>rnd(x?)</code>: Returns a random integer between 0 and <code>x</code> excluded if <code>x</code> is specified, otherwise a random float between 0.0 and 1.0</li>
 <li><code>sin(x)</code>: Returns the sine of <code>x</code></li>
 <li><code>cos(x)</code>: Returns the cosine of <code>x</code></li>
 <li><code>atan2(y, x)</code>: Returns the counterclockwise angle (in radians) between the positive x-axis and the ray that starts from the origin and passes through (<code>x</code>;<code>y</code>)</li>
@@ -335,5 +407,13 @@
 <li><code>l</code> = <code>line</code></li>
 <li><code>r</code> = <code>rnd</code></li>
 <li><code>b</code> = <code>btn</code></li>
+</ul>
+<h1 id="tips-and-tricks">Tips and Tricks</h1>
+<h1 id="code">Code</h1>
+<ul>
+<li>Declare game constants using <code>const</code> somewhere in the code, grouped however may make sense for you. Notably, it&#39;s very useful to use constants for sprite numbers, sprite flags to check, button meanings, etc. When comes the moment something changes, you won&#39;t have to reread your code to change button mappings or sprites. Those constants will hot reload correctly.</li>
+<li>Declare small sound functions consisting of a single <code>sfx</code> call and use those throughout the code. It will be easier to manage if a sound effect needs to change index/offset/length.</li>
+<li>If you declare game state variables in the global scope, they will be overwritten when hot reloading code. Prefer barbaric assignments to global variables (without declarations) for variables for which you want the values to be kept when hot reloading.</li>
+<li>It&#39;s not mandatory to put your draw code in the draw function, you can work with <code>update</code> only if you want, but it&#39;s encouraged because it usually forces you to write better code, and allows you to tweak your draw functions while the virtual machine is paused.</li>
 </ul>
 </body></html>

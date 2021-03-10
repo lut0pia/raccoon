@@ -2,6 +2,7 @@
 
 1. [Introduction](#introduction)
     1. [Game Loop](#game-loop)
+    1. [Input](#input)
 1. [Editors](#editors)
     1. [Virtual Machine](#virtual-machine)
     1. [Code Editor](#code-editor)
@@ -12,6 +13,7 @@
     1. [Map Editor](#map-editor)
     1. [Sound Editor](#sound-editor)
     1. [Music Editor](#music-editor)
+1. [Version Control](#version-control)
 1. [Memory](#memory)
     1. [Spritesheet Memory](#spritesheet-memory)
     1. [Map Memory](#map-memory)
@@ -26,6 +28,7 @@
     1. [Input Functions](#input-functions)
     1. [Memory Functions](#memory-functions)
     1. [Function Shortcuts](#function-shortcuts)
+1. [Tips and Tricks](#tips-and-tricks)
 
 # Introduction
 
@@ -41,11 +44,22 @@ There are three special functions that you can define in your code: `init`, `upd
 
 `draw` will be called every frame, even if the virtual machine is paused. That means that in editor you can pause your game on a specific animation frame, and still live edit your draw code and data, and see the result on the virtual machine's screen.
 
-It's not mandatory to put your draw code in the draw function, you can work with `update` only if you want, but it's encouraged because it usually forces you to write better code.
+Both `update` and `draw` run at 30 frames per second.
+
+## Input
+
+Raccoon supports four players with gamepads having 8 buttons each: four directions (left, right, up and down, indexed 0 to 3) and four general buttons (indexed 4 to 7). All those buttons can be accessed via the [input functions](#input-functions) during gameplay.
+
+Physically, gamepads can be actual gamepads or the keyboard. Here is a map of Raccoon buttons to physical buttons depending on device:
+
+| Device | Directions | 4 | 5 | 6 | 7
+| --- | --- | --- | --- | --- | ---
+| Keyboard | Arrow keys | X | C | V | B
+| Xbox 360 Gamepad | Left joystick | A | B | X | Y
 
 # Editors
 
-Raccoon tools exist in windows that can be moved and resized. Their layout is saved in your local storage.
+Raccoon tools exist in windows that can be moved and resized. They can be opened and closed via the `Toolbox` on the left-side panel. Their layout is saved in your local storage. You can create multiple layouts in your `Layoutbox` and load them up anytime you want. A few basic layouts are already included when you first open Raccoon.
 
 ## Virtual Machine
 
@@ -65,7 +79,7 @@ The code editor is a text editor with syntax highlighting. Clicking on underline
 
 Pressing the `Apply` button or `Control+Enter` (while focusing the text input) will send the current code to the virtual machine, so you can see changes happen right away.
 
-- Use `Control+Left-Click` on function names to go to their definition (or documentation).
+- Use `Control+Left-Click` on function/global names to go to their definition (or documentation).
 
 ## Console
 
@@ -80,6 +94,8 @@ The sprite editor allows you to draw small images that you will then be able to 
 The canvas displays the currently selected sprites (see [Sprite Selector](#sprite-selector) for more information).
 
 To select a drawing color, either use `Left-Click` on the palette on the right or use `1-8` to select the first 8 colors and `Shift+1-8` to select the last 8 colors. You can double click on a color to change it.
+
+Below the palette is a list of generic sprite flags (indexed 0 to 7) as checkboxes. The values of those flags can be accessed via the [fget and fset functions](#rendering-functions) during gameplay.
 
 - Use `Left-Click` to set the texel color to the current color.
 - Use `Right-Click` to change the current color to be the color of the clicked texel (color picking).
@@ -104,6 +120,8 @@ The `Width` and `Height` inputs control the width and height of the animated spr
 
 The `Interval` input controls the amount of frame between each animation frame.
 
+The `Ping-pong` checkbox controls whether the animation starts back at the beginning for each loop or goes back and forth.
+
 ## Map Editor
 
 The map editor allows you to edit a 128x64 tilemap for your game. We'll be using the word tile in this document, any 1x1 sprite is a tile, there is no separate memory for either tiles or sprites.
@@ -114,6 +132,7 @@ The canvas displays a view of the map. The coordinates of the currently hovered 
 - Use `Right-Click` to change the current tile to be the tile under your cursor.
 - Use `Middle-Click` to drag your view of the map to edit different parts of the map.
 - Use `Mouse Wheel` to change the zoom level.
+- Use `Control+Left-Click` to fill with the current tile.
 - Use `Shift+Left-Click` to select tiles.
 - Use `Control+C` to copy selected tiles.
 - Use `Control+V` to paste copied tiles.
@@ -142,6 +161,58 @@ Each row is a list of 4 optional sound effect indices which will be played simul
 When a row is done playing, the subsequent row is played, unless 🛑 is set, in which case playback stops, or ⤴️ is set, in which case we go back up to the closest ⤵️.
 
 - Use ▶️/⏹️ to play/stop the music.
+- Use `Control+Left-Click` on cells to select sounds in [Sound Editor](#sound-editor).
+- Use `Tab` and `Shift+Tab` to navigate between cells.
+
+# Version Control
+
+Raccoon has integrated version control support. Any bin may be linked to a remote storage, you can check a bin's link by opening the bin details popup via the 🏷️ button at the top-right of the screen.
+
+Version control has multiple uses in raccoon:
+- Working together on the same bin, synchronizing your work every so often
+- Sharing your bin via a link to the remote storage
+
+## Creating a new remote storage
+
+If your bin has no linked remote storage yet, then the easiest way to create one is to select your host in the 🏷️ popup, write the link in the link field, and then click on `Version Control > Force Push`. This will effectively create or replace the remote storage with the current bin, ignoring all potential history.
+
+### GitHub
+
+GitHub links start with the owner of the repository, then a slash followed by the name of the repository, then potentially another slash followed a specific commit hash:
+
+`owner/repo[/commit_sha]`
+
+When first trying to write to or import from a GitHub account, you will have to authenticate via a popup.
+
+## Importing from an existing remote storage
+
+There are two ways to import from an existing remote storage.
+
+### Using the import menu
+
+The easier and recommended way is to go into the `File > Import > ...` menu for the relevant host and choose from the list.
+
+### Using the link field
+
+If the first method does not work for you, then you can start by creating a new bin via `File > New`, then fill the link field in the 🏷️ popup, then click on `Version Control > Force Pull`.
+
+## Synchronizing
+
+Once you have a bin with a linked remote storage, you can synchronize your changes and the remote changes on a regular basis. There are two methods to do this.
+
+### Pulling
+
+You can pull by clicking on `Version Control > Pull`. It will look at the remote changes that happened since you last synchronized, compare them to your local changes, and try to merge everything into your local bin. If any conflict arises, then a popup will appear with three options:
+
+- `Keep local X`: Keep your changes, ignore remote changes (slightly dangerous, you don't know what you lose)
+- `Take latest X`: Overwrite your changes with remote changes (slightly safer, you know what you lose)
+- `Cancel`: Abort the whole operation, your bin won't have changed at all
+
+At the end of the process, your current bin will be replaced by the merged bin.
+
+### Pushing
+
+You can push by clicking on `Version Control > Push`. It will try to merge your changes with the remote changes, and if no conflict arises, it will replace the remote bin and your local bin with the merged bin.
 
 # Memory
 
@@ -226,7 +297,7 @@ Sound registers are 4 32bit registers that are used by the virtual machine to co
 
 ## Gamepad State Memory
 
-Gamepad state data is 8 8bit controllers three times, the first 8 bytes are for the current frame's state while the next 8 bytes are the previous frame's state, and the last 8 bytes are the gamepad's current layout (for display purposes). The 4 least significant bits of each byte correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons. On the keyboard those action buttons are X, C, V and B respectively, while on a modern gamepad they are the down, right, left and top face buttons respectively.
+Gamepad state data is 8 8bit controllers three times, the first 8 bytes are for the current frame's state while the next 8 bytes are the previous frame's state, and the last 8 bytes are the gamepad's current layout (for display purposes). The 4 least significant bits of each byte correspond to the left, right, up and down directions respectively, while the 4 most significant bits correspond to 4 action buttons.
 
 ## Screen Memory
 
@@ -275,7 +346,7 @@ Screen coordinates go from (0;0), which is the top-left pixel, to (127;127), whi
 - `min(a, b)`: Returns the lesser number between `a` and `b`
 - `mid(a, b, c)`: Returns the middle number between `a`, `b` and `c`
 - `sqrt(x)`: Returns the square root of `x`
-- `rnd(x?)`: Returns a random integer between 0 and `x` excluded if `x` is specified, otherwise a random number between 0 and 1
+- `rnd(x?)`: Returns a random integer between 0 and `x` excluded if `x` is specified, otherwise a random float between 0.0 and 1.0
 - `sin(x)`: Returns the sine of `x`
 - `cos(x)`: Returns the cosine of `x`
 - `atan2(y, x)`: Returns the counterclockwise angle (in radians) between the positive x-axis and the ray that starts from the origin and passes through (`x`;`y`)
@@ -309,3 +380,12 @@ Some common functions have one-letter shortcuts, useful for keeping code small.
 - `l` = `line`
 - `r` = `rnd`
 - `b` = `btn`
+
+# Tips and Tricks
+
+# Code
+
+- Declare game constants using `const` somewhere in the code, grouped however may make sense for you. Notably, it's very useful to use constants for sprite numbers, sprite flags to check, button meanings, etc. When comes the moment something changes, you won't have to reread your code to change button mappings or sprites. Those constants will hot reload correctly.
+- Declare small sound functions consisting of a single `sfx` call and use those throughout the code. It will be easier to manage if a sound effect needs to change index/offset/length.
+- If you declare game state variables in the global scope, they will be overwritten when hot reloading code. Prefer barbaric assignments to global variables (without declarations) for variables for which you want the values to be kept when hot reloading.
+- It's not mandatory to put your draw code in the draw function, you can work with `update` only if you want, but it's encouraged because it usually forces you to write better code, and allows you to tweak your draw functions while the virtual machine is paused.
