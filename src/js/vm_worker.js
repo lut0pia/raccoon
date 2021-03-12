@@ -1,4 +1,4 @@
-// Raccoon virtual machine
+// Raccoon virtual machine worker
 // This is the worker script that gets executed inside a web worker
 'use strict';
 
