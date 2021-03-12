@@ -22,6 +22,13 @@ function rcn_canvas() {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
+  this.palette = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, this.palette);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
   this.img_program = rcn_gl_create_program(gl, `
     attribute vec4 vert;
     varying highp vec2 uv;
@@ -32,9 +39,17 @@ function rcn_canvas() {
   `, `
     varying highp vec2 uv;
     uniform sampler2D sampler;
+    uniform highp vec2 tex_size;
+    uniform sampler2D palette;
 
     void main(void) {
-      gl_FragColor = texture2D(sampler, uv);
+      lowp float sample = texture2D(sampler, uv).r * 255.0;
+      sample = mod(uv.x * tex_size.x, 2.0) > 1.0
+        ? floor(sample / 16.0)
+        : mod(sample, 16.0);
+      sample = sample / 16.0;
+      gl_FragColor.rgb = texture2D(palette, vec2(sample, 0.0)).rgb;
+      gl_FragColor.a = 1.0;
     }
   `);
   this.color_program = rcn_gl_create_program(gl, `
@@ -56,30 +71,23 @@ function rcn_canvas() {
   ]));
 }
 
-rcn_canvas.prototype.blit = function(x_start, y_start, width, height, pixels, palette) {
+rcn_canvas.prototype.upload_palette = function(palette) {
   if(!palette) {
     // Use current bin palette if unspecified
     palette = rcn_global_bin.rom.slice(rcn.mem_palette_offset, rcn.mem_palette_offset + rcn.mem_palette_size);
   }
 
-  const x_end = x_start + width;
-  const y_end = y_start + height;
-  for(let x = x_start; x < x_end; x++) {
-    for(let y = y_start; y < y_end; y++) {
-      const pixel_index = y*(width>>1) + (x>>1); // Bitshift because pixels are 4bits
-      let pixel = pixels[pixel_index];
-      pixel = ((x & 1) == 0) ? (pixel & 0xf) : (pixel >> 4); // Deal with left or right pixel
+  const gl = this.gl;
+  gl.bindTexture(gl.TEXTURE_2D, this.palette);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, palette.length / 4, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, palette);
+}
 
-      const cpixel_index = y*width + x;
-      this.img[cpixel_index*3+0] = palette[pixel*4+0];
-      this.img[cpixel_index*3+1] = palette[pixel*4+1];
-      this.img[cpixel_index*3+2] = palette[pixel*4+2];
-    }
-  }
+rcn_canvas.prototype.blit = function(pixels, palette) {
+  this.upload_palette(palette);
 
   const gl = this.gl;
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, this.width, this.height, 0, gl.RGB, gl.UNSIGNED_BYTE, this.img);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, this.width / 2, this.height, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, pixels);
 }
 
 rcn_canvas.prototype.draw_quad = function(x, y, width, height, r, g, b, a) {
@@ -129,8 +137,13 @@ rcn_canvas.prototype.flush = function() {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
 
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, this.palette);
+
     gl.useProgram(this.img_program);
     gl.uniform1i(gl.getUniformLocation(this.img_program, 'sampler'), 0);
+    gl.uniform2f(gl.getUniformLocation(this.img_program, 'tex_size'), this.width, this.height);
+    gl.uniform1i(gl.getUniformLocation(this.img_program, 'palette'), 1);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
     gl.vertexAttribPointer(gl.getAttribLocation(this.img_program, 'vert'), 4, gl.FLOAT, false, 0, 0);

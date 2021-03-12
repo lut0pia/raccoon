@@ -216,7 +216,7 @@ rcn_map_ed.prototype.update_map_canvas = function() {
   }
 
   this.map_canvas.set_size(vp_w << 3, vp_h << 3);
-  this.map_canvas.blit(0, 0, vp_w << 3, vp_h << 3, pixels);
+  this.map_canvas.blit(pixels);
   this.map_canvas.flush();
 }
 

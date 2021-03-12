@@ -167,7 +167,7 @@ rcn_anim_ed.prototype.update_canvas = function() {
   }
 
   this.canvas.set_size(spr_w, spr_h);
-  this.canvas.blit(0, 0, spr_w, spr_h, pixels);
+  this.canvas.blit(pixels);
   this.canvas.flush();
 }
 

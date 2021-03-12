@@ -355,7 +355,7 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
   }
 
   this.draw_canvas.set_size(spr_w, spr_h);
-  this.draw_canvas.blit(0, 0, spr_w, spr_h, pixels);
+  this.draw_canvas.blit(pixels);
   this.draw_canvas.flush();
 }
 

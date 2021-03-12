@@ -215,7 +215,7 @@ rcn_vm.prototype.onmessage = function(e) {
       break;
     case 'screen':
       if(this.canvas) {
-        this.canvas.blit(0, 0, 128, 128, e.data.bytes, this.palette);
+        this.canvas.blit(e.data.bytes, this.palette);
         this.canvas.flush();
       }
       break;
