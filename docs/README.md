@@ -40,7 +40,7 @@ There are three special functions that you can define in your code: `init`, `upd
 
 `init` will be called at the very beginning of the game. It won't be called again if you live edit code from the editor. It will be called again if you reboot the virtual machine.
 
-`update` will be called every frame while the virtual machine is not paused. This is generally where most of the game logic goes.
+`update` will be called every frame (30 frames per second) while the virtual machine is not paused. This is generally where most of the game logic goes.
 
 `draw` will be called every frame, even if the virtual machine is paused. That means that in editor you can pause your game on a specific animation frame, and still live edit your draw code and data, and see the result on the virtual machine's screen.
 
