@@ -377,6 +377,7 @@ async function rcn_start_editor_mode(params) {
   })
   bin_details.appendChild(bin_details_button);
 
+  let bin_details_save_status_timeout = null;
   const update_bin_details = e => {
     bin_name.innerText = rcn_global_bin.name;
     if(rcn_global_bin.host && rcn_global_bin.link) {
@@ -384,7 +385,10 @@ async function rcn_start_editor_mode(params) {
     } else {
       bin_host.innerText = '';
     }
-    document.body.setAttribute('bin_save_status', rcn_bin_save_status());
+    if(bin_details_save_status_timeout) {
+      clearTimeout(bin_details_save_status_timeout);
+    }
+    bin_details_save_status_timeout = setTimeout(() => document.body.setAttribute('bin_save_status', rcn_bin_save_status()), 1000);
   };
   document.body.addEventListener('rcn_bin_change', update_bin_details);
   document.body.addEventListener('rcn_bins_change', update_bin_details);
