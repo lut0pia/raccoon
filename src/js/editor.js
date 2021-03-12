@@ -113,12 +113,12 @@ async function rcn_start_editor_mode(params) {
       'sound_ed': {
         ctor: 'rcn_sound_ed',
         top: '0%', left: '0%',
-        width: '75%', height: '100%',
+        width: '70%', height: '100%',
       },
       'music_ed': {
         ctor: 'rcn_music_ed',
-        top: '0%', left: '75%',
-        width: '25%', height: '100%',
+        top: '0%', left: '70%',
+        width: '30%', height: '100%',
       },
     };
   }
