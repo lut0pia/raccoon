@@ -63,7 +63,7 @@ function rcn_anim_ed() {
   this.add_child(this.canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
-    if(rcn_mem_changed(e, 'palette') || rcn_mem_changed(e, 'spritesheet')) {
+    if(rcn_mem_changed(e, 'spritesheet')) {
       anim_ed.update_canvas();
     }
   });
@@ -167,7 +167,7 @@ rcn_anim_ed.prototype.update_canvas = function() {
   }
 
   this.canvas.set_size(spr_w, spr_h);
-  this.canvas.blit(pixels);
+  this.canvas.upload_pixels(pixels);
   this.canvas.flush();
 }
 

@@ -150,18 +150,19 @@ async function rcn_start_editor_mode(params) {
     },
   });
 
-  // Flush all canvases
-  // Need to wait a bit because we just created the DOM elements
-  // and layout may not have kicked in yet
-  setTimeout(function() {
-    const canvases = document.getElementsByTagName('canvas');
-    for(let i = 0; i < canvases.length; i++) {
-      const canvas = canvases[i];
-      if(canvas.rcn_canvas) {
-        canvas.rcn_canvas.flush();
+  // Auto upload palette to canvases
+  document.body.addEventListener('rcn_bin_change', e => {
+    if(rcn_mem_changed(e, 'palette')) {
+      const canvases = document.getElementsByTagName('canvas');
+      for(let i = 0; i < canvases.length; i++) {
+        const canvas = canvases[i];
+        if(canvas.rcn_canvas) {
+          canvas.rcn_canvas.upload_palette();
+          canvas.rcn_canvas.flush();
+        }
       }
     }
-  }, 100);
+  });
 
   // Event history (undo/redo)
   let code_event_stack = [{

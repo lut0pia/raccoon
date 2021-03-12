@@ -69,6 +69,8 @@ function rcn_canvas() {
     -1, 3, 0, -1,
     3, -1, 2, 1,
   ]));
+
+  this.upload_palette();
 }
 
 rcn_canvas.prototype.upload_palette = function(palette) {
@@ -82,12 +84,14 @@ rcn_canvas.prototype.upload_palette = function(palette) {
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, palette.length / 4, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, palette);
 }
 
-rcn_canvas.prototype.blit = function(pixels, palette) {
-  this.upload_palette(palette);
+rcn_canvas.prototype.upload_pixels = function(pixels) {
+  if(pixels) {
+    this.pixels = pixels;
+  }
 
   const gl = this.gl;
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, this.width / 2, this.height, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, pixels);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, this.width / 2, this.height, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, this.pixels);
 }
 
 rcn_canvas.prototype.draw_quad = function(x, y, width, height, r, g, b, a) {

@@ -98,7 +98,7 @@ function rcn_map_ed() {
   this.add_child(this.map_canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
-    if(rcn_mem_changed(e, 'map') || rcn_mem_changed(e, 'palette') || rcn_mem_changed(e, 'spritesheet')) {
+    if(rcn_mem_changed(e, 'map') || rcn_mem_changed(e, 'spritesheet')) {
       map_ed.update_map_canvas();
     }
   });
@@ -216,7 +216,7 @@ rcn_map_ed.prototype.update_map_canvas = function() {
   }
 
   this.map_canvas.set_size(vp_w << 3, vp_h << 3);
-  this.map_canvas.blit(pixels);
+  this.map_canvas.upload_pixels(pixels);
   this.map_canvas.flush();
 }
 

@@ -128,7 +128,6 @@ function rcn_sprite_ed() {
   this.addEventListener('rcn_bin_change', function(e) {
     if(rcn_mem_changed(e, 'palette')) {
       sprite_ed.update_color_inputs();
-      sprite_ed.update_draw_canvas();
     }
 
     if(rcn_mem_changed(e, 'spritesheet')) {
@@ -355,7 +354,7 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
   }
 
   this.draw_canvas.set_size(spr_w, spr_h);
-  this.draw_canvas.blit(pixels);
+  this.draw_canvas.upload_pixels(pixels);
   this.draw_canvas.flush();
 }
 

@@ -42,7 +42,7 @@ function rcn_sprite_select_ed() {
   this.spritesheet_wrapper.appendChild(this.spritesheet_canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
-    if(rcn_mem_changed(e, 'palette') || rcn_mem_changed(e, 'spritesheet')) {
+    if(rcn_mem_changed(e, 'spritesheet')) {
       sprite_sel_ed.update_spritesheet_canvas();
     }
   });
@@ -107,7 +107,7 @@ rcn_sprite_select_ed.prototype.update_sprite_index_text = function() {
 
 rcn_sprite_select_ed.prototype.update_spritesheet_canvas = function() {
   this.spritesheet_canvas.set_size(128, 96);
-  this.spritesheet_canvas.blit(rcn_global_bin.rom.slice(rcn.mem_spritesheet_begin));
+  this.spritesheet_canvas.upload_pixels(rcn_global_bin.rom.slice(rcn.mem_spritesheet_begin));
   this.spritesheet_canvas.flush();
 }
 

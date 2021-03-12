@@ -211,11 +211,11 @@ rcn_vm.prototype.set_volume = function(volume) {
 rcn_vm.prototype.onmessage = function(e) {
   switch(e.data.type) {
     case 'palette':
-      this.palette = e.data.bytes;
+      this.canvas.upload_palette(e.data.bytes);
       break;
     case 'screen':
       if(this.canvas) {
-        this.canvas.blit(e.data.bytes, this.palette);
+        this.canvas.upload_pixels(e.data.bytes);
         this.canvas.flush();
       }
       break;
