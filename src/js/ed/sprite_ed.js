@@ -54,18 +54,26 @@ function rcn_sprite_ed() {
 
     const color_input = document.createElement('input');
     color_input.type = 'color';
-    color_input.oninput = function() {
-      // Update bin's palette with new color
-      const rgb_int = parseInt(this.value.slice(1), 16);
-      const rgb_bytes = new Uint8Array(3);
-      rgb_bytes[0] = (rgb_int>>16);
-      rgb_bytes[1] = (rgb_int>>8) & 0xff;
-      rgb_bytes[2] = rgb_int & 0xff;
-      rcn_global_bin.rom.set(rgb_bytes, rcn.mem_palette_offset + i*4);
-      rcn_dispatch_ed_event('rcn_bin_change', {
-        begin: rcn.mem_palette_offset + i*4,
-        end: rcn.mem_palette_offset + i*4+3,
-      });
+    let color_change_timeout = null;
+    color_input.oninput = e => {
+      // This event gets spammed in Chrome
+      // Using a timeout to make sure we don't spam in return
+      if(!color_change_timeout) {
+        color_change_timeout = setTimeout(() => {
+          // Update bin's palette with new color
+          const rgb_int = parseInt(color_input.value.slice(1), 16);
+          const rgb_bytes = new Uint8Array(3);
+          rgb_bytes[0] = (rgb_int>>16);
+          rgb_bytes[1] = (rgb_int>>8) & 0xff;
+          rgb_bytes[2] = rgb_int & 0xff;
+          rcn_global_bin.rom.set(rgb_bytes, rcn.mem_palette_offset + i*4);
+          rcn_dispatch_ed_event('rcn_bin_change', {
+            begin: rcn.mem_palette_offset + i*4,
+            end: rcn.mem_palette_offset + i*4+3,
+          });
+          color_change_timeout = null;
+        }, 0);
+      }
     }
     this.color_inputs.push(color_input);
     color_wrapper.appendChild(color_input);
