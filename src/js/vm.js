@@ -12,7 +12,9 @@ function rcn_vm(params = {}) {
   const vm = this;
 
   if(!params.no_canvas) {
-    this.canvas = new rcn_canvas();
+    this.canvas = new rcn_canvas({
+      ignore_alpha: true,
+    });
     this.canvas.set_size(128, 128);
     this.canvas.node.tabIndex = 0; // Means we can focus the canvas and receive input
     this.canvas.node.addEventListener('keydown', function(e) {

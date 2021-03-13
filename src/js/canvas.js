@@ -1,7 +1,9 @@
 // Raccoon canvas
 'use strict';
 
-function rcn_canvas() {
+function rcn_canvas(params) {
+  params = params || {};
+
   this.node = document.createElement('canvas');
   this.node.rcn_canvas = this;
 
@@ -48,8 +50,15 @@ function rcn_canvas() {
         ? floor(sample / 16.0)
         : mod(sample, 16.0);
       sample = sample / 16.0;
-      gl_FragColor.rgb = texture2D(palette, vec2(sample, 0.0)).rgb;
-      gl_FragColor.a = 1.0;
+      lowp vec4 pal = texture2D(palette, vec2(sample, 0.0));
+      gl_FragColor.rgb = pal.rgb;`
+      + (params.ignore_alpha
+      ? `
+      gl_FragColor.a = 1.0;`
+      : `
+      lowp float checker = mod(floor(gl_FragCoord.x / 8.0) + floor(gl_FragCoord.y / 8.0), 2.0);
+      gl_FragColor.a = floor(pal.a * 2.0) == 1.0 ? (checker == 0.0 ? 1.0 : 0.5) : 1.0;`)
+      + `
     }
   `);
   this.color_program = rcn_gl_create_program(gl, `
