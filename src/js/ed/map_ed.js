@@ -20,7 +20,7 @@ function rcn_map_ed() {
   // Create map canvas
   this.map_canvas = new rcn_canvas();
   this.map_canvas.node.classList.add('map');
-  let shift_start_client_x, shift_start_client_y, shift_start_offset_x, shift_start_offset_y;
+  let shift_start_coords_x, shift_start_coords_y, shift_start_offset_x, shift_start_offset_y;
   this.map_canvas.interaction(function(e, tex_coords) {
     if(map_ed.selection.event(e, tex_coords)) {
       return;
@@ -38,16 +38,15 @@ function rcn_map_ed() {
       rcn_dispatch_ed_event('rcn_current_sprite_change');
     } else if(e.buttons == 4) { // Middle button: shift map
       if(e.type == 'mousedown') {
-        shift_start_client_x = e.clientX;
-        shift_start_client_y = e.clientY;
+        shift_start_coords_x = tex_coords.x;
+        shift_start_coords_y = tex_coords.y;
         shift_start_offset_x = map_ed.offset_x;
         shift_start_offset_y = map_ed.offset_y;
         e.preventDefault();
       }
-      if(shift_start_client_x != undefined && shift_start_offset_y != undefined) {
-        const vp = map_ed.map_canvas.compute_viewport();
-        map_ed.offset_x = shift_start_offset_x + (shift_start_client_x - e.clientX) / (vp.mul * 8);
-        map_ed.offset_y = shift_start_offset_y + (shift_start_client_y - e.clientY) / (vp.mul * 8);
+      if(shift_start_coords_x != undefined && shift_start_coords_y != undefined) {
+        map_ed.offset_x = shift_start_offset_x + (shift_start_coords_x >> 3) - (tex_coords.x >> 3);
+        map_ed.offset_y = shift_start_offset_y + (shift_start_coords_y >> 3) - (tex_coords.y >> 3);
         map_ed.update_map_canvas();
         map_ed.selection.reset();
         e.preventDefault();
