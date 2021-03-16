@@ -49,7 +49,7 @@ function rcn_map_ed() {
           shift_start_offset_x + (shift_start_coords_x >> 3) - (tex_coords.x >> 3),
           shift_start_offset_y + (shift_start_coords_y >> 3) - (tex_coords.y >> 3),
         );
-        map_ed.update_map_canvas();
+        map_ed.update_map_canvas(true);
         map_ed.selection.reset();
         e.preventDefault();
       }
@@ -59,6 +59,7 @@ function rcn_map_ed() {
     map_ed.change_zoom(-Math.sign(e.deltaY))
     e.preventDefault();
   });
+  this.canvas_dirty_tiles = [];
   this.selection = new rcn_selection(this.map_canvas);
   this.selection.requires_shift = true;
   this.selection.tile_size = 8;
@@ -99,7 +100,19 @@ function rcn_map_ed() {
   this.add_child(this.map_canvas.node);
 
   this.addEventListener('rcn_bin_change', function(e) {
-    if(rcn_mem_changed(e, 'map') || rcn_mem_changed(e, 'spritesheet')) {
+    if(rcn_mem_changed(e, 'spritesheet')) {
+      map_ed.update_map_canvas(true);
+    }
+
+    if(rcn_mem_changed(e, 'map')) {
+      const begin = Math.max(e.detail.begin - rcn.mem_map_offset, 0);
+      const end = Math.min(e.detail.end - rcn.mem_map_offset, rcn.mem_map_size);
+      for(let i = begin; i < end; i++) {
+        map_ed.canvas_dirty_tiles.push({
+          x: (i & 0x7f) - map_ed.offset_x,
+          y: (i >> 7) - map_ed.offset_y,
+        });
+      }
       map_ed.update_map_canvas();
     }
   });
@@ -128,7 +141,7 @@ function rcn_map_ed() {
   });
 
   this.hover.onchange();
-  this.update_map_canvas();
+  this.update_map_canvas(true);
 }
 
 rcn_map_ed.prototype.title = 'Map Editor';
@@ -181,14 +194,16 @@ rcn_map_ed.prototype.get_viewport_height = function() {
   return Math.min(rcn.map_height, this.get_viewport_width())
 }
 
-rcn_map_ed.prototype.update_map_canvas = function() {
+rcn_map_ed.prototype.update_map_canvas = function(fully_dirty = false) {
   const vp_w = this.get_viewport_width();
   const vp_h = this.get_viewport_height();
 
-  const pixels = new Uint8Array(((vp_w * vp_h) << 6) >> 1);
+  this.map_canvas.set_size(vp_w << 3, vp_h << 3);
+
+  const pixels = this.map_canvas.pixels;
   const map_row_size = (vp_w << 3) >> 1;
 
-  const draw_tile = function(pixels, mx, my, spr) {
+  const draw_tile = function(mx, my, spr) {
     const pix_x = mx << 3;
     const pix_y = my << 3;
     const pix_index = (pix_y * vp_w * 4) + (pix_x >> 1);
@@ -201,19 +216,29 @@ rcn_map_ed.prototype.update_map_canvas = function() {
     }
   }
 
-  for(let mx = 0; mx < vp_w; mx++) {
-    for(let my = 0; my < vp_h; my++) {
-      draw_tile(pixels, mx, my, this.get_tile(mx, my));
+  if(fully_dirty) {
+    for(let mx = 0; mx < vp_w; mx++) {
+      for(let my = 0; my < vp_h; my++) {
+        draw_tile(mx, my, this.get_tile(mx, my));
+      }
+    }
+  } else {
+    for(let dt of this.canvas_dirty_tiles) {
+      if(dt.x >= 0 && dt.x < vp_w && dt.y >= 0 && dt.y < vp_h) {
+        draw_tile(dt.x, dt.y, this.get_tile(dt.x, dt.y));
+      }
     }
   }
 
+  this.canvas_dirty_tiles = [];
+
   // Draw hovered tile with stamp
   if(this.hover.is_hovering()) {
-    draw_tile(pixels, this.hover.current_x, this.hover.current_y, rcn_current_sprite);
+    draw_tile(this.hover.current_x, this.hover.current_y, rcn_current_sprite);
+    this.canvas_dirty_tiles.push({x: this.hover.current_x, y: this.hover.current_y});
   }
 
-  this.map_canvas.set_size(vp_w << 3, vp_h << 3);
-  this.map_canvas.upload_pixels(pixels);
+  this.map_canvas.upload_pixels();
   this.map_canvas.flush();
 }
 
@@ -236,7 +261,7 @@ rcn_map_ed.prototype.change_zoom = function(delta) {
   if(this.zoom != prev_zoom || this.offset_x != prev_offset_x || this.offset_y != prev_offset_y) {
     this.hover.update_hovering(null);
     this.selection.reset();
-    this.update_map_canvas();
+    this.update_map_canvas(true);
     this.hover.refresh_hovering();
   }
 }
