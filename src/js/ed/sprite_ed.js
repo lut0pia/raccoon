@@ -354,15 +354,16 @@ rcn_sprite_ed.prototype.update_draw_canvas = function() {
   const spr_h = rcn_current_sprite_rows << 3;
   const texel_index = ((rcn_current_sprite & 0xf) << 2) + ((rcn_current_sprite >> 4) << 9);
   const row_size = spr_w >> 1;
-  let pixels = new Uint8Array((spr_w * spr_h) >> 1);
 
+  this.draw_canvas.set_size(spr_w, spr_h);
+
+  const pixels = this.draw_canvas.pixels;
   for(let i = 0; i < spr_h; i++) {
     const row_index = texel_index + (i << 6);
     pixels.set(rcn_global_bin.rom.slice(row_index, row_index + row_size), i * row_size);
   }
 
-  this.draw_canvas.set_size(spr_w, spr_h);
-  this.draw_canvas.upload_pixels(pixels);
+  this.draw_canvas.upload_pixels();
   this.draw_canvas.flush();
 }
 
