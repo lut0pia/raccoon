@@ -126,7 +126,7 @@ rcn_canvas.prototype.draw_outline = function(x, y, w, h, t, r, g, b, a) {
 }
 
 rcn_canvas.prototype.flush = function() {
-  if(this.img) {
+  if(this.pixels) {
     const gl = this.gl;
 
     // Clear all to black
@@ -181,7 +181,7 @@ rcn_canvas.prototype.set_size = function(width, height) {
 
   this.width = width;
   this.height = height;
-  this.img = new Uint8Array(width * height * 3);
+  this.pixels = new Uint8Array(width * height / 2);
 }
 
 rcn_canvas.prototype.client_to_texture_coords = function(x, y) {
