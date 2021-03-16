@@ -159,15 +159,17 @@ rcn_anim_ed.prototype.update_canvas = function() {
   const spr_i = this.get_frame_spr(frame);
   const texel_index = ((spr_i & 0xf) << 2) + ((spr_i >> 4) << 9);
   const row_size = spr_w >> 1;
-  let pixels = new Uint8Array((spr_w * spr_h) >> 1);
+
+  this.canvas.set_size(spr_w, spr_h);
+
+  const pixels = this.canvas.pixels;
 
   for(let i = 0; i < spr_h; i++) {
     const row_index = texel_index + (i << 6);
     pixels.set(rcn_global_bin.rom.slice(row_index, row_index + row_size), i * row_size);
   }
 
-  this.canvas.set_size(spr_w, spr_h);
-  this.canvas.upload_pixels(pixels);
+  this.canvas.upload_pixels();
   this.canvas.flush();
 }
 
