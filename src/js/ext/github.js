@@ -77,6 +77,13 @@ async function rcn_github_request(p) {
   return JSON.parse(await rcn_http_request(p));
 }
 
+async function rcn_github_user() {
+  return rcn_github_request({
+    url: '/user',
+    requires_token: true,
+  })
+}
+
 async function rcn_github_get_commit(owner, repo, sha) {
   return rcn_github_request('/repos/'+owner+'/'+repo+'/git/commits/'+sha);
 }
@@ -99,9 +106,21 @@ async function rcn_github_get_main_branch(owner, repo) {
   }
 }
 
-async function rcn_github_create_repo(repo) {
+async function rcn_github_create_user_repo(repo) {
   return rcn_github_request({
     url: '/user/repos',
+    requires_token: true,
+    post: {
+      name: repo,
+      description: 'Automatically created by raccoon',
+      auto_init: true,
+    },
+  });
+}
+
+async function rcn_github_create_org_repo(org, repo) {
+  return rcn_github_request({
+    url: `/orgs/${org}/repos`,
     requires_token: true,
     post: {
       name: repo,
@@ -216,8 +235,14 @@ rcn_hosts['github'] = {
     const owner = pair[0];
     const repo = pair[1];
 
+    const current_user = await rcn_github_user();
+
     try {
-      await rcn_github_create_repo(repo);
+      if(current_user.login == owner) {
+        await rcn_github_create_user_repo(repo);
+      } else {
+        await rcn_github_create_org_repo(owner, repo);
+      }
     } catch(e) {
       if(e.status == 422 && e.responseText.search('name already exists') >= 0) {
         // Repository already exists
