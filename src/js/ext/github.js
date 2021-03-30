@@ -316,7 +316,9 @@ rcn_hosts['github'] = {
     return (await rcn_github_request({
       url: '/user/repos',
       requires_token: true,
-    })).map(r => ({
+    }))
+    .filter(r => r.language == null)
+    .map(r => ({
       name: r.name,
       link: r.full_name,
     }));
