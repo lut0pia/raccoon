@@ -7,7 +7,7 @@
     "fantasyconsole"
   ],
   "dependencies": {
-    "ws": "7.3.x"
+    "ws": ">=7.4.6"
   },
   "repository": {
     "type": "git",
