@@ -79,7 +79,9 @@ function rcn_canvas(params) {
     3, -1, 2, 1,
   ]));
 
-  this.upload_palette();
+  if(!params.no_palette_init) {
+    this.upload_palette();
+  }
 }
 
 rcn_canvas.prototype.upload_palette = function(palette) {
