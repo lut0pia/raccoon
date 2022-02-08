@@ -122,7 +122,7 @@ rcn_vm_ed.prototype.onmessage = function(e) {
 
       const console_ed = rcn_find_editor(rcn_console_ed);
       if(console_ed) {
-        console_ed.log(e.data.msg);
+        console_ed.log_text(e.data.msg);
       }
       break;
   }
