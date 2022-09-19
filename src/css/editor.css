@@ -19,6 +19,7 @@ body > aside {
   width: 180px;
   height: calc(100% - 32px);
   background-color: hsl(200deg 23% 14%);
+  overflow-y: auto;
 }
 
 body > main {
