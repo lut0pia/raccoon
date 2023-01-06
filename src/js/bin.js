@@ -119,10 +119,12 @@ rcn_bin.prototype.to_json = function() {
     return hex_lines;
   }
 
-  let code_lines = this.code.split('\n');
+  let code_lines = this.code.split('\n')
+    // Remove trailing spaces
+    .map(line => line.trimEnd());
 
   // Remove trailing empty lines
-  while(code_lines.length>0 && code_lines[code_lines.length-1].match(/^\s*$/)) {
+  while(code_lines.length > 0 && code_lines[code_lines.length-1].length == 0) {
     code_lines.pop();
   }
 
