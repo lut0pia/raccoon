@@ -136,6 +136,11 @@ rcn_vm.prototype.reset = function() {
 }
 
 rcn_vm.prototype.poll_gamepads = function() {
+  if(!navigator.getGamepads) {
+    // Gamepads are unavailable outside of secure contexts
+    return;
+  }
+
   const gamepads = navigator.getGamepads();
   for(let i = 0; i < gamepads.length; i++) {
     const gamepad = gamepads[i];
