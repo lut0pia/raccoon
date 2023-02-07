@@ -4,8 +4,8 @@
 }
 
 .window.console_ed div {
-  width: 100%;
-  height: calc(100% - 30px);
+  width: calc(100% - 2px); /* Account for border */
+  height: calc(100% - 30px); /* Account for text input */
   border: 1px inset grey;
   overflow-y: scroll;
 }
