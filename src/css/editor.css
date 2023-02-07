@@ -84,6 +84,7 @@ input[type=button].text:active, input[type=button].text:disabled {
 
 input[type=button]:not(.text) {
   opacity: 0.5;
+  margin: 2px;
 }
 
 input[type=button]:hover {
@@ -159,8 +160,9 @@ select:disabled {
 */
 
 input[type=text] {
-  padding: 0px 2px 0px 2px;
-  border: 1px grey inset;
+  padding: 3px 9px;
+  border: 1px black inset;
+  background-color: hsla(199, 52%, 12%, 1);
 }
 
 /*
@@ -277,7 +279,7 @@ input[type=text] {
 
 #popup > .buttons {
   width: 100%;
-  margin-top: 16px;
+  margin-top: 1em;
 }
 
 #popup > .buttons input{
@@ -288,6 +290,10 @@ input[type=text] {
 
 #popup > .buttons input:hover{
   background: hsla(199, 55%, 14%, 1);
+}
+
+#popup p {
+  margin: 1em;
 }
 
 #popup article {
