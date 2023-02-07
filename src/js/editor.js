@@ -632,6 +632,40 @@ async function rcn_start_editor_mode(params) {
       }(),
     }),
   });
+  rcn_editor_header_button({
+    path: 'File/Export/URL',
+    action: async () => {
+      const host_name = rcn_global_bin.host;
+      if(!host_name) {
+        return await rcn_ui_popup({
+          text:`There is no host for the current bin, so no URL can be generated for it.`,
+        });
+      }
+      const host = rcn_hosts[host_name];
+      const url = host.export(rcn_global_bin);
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.readOnly = true;
+      input.value = url;
+      input.style.width = '50%';
+      input.addEventListener('click', e => {
+        input.select();
+        input.setSelectionRange(0, 99999); // For mobile devices
+      });
+
+      return await rcn_ui_popup({
+        text:`You can share this URL to other people to allow them to play this bin:`,
+        nodes: [
+          input,
+          rcn_ui_button({
+            value: '🔗',
+            onclick: () => window.open(url, '_blank'),
+          })
+        ],
+      });
+    },
+  });
 
   rcn_editor_header_button({
     path: `File/Import/File...`,

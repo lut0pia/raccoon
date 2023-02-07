@@ -323,4 +323,8 @@ rcn_hosts['github'] = {
       link: r.full_name,
     }));
   },
+  export: function(o) {
+    const pair = o.link.split('/');
+    return `${location.origin}/?${this.get_param}=${pair[0]}/${pair[1]}`;
+  },
 }
