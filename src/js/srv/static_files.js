@@ -22,6 +22,11 @@ exports.handle_request = function(request, response) {
   if(filepath == '/') {
     filepath = '/index.html';
   }
+  if(filepath.startsWith('/config.json')) {
+    response.writeHead(403);
+    response.end('<h1>Forbidden</h1>');
+    return;
+  }
   filepath = filepath.substr(1);
 
   try {
